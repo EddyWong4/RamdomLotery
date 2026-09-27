@@ -8,7 +8,7 @@ import { svgFicha } from './fichas.js';
 import * as misFichas from './mis-fichas.js';
 import { iniciarPanelFichas } from './panel-fichas.js';
 import {
-  leerParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior, MAX_TABLEROS_JUGADOR,
+  leerParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior, firmaJuego, parametrosTablerosManuales, MAX_TABLEROS_JUGADOR,
 } from './enlaces.js';
 
 const $ = (sel) => document.querySelector(sel);
@@ -34,8 +34,13 @@ function guardarMarcas(numero) {
 // El link refleja los tableros en juego, así al recargar o compartir se conservan
 function actualizarUrl() {
   const { datos, numeros } = actual;
-  const p = new URLSearchParams({ c: datos.semilla, n: datos.tamano, k: datos.cantidad, t: numeros.join(',') });
-  if (datos.posicionDoble) p.set('d', datos.posicionDoble);
+  let p;
+  if (datos.manual) {
+    p = parametrosTablerosManuales(numeros.map((n) => actual.tableros.get(n)));
+  } else {
+    p = new URLSearchParams({ c: datos.semilla, n: datos.tamano, k: datos.cantidad, t: numeros.join(',') });
+    if (datos.posicionDoble) p.set('d', datos.posicionDoble);
+  }
   history.replaceState(null, '', `#/jugar?${p}`);
   recordarUltimoJugar(`#/jugar?${p}`);
 }
@@ -53,10 +58,14 @@ function pintarDetalle() {
   const { datos, numeros, tableros, marcas } = actual;
   const total = [...marcas.values()].reduce((s, m) => s + m.size, 0);
   el.titulo.textContent = numeros.length === 1 ? `Tablero ${numeroTablero(numeros[0])}` : `Mis ${numeros.length} tableros`;
-  const doble = datos.posicionDoble
+  const doble = datos.manual
+    ? ([...tableros.values()].some((t) => t.doble) ? 'con carta doble' : null)
+    : datos.posicionDoble
     ? `doble: ${nombrePosicion(datos.posicionDoble === 'aleatoria' ? 'aleatoria' : tableros.get(numeros[0])?.doble?.posicion ?? datos.posicionDoble).toLowerCase()}`
     : null;
-  el.detalle.textContent = [`${datos.tamano}×${datos.tamano}`, doble, `juego ${datos.semilla}`, `${total} marcadas`].filter(Boolean).join(' · ');
+  el.detalle.textContent = [`${datos.tamano}×${datos.tamano}`, doble, datos.manual ? 'tableros favoritos' : `juego ${datos.semilla}`, `${total} marcadas`].filter(Boolean).join(' · ');
+  // Sin código de juego no se pueden pedir otros tableros por número
+  el.agregar.hidden = !!datos.manual;
   el.agregarNumero.max = datos.cantidad;
   el.btnAgregar.disabled = numeros.length >= MAX_TABLEROS_JUGADOR;
 }
@@ -191,6 +200,7 @@ export function iniciarJugador(funcionAvisar) {
     ayuda: $('#jugar-ayuda'),
     limpiar: $('#btn-limpiar-marcas'),
     agregarNumero: $('#jugar-agregar-numero'),
+    agregar: $('.jugar-agregar'),
     btnAgregar: $('#btn-jugar-agregar'),
     marcarTodos: $('#marcar-todos'),
   };
@@ -224,7 +234,7 @@ export const vistaJugar = {
       actual = null;
       return;
     }
-    const mismoJuego = actual && claveTablero(actual.datos, 0) === claveTablero(datos, 0) &&
+    const mismoJuego = actual && firmaJuego(actual.datos) === firmaJuego(datos) &&
       actual.numeros.join(',') === datos.numeros.join(',');
     if (!mismoJuego) {
       const tableros = tablerosDesdeParametros(datos);

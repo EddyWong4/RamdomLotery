@@ -66,6 +66,10 @@ export const guardarFichaActiva = (id) => escribir('ficha-activa', id);
 export const cargarPreferenciasJugador = (porDefecto) => ({ ...porDefecto, ...leer('jugador', {}) });
 export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
 
+// Tableros favoritos (hechos a mano o guardados desde un juego)
+export const cargarFavoritos = () => leer('favoritos', []);
+export const guardarFavoritos = (favoritos) => escribir('favoritos', favoritos);
+
 // Último link de tableros abierto en este dispositivo (para la pestaña "Jugar")
 export const cargarUltimoJugar = () => leer('ultimo-jugar', null);
 export const guardarUltimoJugar = (hash) => escribir('ultimo-jugar', hash);

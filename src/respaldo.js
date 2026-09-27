@@ -1,12 +1,13 @@
 // Respaldo: un archivo .json con lo que la app guarda en el navegador, para no perderlo
 // o para pasarlo a otro dispositivo. Opcionalmente incluye las imágenes cargadas.
 import { combinarFichas, fichasConPredeterminada, normalizarFicha } from './fichas.js';
+import { combinarFavoritos, normalizarFavorito } from './favoritos.js';
 
 export const FORMATO = 'loteria-tableros-respaldo';
 export const VERSION_FORMATO = 1;
 
 // Datos que se "combinan" (no se pierde nada de lo que ya hay) y los que se reemplazan solo si el usuario lo pide
-const COMBINABLES = ['juegos', 'marcas', 'fichas'];
+const COMBINABLES = ['juegos', 'marcas', 'fichas', 'favoritos'];
 const REEMPLAZABLES = ['preferencias', 'juego-actual', 'partida', 'cantador', 'ficha-activa', 'jugador'];
 
 export function crearRespaldo(datos, imagenes = null, versionApp = '') {
@@ -49,6 +50,15 @@ export function combinarDatos(actuales, delRespaldo, { reemplazarActual = false 
     datos.marcas = { ...(actuales.marcas ?? {}), ...delRespaldo.marcas };
   }
 
+  // Favoritos: se agregan sin duplicar (mismo id o mismas cartas)
+  let favoritosNuevos = 0;
+  if (Array.isArray(delRespaldo.favoritos)) {
+    const propios = (Array.isArray(actuales.favoritos) ? actuales.favoritos : []).map(normalizarFavorito).filter(Boolean);
+    const { favoritos, agregados } = combinarFavoritos(propios, delRespaldo.favoritos);
+    if (agregados) datos.favoritos = favoritos;
+    favoritosNuevos = agregados;
+  }
+
   // Fichas: se agregan las del respaldo sin duplicar ni sobrescribir las propias
   let fichasNuevas = 0;
   if (Array.isArray(delRespaldo.fichas)) {
@@ -75,6 +85,7 @@ export function combinarDatos(actuales, delRespaldo, { reemplazarActual = false 
       juegosActualizados: juegosRespaldo.filter((j) => juegosActuales.some((a) => a.id === j.id)).length,
       tablerosConMarcas: Object.keys(delRespaldo.marcas ?? {}).length,
       fichasNuevas,
+      favoritosNuevos,
       reemplazados,
     },
   };

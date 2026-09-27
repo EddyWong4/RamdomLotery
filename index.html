@@ -206,6 +206,47 @@
     </form>
   </dialog>
 
+  <!-- Editor para crear o cambiar un tablero a mano -->
+  <dialog id="dialogo-editor" class="dialogo dialogo-editor">
+    <div class="dialogo-contenido">
+      <h2 id="editor-titulo">Crear tablero a mano</h2>
+      <div class="editor-columnas">
+        <div class="editor-izquierda">
+          <div class="fila-campos">
+            <label class="campo"><span>Nombre</span><input id="editor-nombre" type="text" maxlength="40" placeholder="Mi tablero" /></label>
+          </div>
+          <div class="campo">
+            <span>Tamaño</span>
+            <div class="segmentado" id="editor-tamano">
+              <button type="button" data-valor="2">2×2</button>
+              <button type="button" data-valor="3">3×3</button>
+              <button type="button" data-valor="4">4×4</button>
+              <button type="button" data-valor="5">5×5</button>
+            </div>
+          </div>
+          <div id="editor-tablero" class="editor-tablero" role="grid" aria-label="Casillas del tablero"></div>
+          <p id="editor-estado" class="editor-estado" aria-live="polite"></p>
+          <div class="editor-herramientas">
+            <button type="button" id="editor-azar" class="btn-chico">🎲 Completar al azar</button>
+            <button type="button" id="editor-quitar" class="btn-chico">Quitar carta</button>
+            <button type="button" id="editor-vaciar" class="btn-chico">Vaciar</button>
+          </div>
+        </div>
+        <div class="editor-derecha">
+          <label class="campo">
+            <span>Toca una casilla y después la carta que va en ella</span>
+            <input id="editor-buscar" type="search" placeholder="Buscar por nombre o número" autocomplete="off" />
+          </label>
+          <div id="editor-cartas" class="editor-cartas"></div>
+        </div>
+      </div>
+      <div class="botones-iguales">
+        <button type="button" id="editor-cancelar" class="btn-secundario">Cancelar</button>
+        <button type="button" id="editor-guardar" class="btn-principal">Guardar en favoritos</button>
+      </div>
+    </div>
+  </dialog>
+
   <!-- ═══ Vista: Tableros (generar, imprimir, simular) ═══ -->
   <main class="contenedor" data-vista="tableros">
     <aside class="panel-lateral">
@@ -262,6 +303,18 @@
         <p class="ayuda">Con el mismo código, tamaño y cantidad se obtienen exactamente los mismos tableros.</p>
 
         <button type="button" id="btn-generar" class="btn-principal">Generar tableros</button>
+      </section>
+
+      <!-- Favoritos: tableros hechos a mano o marcados con ★ -->
+      <section class="tarjeta" id="panel-favoritos">
+        <h2>Mis tableros favoritos <span id="favoritos-cuenta"></span></h2>
+        <p class="ayuda">Crea un tablero eligiendo tú las cartas, o marca con ★ cualquier tablero generado. Después úsalos como juego para imprimirlos, cantarlos o compartirlos.</p>
+        <button type="button" id="btn-crear-manual" class="btn-secundario">✎ Crear tablero a mano</button>
+        <ul id="lista-favoritos" class="lista-favoritos"></ul>
+        <div class="favoritos-acciones" id="favoritos-acciones" hidden>
+          <button type="button" id="btn-fav-seleccion" class="btn-chico">Seleccionar todos</button>
+          <button type="button" id="btn-usar-favoritos" class="btn-principal">Usar como juego</button>
+        </div>
       </section>
 
       <!-- 2. Exportar -->

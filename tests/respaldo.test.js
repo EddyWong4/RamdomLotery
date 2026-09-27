@@ -68,6 +68,15 @@ describe('respaldo', () => {
       expect(resumen.fichasNuevas).toBe(1);
     });
 
+    it('agrega los tableros favoritos del respaldo sin duplicar', () => {
+      const mio = { id: 'm1', nombre: 'Mío', tamano: 2, cartas: [1, 2, 3, 4] };
+      const { datos, resumen } = combinarDatos({ favoritos: [mio] }, {
+        favoritos: [{ id: 'x', tamano: 2, cartas: [1, 2, 3, 4] }, { id: 'y', nombre: 'Suyo', tamano: 2, cartas: [5, 6, 7, 8] }],
+      });
+      expect(datos.favoritos.map((f) => f.nombre)).toEqual(['Mío', 'Suyo']);
+      expect(resumen.favoritosNuevos).toBe(1);
+    });
+
     it('detecta si el respaldo trae datos actuales', () => {
       expect(traeDatosActuales(respaldo)).toBe(true);
       expect(traeDatosActuales({ juegos: [] })).toBe(false);

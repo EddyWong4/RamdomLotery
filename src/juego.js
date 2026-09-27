@@ -12,10 +12,12 @@ import { generarTableros, calcularEstadisticas, MAX_TABLEROS } from './generador
 export const tablerosGenerados = (juego) =>
   juego.generados ?? Math.max(juego.tableros.length, ...juego.tableros.map((t) => t.numero));
 
-export const puedeAgregar = (juego) => tablerosGenerados(juego) < MAX_TABLEROS;
+// Un juego de favoritos (manual) no tiene código: no se pueden generar más tableros con él
+export const puedeAgregar = (juego) => !juego.manual && tablerosGenerados(juego) < MAX_TABLEROS;
 
 export function agregarTablero(juego) {
   const generados = tablerosGenerados(juego);
+  if (juego.manual) throw new Error('Un juego de favoritos no tiene código para generar más tableros');
   if (generados >= MAX_TABLEROS) throw new Error(`Se llegó al máximo de ${MAX_TABLEROS} tableros por juego`);
   const { tableros } = generarTableros({
     cantidad: generados + 1,

@@ -20,6 +20,12 @@ Las esquinas centrales y los pares solo existen en 4×4 y 5×5; en 5×5 el “pa
 (`src/juego.js`). Los tableros conservan su número (no se renumeran) y el nuevo cumple las mismas reglas (único, reparto parejo,
 doble distinta), así los tableros impresos y los links compartidos siguen coincidiendo.
 
+**Tableros a mano y favoritos** (`src/favoritos.js`, `src/editor-tablero.js`, `src/panel-favoritos.js`): el editor permite
+elegir cada carta de cada casilla (buscar por nombre o número, completar al azar); una carta repetida dos veces lo vuelve tablero
+doble. La ★ de cualquier tablero generado lo guarda en favoritos. **Usar como juego** convierte los favoritos elegidos (mismo
+tamaño) en el juego actual para imprimirlos, simularlos, verificarlos y compartirlos; como no tienen código de juego, el link
+lleva las cartas (`#/jugar?b=1.6.7.7…`). Los favoritos viajan en el respaldo.
+
 **Simulador de partidas** (`src/simulador.js`): juega 100, 1,000 o 10,000 partidas con los tableros generados
 (forma de ganar: tabla llena, línea o cuatro esquinas), muestra el tablero que más veces ganó y las victorias de cada uno.
 Una prueba de chi-cuadrada indica si las diferencias son normales del azar o si algún tablero tiene ventaja real.
@@ -124,6 +130,9 @@ src/
   mis-fichas.js  fichas guardadas del usuario y ficha activa
   panel-fichas.js panel para elegir / personalizar / exportar / importar fichas
   juego.js       agregar / eliminar tableros de un juego
+  favoritos.js   validación de tableros a mano, favoritos y juego de favoritos
+  editor-tablero.js editor para crear / cambiar un tablero a mano
+  panel-favoritos.js panel "Mis tableros favoritos"
   respaldo.js    formato, validación y combinación de respaldos
   pwa.js         service worker y aviso de nueva versión
   plataforma.js  detección de iOS / Android / escritorio

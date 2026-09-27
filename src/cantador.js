@@ -110,7 +110,7 @@ function pintarAyudaVerificar() {
   const juego = almacen.cargarJuegoActual();
   el.numero.max = juego?.tableros.length ?? '';
   el.verificarAyuda.textContent = juego?.tableros.length
-    ? `Juego actual: ${juego.tableros.length} tableros ${juego.tamano}×${juego.tamano}${juego.posicionDoble ? ' dobles' : ''} (código ${juego.semilla}).`
+    ? `Juego actual: ${juego.tableros.length} tableros ${juego.tamano}×${juego.tamano}${juego.posicionDoble ? ' dobles' : ''} ${juego.manual ? '(tableros favoritos)' : `(código ${juego.semilla})`}.`
     : 'Primero genera tableros en la sección Tableros.';
   el.btnVerificar.disabled = !juego?.tableros.length;
   el.btnRevisar.disabled = !juego?.tableros.length;

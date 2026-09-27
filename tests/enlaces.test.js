@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { generarTableros } from '../src/generador.js';
 import {
-  parametrosTablero, enlaceTablero, leerParametros, tableroDesdeParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior,
+  parametrosTablero, enlaceTablero, leerParametros, tableroDesdeParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior, firmaJuego,
 } from '../src/enlaces.js';
 
 const juegoDe = (opciones) => {
@@ -61,6 +61,42 @@ describe('links de tableros', () => {
     const b = leerParametros(new URLSearchParams('c=A&n=4&k=11&t=3'));
     expect(claveTablero(a)).toBe(claveTablero(b));
     expect(claveTableroAnterior(a)).not.toBe(claveTableroAnterior(b));
+  });
+
+  describe('tableros sin código (favoritos / hechos a mano)', () => {
+    const juego = {
+      manual: true, tamano: 2, semilla: 'FAVORITOS',
+      tableros: [{ numero: 1, cartas: [1, 2, 3, 4] }, { numero: 2, cartas: [7, 9, 7, 10], doble: { carta: 7 } }, { numero: 3, cartas: [11, 12, 13, 14] }],
+    };
+
+    it('el link lleva las cartas y las regenera tal cual', () => {
+      const p = parametrosTablero(juego, [2, 3]);
+      expect(p.get('b')).toBe('7.9.7.10_11.12.13.14');
+      const datos = leerParametros(p);
+      expect(datos).toMatchObject({ manual: true, tamano: 2, numeros: [2, 3] });
+      const mapa = tablerosDesdeParametros(datos);
+      expect(mapa.get(2)).toEqual(juego.tableros[1]);
+      expect(mapa.get(3).cartas).toEqual([11, 12, 13, 14]);
+    });
+
+    it('la clave de marcas depende de las cartas, no del número', () => {
+      const d = leerParametros(parametrosTablero(juego, [1]));
+      expect(claveTablero(d, 1)).toBe('m|1.2.3.4');
+      expect(firmaJuego(d)).toBe('m|1.2.3.4');
+    });
+
+    it.each([
+      'b=1.2.3',             // no es cuadrado
+      'b=1.1.1.2',           // carta 3 veces
+      'b=1.2.3.4_1.2.3.4.5.6.7.8.9', // tamaños distintos
+      'b=1.2.3.99',          // carta inexistente
+    ])('rechaza cartas inválidas: %s', (q) => {
+      expect(leerParametros(new URLSearchParams(q))).toBeNull();
+    });
+
+    it('sin t válido numera 1, 2, 3…', () => {
+      expect(leerParametros(new URLSearchParams('b=1.2.3.4_5.6.7.8&t=x')).numeros).toEqual([1, 2]);
+    });
   });
 
   it('la clave distingue tableros y juegos', () => {

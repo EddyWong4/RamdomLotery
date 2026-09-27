@@ -233,3 +233,12 @@ html[data-plataforma='android'] {
   html[data-plataforma='android'] .aviso.visible { transform: translateY(0); }
   html[data-plataforma='android'] .dialogo-contenido::before { width: 32px; height: 4px; background: rgba(255, 255, 255, 0.4); }
 }
+
+/* Editor de tablero en el celular: hoja de pantalla casi completa */
+@media (max-width: 860px) {
+  .dialogo-editor { max-height: calc(100vh - env(safe-area-inset-top) - 24px); }
+  .dialogo-editor .dialogo-contenido { max-height: calc(100vh - env(safe-area-inset-top) - 24px); }
+  .editor-cartas { max-height: 34vh; }
+  .editor-tablero { max-width: min(300px, 72vw); }
+  input[type='search'] { font-size: 16px; min-height: var(--toque); }
+}

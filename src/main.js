@@ -15,6 +15,7 @@ import { iniciarCompartir, abrirCompartir } from './compartir.js';
 import { MAX_TABLEROS_JUGADOR } from './enlaces.js';
 import { crearRespaldo, validarRespaldo, combinarDatos, traeDatosActuales } from './respaldo.js';
 import { iniciarPwa } from './pwa.js';
+import { iniciarFavoritos, esFavorito, alternarFavorito, pintarFavoritos } from './panel-favoritos.js';
 import { agregarTablero, eliminarTablero, puedeAgregar, tablerosGenerados, tablerosEliminados } from './juego.js';
 import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
@@ -252,7 +253,7 @@ function pintarTableros() {
   const e = juego.estadisticas;
   el.estadisticas.innerHTML = [
     `${juego.tableros.length} tableros ${n}×${n}` + (tablerosEliminados(juego) ? ` (${tablerosEliminados(juego)} eliminados)` : ''),
-    `Código: ${escapar(juego.semilla)}`,
+    juego.manual ? 'Tableros favoritos' : `Código: ${escapar(juego.semilla)}`,
     juego.posicionDoble ? `Dobles: ${nombrePosicion(juego.posicionDoble)}` : null,
     juego.posicionDoble ? resumenDobles(juego.tableros) : null,
     e.usoMin === e.usoMax ? `Cada carta sale ${e.usoMin} veces` : `Cada carta sale ${e.usoMin}–${e.usoMax} veces`,
@@ -349,6 +350,7 @@ function htmlTablero(t, { n, victoriasPorTablero, maxVictorias }) {
         <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="Seleccionar tablero ${numero}"> Nº ${numero}</label>
         ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
         <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
+        <button type="button" data-favorito="${t.numero}" class="secundario estrella${esFavorito(estado.juego, t) ? ' activo' : ''}" aria-pressed="${esFavorito(estado.juego, t)}" title="Favorito" aria-label="Favorito: tablero ${numero}">${esFavorito(estado.juego, t) ? '★' : '☆'}</button>
         <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
         <button type="button" data-eliminar="${t.numero}" class="secundario" title="Eliminar este tablero" aria-label="Eliminar tablero ${numero}">🗑</button>
       </div>
@@ -427,7 +429,7 @@ function opcionesPdf(extra = {}) {
     formato: p.formato,
     lineasCorte: p.lineasCorte,
     mostrarPie: p.mostrarPie,
-    semilla: estado.juego.semilla,
+    semilla: estado.juego.manual ? 'favoritos' : estado.juego.semilla,
     alProgresar: (x) => avisar(`Creando PDF… ${Math.round(x * 100)}%`, 60000),
     ...extra,
   };
@@ -656,6 +658,18 @@ function irATablero(numero) {
   art.classList.add('resaltar');
 }
 
+// Actualiza las estrellas de los tableros visibles (al cambiar los favoritos desde su panel)
+function actualizarEstrellas() {
+  if (!estado.juego) return;
+  el.tableros.querySelectorAll('button[data-favorito]').forEach((b) => {
+    const t = estado.juego.tableros.find((x) => x.numero === Number(b.dataset.favorito));
+    const fav = !!t && esFavorito(estado.juego, t);
+    b.classList.toggle('activo', fav);
+    b.setAttribute('aria-pressed', fav);
+    b.textContent = fav ? '★' : '☆';
+  });
+}
+
 // ── Respaldo ────────────────────────────────────────────────────────────────
 function pintarRespaldo() {
   const cuantas = imagenes.imagenesGuardadas();
@@ -747,7 +761,8 @@ function cargarJuego(id) {
   estado.juego = juego;
   estado.seleccion = new Set(juego.seleccion || []);
   estado.visibles = POR_PAGINA;
-  Object.assign(estado.prefs, { tamano: juego.tamano, cantidad: juego.tableros.length, semilla: juego.semilla, dobles: !!juego.posicionDoble });
+  Object.assign(estado.prefs, { tamano: juego.tamano, cantidad: juego.tableros.length, dobles: !!juego.posicionDoble });
+  if (!juego.manual) estado.prefs.semilla = juego.semilla;
   if (juego.posicionDoble) estado.prefs.posicionDoble = juego.posicionDoble;
   guardarPrefs();
   guardarJuegoActual();
@@ -818,6 +833,11 @@ function conectarEventos() {
     const x = e.target.closest('button[data-eliminar]');
     if (x) eliminarUnTablero(Number(x.dataset.eliminar));
     if (e.target.closest('button[data-agregar]')) agregarUnTablero();
+    const f = e.target.closest('button[data-favorito]');
+    if (f) {
+      const tablero = estado.juego.tableros.find((t) => t.numero === Number(f.dataset.favorito));
+      if (tablero) alternarFavorito(estado.juego, tablero);
+    }
     const c = e.target.closest('button[data-compartir]');
     if (c) abrirCompartir(estado.juego, Number(c.dataset.compartir));
   });
@@ -867,6 +887,21 @@ pintarVersion();
 pintarFormulario();
 pintarJuegosGuardados();
 conectarEventos();
+iniciarFavoritos({
+  avisar,
+  tamanoPreferido: () => estado.prefs.tamano,
+  alCambiar: actualizarEstrellas,
+  usarComoJuego: (juego) => {
+    estado.juego = juego;
+    estado.seleccion = new Set();
+    estado.visibles = POR_PAGINA;
+    guardarJuegoActual();
+    pintarTableros();
+    if (location.hash && location.hash !== '#/') location.hash = '#/';
+    el.barra.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    avisar(`Juego con ${juego.tableros.length} tableros favoritos listo: imprímelo, simúlalo, cántalo o compártelo`, 5000);
+  },
+});
 iniciarCantador();
 iniciarJugador(avisar);
 iniciarCompartir();
@@ -881,4 +916,5 @@ imagenes.iniciarImagenes().finally(() => {
   pintarTableros();
   refrescarCantador();
   refrescarJugador();
+  pintarFavoritos();
 });
