@@ -9,6 +9,7 @@ import * as misFichas from './mis-fichas.js';
 import { iniciarPanelFichas } from './panel-fichas.js';
 import { canto } from './cantador.js';
 import { cartasCantadas, cartaActual, terminada } from './partida.js';
+import { MODOS, verificarTablero, normalizarModo } from './reglas.js';
 import {
   leerParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior, firmaJuego, parametrosTablerosManuales, MAX_TABLEROS_JUGADOR,
 } from './enlaces.js';
@@ -87,6 +88,7 @@ function pintar() {
         <header>
           <b>${numeroTablero(numero)}</b>
           <span class="ayuda" data-cuenta="${numero}">${m.size} marcadas</span>
+          <span class="loteria-aviso" data-loteria hidden>🎉 ¡Lotería!</span>
           ${numeros.length > 1 ? `<button type="button" class="btn-chico" data-quitar="${numero}" aria-label="Dejar de jugar el tablero ${numeroTablero(numero)}">✕</button>` : ''}
         </header>
         <div class="jugar-tablero" style="grid-template-columns:repeat(${datos.tamano},1fr)">
@@ -96,6 +98,7 @@ function pintar() {
   }).join('');
   pintarDetalle();
   pintarCanto();
+  revisarGanadores();
 
   const sinImagenes = imagenes.cartasSinImagen().length === 54;
   el.ayuda.textContent = 'Toca una carta cuando la canten para ponerle tu ficha. Tócala otra vez para quitarla.' +
@@ -117,6 +120,7 @@ function pintarMarcas(numeros = actual.numeros) {
     if (cuenta) cuenta.textContent = `${m.size} marcadas`;
   }
   pintarDetalle();
+  revisarGanadores();
 }
 
 // ── Cantar desde la vista Jugar ──────────────────────────────────────────────
@@ -155,13 +159,56 @@ function pintarCanto() {
   el.cantoVoz.disabled = !('speechSynthesis' in window);
   el.cantoSonidos.checked = pc.sonidos;
   el.cantoMarcar.checked = !!prefs.marcarSolas;
-  // Las 5 anteriores a la actual, de la más reciente a la más vieja
-  const previas = cartasCantadas(p).slice(0, -1).slice(-5).reverse();
-  el.cantoRecientes.innerHTML = previas.map((x) => {
+  const modo = normalizarModo(pc.modo);
+  el.cantoModo.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b.dataset.valor === modo));
+
+  // Todas las cartas que ya pasaron, en orden; la tira se desplaza para mostrar la más reciente
+  const pasadas = cartasCantadas(p);
+  el.cantoCuenta.textContent = pasadas.length ? `(${pasadas.length})` : '';
+  el.cantoRecientes.innerHTML = pasadas.map((x, i) => {
     const u = imagenes.urlMiniatura(x);
     const n = escapar(cartaPorId(x).nombre);
-    return u ? `<img src="${u}" alt="${n}" title="${x}. ${n}">` : `<span class="carta-vacia" title="${x}. ${n}"><b>${x}</b></span>`;
+    const clase = i === pasadas.length - 1 ? ' class="actual"' : '';
+    return u
+      ? `<img${clase} src="${u}" alt="${n}" title="${i + 1}. ${n}">`
+      : `<span${clase} title="${i + 1}. ${n}"><b>${x}</b></span>`;
   }).join('');
+  el.cantoRecientes.scrollLeft = el.cantoRecientes.scrollWidth;
+}
+
+// ── ¡Lotería! ────────────────────────────────────────────────────────────────
+// Con el cantador abierto, cada tablero se revisa con la forma de ganar elegida.
+// Solo cuentan las fichas puestas en cartas que ya salieron.
+let ganadoresPrevios = new Set();
+
+function revisarGanadores() {
+  const ganadores = new Set();
+  const visible = cantoVisible();
+  const modo = normalizarModo(canto.prefs().modo);
+  const salieron = cartasSalidas();
+  for (const numero of actual.numeros) {
+    const caja = el.tableros.querySelector(`[data-caja="${numero}"]`);
+    if (!caja) continue;
+    let r = null;
+    if (visible) {
+      const t = actual.tableros.get(numero);
+      const fichas = [...actual.marcas.get(numero)].map((i) => t.cartas[i]).filter((id) => salieron.has(id));
+      r = verificarTablero(t.cartas, fichas, modo);
+    }
+    const gano = !!r?.gano;
+    if (gano) ganadores.add(numero);
+    caja.classList.toggle('gano', gano);
+    const ganadoras = new Set(gano ? r.ganadoras : []);
+    caja.querySelectorAll('.jugar-casilla').forEach((b) => b.classList.toggle('ganadora', ganadoras.has(Number(b.dataset.i))));
+    const aviso = caja.querySelector('[data-loteria]');
+    if (aviso) aviso.hidden = !gano;
+  }
+  const nuevos = [...ganadores].filter((n) => !ganadoresPrevios.has(n));
+  if (nuevos.length) {
+    avisar(`🎉 ¡Lotería! ${nuevos.map(numeroTablero).join(', ')} · ${MODOS[modo].nombre.toLowerCase()}`, 5000);
+    if (canto.automatico()) canto.detener();
+  }
+  ganadoresPrevios = ganadores;
 }
 
 // Resalta en los tableros las cartas que ya salieron (sin volver a pintar las imágenes)
@@ -191,7 +238,16 @@ function alCambiarCanto({ avanzo }) {
   if (!activa || !actual || !cantoVisible()) return;
   pintarCanto();
   pintarCantadas();
+  revisarGanadores();
   if (avanzo && prefs.marcarSolas) marcarCartaCantada(cartaActual(canto.partida()));
+}
+
+// En computadora, la mesa de juego (cantador + tableros) ocupa la pantalla: se lleva a la vista
+function enfocarMesa() {
+  if (cantoVisible() && window.matchMedia('(min-width: 861px)').matches) {
+    // Después de que la ruta regrese la página arriba
+    setTimeout(() => document.querySelector('.jugar-mesa')?.scrollIntoView({ block: 'start' }), 0);
+  }
 }
 
 function alternarCanto(visible = !cantoVisible()) {
@@ -200,6 +256,8 @@ function alternarCanto(visible = !cantoVisible()) {
   if (!visible) canto.detener();
   pintarCanto();
   pintarCantadas();
+  revisarGanadores();
+  enfocarMesa();
 }
 
 function nuevaPartidaCanto() {
@@ -319,6 +377,8 @@ export function iniciarJugador(funcionAvisar) {
     cantoSonidos: $('#canto-sonidos'),
     cantoMarcar: $('#canto-marcar'),
     cantoRecientes: $('#canto-recientes'),
+    cantoModo: $('#canto-modo'),
+    cantoCuenta: $('#canto-cuenta'),
   };
   prefs = { marcarEnTodos: true, cantarAqui: false, marcarSolas: false, ...almacen.cargarPreferenciasJugador({}) };
   el.marcarTodos.checked = prefs.marcarEnTodos;
@@ -360,6 +420,14 @@ export function iniciarJugador(funcionAvisar) {
   });
   // Safari solo permite el audio después de un toque: cualquier clic en el cantador lo desbloquea (fase de captura)
   el.canto.addEventListener('click', () => canto.despertarAudio(), true);
+  el.cantoModo.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-valor]');
+    if (!b) return;
+    ganadoresPrevios = new Set(); // con otra forma de ganar se vuelve a avisar
+    canto.cambiarPreferencia('modo', b.dataset.valor);
+    pintarCanto();
+    revisarGanadores();
+  });
   canto.alCambiar(alCambiarCanto);
   document.addEventListener('keydown', alPresionarTecla);
 
@@ -390,6 +458,7 @@ export const vistaJugar = {
     recordarUltimoJugar(location.hash);
     activa = true;
     pintar();
+    if (!mismoJuego) enfocarMesa();
   },
   alSalir() {
     activa = false;
