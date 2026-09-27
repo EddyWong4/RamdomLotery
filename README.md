@@ -67,6 +67,11 @@ Para probar otro estilo: `?plataforma=ios`, `android` o `escritorio` en la direc
 **Sin internet (PWA):** después de la primera visita la app funciona sin conexión y se puede instalar en el celular o la
 computadora ("Agregar a pantalla de inicio" / "Instalar"). Cuando se publica una versión nueva aparece un aviso para actualizar.
 
+**Contador de visitas** (`src/visitas.js`): con [GoatCounter](https://www.goatcounter.com) (gratis, sin cookies, no guarda IP).
+La visita se registra con su "píxel" (sin cargar scripts de terceros), una vez por cada apertura de la app, y el total se muestra
+al pie de la página. No cuenta en localhost ni sin internet. Se activa poniendo el código del sitio en `src/config.js`
+(`GOATCOUNTER`) y activando *Allow adding visitor counts on your website* en la configuración del sitio en GoatCounter.
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).
@@ -143,6 +148,8 @@ src/
   respaldo.js    formato, validación y combinación de respaldos
   pwa.js         service worker y aviso de nueva versión
   plataforma.js  detección de iOS / Android / escritorio
+  visitas.js     contador de visitas (GoatCounter)
+  config.js      configuración del sitio publicado (código de GoatCounter)
   nativo.css     estilos de app nativa en el celular
   temas.css      colores de los 5 temas
   temas.js       lista de temas, aplicar y recordar

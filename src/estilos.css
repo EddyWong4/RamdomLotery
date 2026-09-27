@@ -589,6 +589,8 @@ input[type='range'] { accent-color: var(--oro); width: 100%; }
   font-variant-numeric: tabular-nums;
 }
 .version b { color: var(--oro); }
+.pie-pagina { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.visitas[hidden] { display: none; }
 
 /* ── Aviso de nueva versión ─────────────────────── */
 .aviso-actualizacion {
