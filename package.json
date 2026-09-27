@@ -1,7 +1,7 @@
 {
   "name": "tableros-loteria",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Generador de tableros de Lotería Mexicana (54 cartas) con exportación a PDF",
   "type": "module",
   "scripts": {
@@ -19,6 +19,10 @@
   "devDependencies": {
     "jsdom": "^25.0.1",
     "vite": "^5.4.0",
+    "vite-plugin-pwa": "^0.21.2",
     "vitest": "^2.1.9"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

@@ -14,7 +14,7 @@ Las esquinas centrales y los pares solo existen en 4×4 y 5×5; en 5×5 el “pa
 
 - Sin base de datos ni servidor: todo corre en el navegador.
 - Las preferencias, el juego actual y los juegos guardados se guardan en `localStorage` (solo en ese navegador).
-- Software libre: [Vite](https://vitejs.dev), [jsPDF](https://github.com/parallax/jsPDF), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) y [Vitest](https://vitest.dev) (todos MIT).
+- Software libre: [Vite](https://vitejs.dev), [jsPDF](https://github.com/parallax/jsPDF), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) y [Vitest](https://vitest.dev) y [vite-plugin-pwa](https://vite-pwa-org.netlify.app) (todos MIT).
 
 **Simulador de partidas** (`src/simulador.js`): juega 100, 1,000 o 10,000 partidas con los tableros generados
 (forma de ganar: tabla llena, línea o cuatro esquinas), muestra el tablero que más veces ganó y las victorias de cada uno.
@@ -34,9 +34,13 @@ las marcas se guardan en su navegador. Con carta doble, tocarla marca sus dos ca
 y, opcionalmente, las imágenes cargadas. Al restaurarlo se agregan los juegos sin borrar los existentes; el juego actual y las
 preferencias solo se reemplazan si el usuario lo confirma.
 
+**Sin internet (PWA):** después de la primera visita la app funciona sin conexión y se puede instalar en el celular o la
+computadora ("Agregar a pantalla de inicio" / "Instalar"). Cuando se publica una versión nueva aparece un aviso para actualizar.
+
 ## Uso
 
-Requiere [Node.js](https://nodejs.org) 18 o superior.
+Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).
+`npm run dev` y `npm test` también funcionan en Node 18.
 
 ```bash
 npm install
@@ -99,11 +103,13 @@ src/
   jugador.js     vista Jugar: tablero en el celular
   compartir.js   ventana con link y código QR
   respaldo.js    formato, validación y combinación de respaldos
+  pwa.js         service worker y aviso de nueva versión
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)
   main.js        interfaz
 scripts/preparar-imagenes.ps1   renombra y redimensiona las imágenes
+scripts/generar-iconos.ps1      íconos de la app (public/icono-*.png)
 tests/                          pruebas automáticas
 docs/PLAN.md                    plan de mejoras
 ```

@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tableros de Lotería</title>
   <meta name="description" content="Genera tableros de Lotería Mexicana de 2x2 a 5x5 y descárgalos en PDF para imprimir." />
+  <meta name="theme-color" content="#2d1206" />
+  <link rel="icon" href="/icono.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
@@ -282,6 +285,12 @@
   <footer class="pie-pagina">
     <span id="version" class="version"></span>
   </footer>
+
+  <div id="aviso-actualizacion" class="aviso-actualizacion" role="alert" hidden>
+    <span>Hay una nueva versión de la app.</span>
+    <button type="button" id="btn-actualizar" class="btn-chico destacado">Actualizar</button>
+    <button type="button" id="btn-actualizar-despues" class="btn-chico">Después</button>
+  </div>
 
   <div id="aviso" class="aviso" role="status" aria-live="polite"></div>
 

@@ -9,6 +9,7 @@ import { registrarVista, iniciarRutas } from './rutas.js';
 import { iniciarJugador, vistaJugar, refrescarJugador } from './jugador.js';
 import { iniciarCompartir, abrirCompartir } from './compartir.js';
 import { crearRespaldo, validarRespaldo, combinarDatos, traeDatosActuales } from './respaldo.js';
+import { iniciarPwa } from './pwa.js';
 import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
 const PREFERENCIAS_INICIALES = {
@@ -776,6 +777,7 @@ registrarVista('tableros');
 registrarVista('cantar', vistaCantar);
 registrarVista('jugar', vistaJugar);
 iniciarRutas();
+iniciarPwa(avisar);
 // Los tableros se pintan cuando se sabe de dónde salen las imágenes (incluidas, guardadas o ninguna)
 imagenes.iniciarImagenes().finally(() => {
   pintarPanelImagenes();
