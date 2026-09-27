@@ -4,7 +4,7 @@
 # Uso:  powershell -ExecutionPolicy Bypass -File scripts\preparar-imagenes.ps1 -Origen "C:\ruta\a\las\cartas"
 
 param(
-  [string]$Origen = "$env:USERPROFILE\Downloads\loteria moderna",
+  [Parameter(Mandatory = $true)][string]$Origen,
   [int]$AnchoImpresion = 800,
   [int]$AnchoMiniatura = 220,
   [int]$Calidad = 85
