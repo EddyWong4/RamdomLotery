@@ -512,13 +512,22 @@ select option { background: var(--fondo-2); }
 .jugar-barra .jugar-cabecera { margin-bottom: 0; }
 .jugar-barra .jugar-cabecera h2 { text-transform: none; letter-spacing: 0; font-size: 26px; }
 .jugar-agregar .con-boton .btn-principal { flex-shrink: 0; padding: 9px 16px; font-size: 14px; }
-.jugar-tableros { display: grid; gap: 16px; grid-template-columns: minmax(0, 640px); justify-content: center; }
-@media (min-width: 900px) {
-  .jugar-tableros[data-cantidad="2"], .jugar-tableros[data-cantidad="3"] { grid-template-columns: repeat(2, minmax(0, 560px)); }
+/* Los tableros se muestran por páginas: jugador.js calcula cuántos caben (data-cantidad) */
+.jugar-tableros { display: grid; gap: 16px; grid-template-columns: minmax(0, 640px); justify-content: center; align-content: start; }
+.jugar-tableros[data-cantidad="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.jugar-tableros[data-cantidad="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.jugar-paginas { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.jugar-paginas .btn-icono { width: 40px; height: 40px; padding: 0; }
+.jugar-paginas-lista { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+.pagina-tablero {
+  min-width: 44px; height: 32px; padding: 0 8px; border-radius: 50px; cursor: pointer;
+  font: 800 13px var(--fuente-ui, Nunito), sans-serif; color: var(--texto-suave);
+  background: color-mix(in srgb, var(--tinta) 8%, transparent); border: 1.5px solid color-mix(in srgb, var(--tinta) 15%, transparent);
 }
-@media (min-width: 1300px) {
-  .jugar-tableros[data-cantidad="3"] { grid-template-columns: repeat(3, minmax(0, 420px)); }
-}
+.pagina-tablero.actual { color: var(--texto); border-color: var(--oro); background: color-mix(in srgb, var(--oro) 18%, transparent); }
+.pagina-tablero.gano { color: #1b1b1b; background: var(--oro); border-color: var(--oro); }
+.pagina-tablero.gano::after { content: ' 🎉'; }
+.jugar-paginas-cuenta { font-size: 13px; font-weight: 700; color: var(--texto-suave); white-space: nowrap; }
 .jugar-tablero-caja header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
 .jugar-tablero-caja header b { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--oro); }
 .jugar-tablero-caja header .btn-chico { margin-left: auto; padding: 3px 10px; }
@@ -917,4 +926,16 @@ input[type='search']:focus { border-color: var(--oro); }
 @media (max-width: 860px) {
   .aviso-pago { margin-top: 8px; width: calc(100% - 24px); padding: 10px 12px; }
   .aviso-pago p { font-size: 13px; }
+}
+
+/* Con paginación el tablero deja lugar a la barra de páginas */
+@media (min-width: 700px) {
+  .jugar-tableros[data-paginado] .jugar-tablero-caja { max-width: calc((100dvh - 170px) * 0.62); }
+}
+@media (min-width: 861px) {
+  .jugar.con-canto .jugar-tableros[data-paginado] .jugar-tablero-caja { max-width: calc((100cqh - 116px) * 0.62); }
+  .jugar.con-canto .jugar-tableros { align-content: center; }
+}
+@media (max-width: 699px) {
+  .jugar-paginas-cuenta { display: none; }
 }

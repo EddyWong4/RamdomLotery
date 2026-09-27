@@ -25,6 +25,7 @@ let prefs;
 // { datos, numeros: [n], tableros: Map n → tablero, marcas: Map n → Set<índice> }
 let actual = null;
 let activa = false; // la vista Jugar está en pantalla
+let pagina = 0; // con varios tableros se muestran por páginas, sin desplazarse
 
 function cargarMarcas(datos, numero) {
   const nuevas = almacen.cargarMarcas(claveTablero(datos, numero));
@@ -76,11 +77,19 @@ function pintarDetalle() {
 
 function pintar() {
   if (!actual) return;
+  // La distribución (con o sin cantador) debe estar lista antes de medir cuántos tableros caben
+  document.querySelector('.jugar').classList.toggle('con-canto', cantoVisible());
   const { datos, numeros, tableros, marcas } = actual;
   const ficha = misFichas.fichaActiva();
   const salieron = cartasSalidas();
-  el.tableros.dataset.cantidad = Math.min(numeros.length, 3);
-  el.tableros.innerHTML = numeros.map((numero) => {
+  const cuantos = porPagina();
+  const paginas = Math.ceil(numeros.length / cuantos);
+  pagina = Math.min(Math.max(0, pagina), paginas - 1);
+  const enPagina = numeros.slice(pagina * cuantos, (pagina + 1) * cuantos);
+  el.tableros.dataset.cantidad = enPagina.length;
+  el.tableros.dataset.porPagina = cuantos;
+  el.tableros.toggleAttribute('data-paginado', paginas > 1);
+  el.tableros.innerHTML = htmlPaginas(paginas, cuantos) + enPagina.map((numero) => {
     const t = tableros.get(numero);
     const m = marcas.get(numero);
     return `
@@ -99,6 +108,7 @@ function pintar() {
   pintarDetalle();
   pintarCanto();
   revisarGanadores();
+  ultimoPorPagina = cuantos;
 
   const sinImagenes = imagenes.cartasSinImagen().length === 54;
   el.ayuda.textContent = 'Toca una carta cuando la canten para ponerle tu ficha. Tócala otra vez para quitarla.' +
@@ -191,7 +201,6 @@ function revisarGanadores() {
   const salieron = cartasSalidas();
   for (const numero of actual.numeros) {
     const caja = el.tableros.querySelector(`[data-caja="${numero}"]`);
-    if (!caja) continue;
     let r = null;
     if (visible) {
       const t = actual.tableros.get(numero);
@@ -200,6 +209,8 @@ function revisarGanadores() {
     }
     const gano = !!r?.gano;
     if (gano) ganadores.add(numero);
+    el.tableros.querySelector(`[data-ir="${numero}"]`)?.classList.toggle('gano', gano);
+    if (!caja) continue; // está en otra página: solo se marca su botón
     caja.classList.toggle('gano', gano);
     const ganadoras = new Set(gano ? r.ganadoras : []);
     caja.querySelectorAll('.jugar-casilla').forEach((b) => b.classList.toggle('ganadora', ganadoras.has(Number(b.dataset.i))));
@@ -257,9 +268,11 @@ function alternarCanto(visible = !cantoVisible()) {
   prefs.cantarAqui = visible;
   almacen.guardarPreferenciasJugador(prefs);
   if (!visible) canto.detener();
-  pintarCanto();
-  pintarCantadas();
-  revisarGanadores();
+  // Cambia el espacio para los tableros: se vuelve a calcular cuántos caben por página
+  const primero = actual.numeros[pagina * (ultimoPorPagina || 1)];
+  document.querySelector('.jugar').classList.toggle('con-canto', visible);
+  if (primero !== undefined) pagina = paginaDe(primero);
+  pintar();
   enfocarMesa();
 }
 
@@ -277,6 +290,56 @@ function alPresionarTecla(e) {
   if (e.target.closest('input, select, textarea, button, summary')) return;
   if (e.key === ' ' || e.key === 'ArrowRight') { e.preventDefault(); canto.avanzar(); }
   else if (e.key === 'ArrowLeft') { e.preventDefault(); canto.retroceder(); }
+}
+
+// ── Páginas de tableros ──────────────────────────────────────────────────────
+// Cuántos tableros caben lado a lado sin desplazarse: cada uno mide lo que permite el alto disponible
+function porPagina() {
+  if (!window.matchMedia('(min-width: 700px)').matches) return 1;
+  const conMesa = cantoVisible() && window.matchMedia('(min-width: 861px)').matches;
+  const ancho = el.tableros.clientWidth || window.innerWidth - 64;
+  const alto = conMesa && el.tableros.clientHeight ? el.tableros.clientHeight : window.innerHeight - 60;
+  const tablero = Math.min(640, (alto - 110) * 0.62);
+  return Math.max(1, Math.min(3, Math.floor((ancho + 16) / (tablero + 16))));
+}
+
+function htmlPaginas(paginas, cuantos) {
+  if (paginas <= 1) return '';
+  const { numeros } = actual;
+  const flecha = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+  const botones = numeros.map((n, i) => {
+    const aqui = Math.floor(i / cuantos) === pagina;
+    return `<button type="button" class="pagina-tablero${aqui ? ' actual' : ''}${ganadoresPrevios.has(n) ? ' gano' : ''}" data-ir="${n}"
+      ${aqui ? 'aria-current="true"' : ''} title="Ir al tablero ${numeroTablero(n)}">${String(n).padStart(3, '0')}</button>`;
+  }).join('');
+  return `<nav class="jugar-paginas" aria-label="Páginas de tableros">
+      <button type="button" class="btn-icono" data-pagina="-1" aria-label="Tableros anteriores" ${pagina === 0 ? 'disabled' : ''}>${flecha('M15 5 8 12l7 7')}</button>
+      <div class="jugar-paginas-lista">${botones}</div>
+      <span class="jugar-paginas-cuenta">${pagina + 1} / ${paginas}</span>
+      <button type="button" class="btn-icono" data-pagina="1" aria-label="Tableros siguientes" ${pagina === paginas - 1 ? 'disabled' : ''}>${flecha('M9 5l7 7-7 7')}</button>
+    </nav>`;
+}
+
+function irAPagina(nueva) {
+  const paginas = Math.ceil(actual.numeros.length / porPagina());
+  const destino = Math.min(Math.max(0, nueva), paginas - 1);
+  if (destino === pagina) return;
+  pagina = destino;
+  pintar();
+}
+
+const paginaDe = (numero) => Math.floor(actual.numeros.indexOf(numero) / porPagina());
+
+// Si cambia el tamaño de la ventana, cambia cuántos tableros caben: la página actual conserva su primer tablero
+let ultimoPorPagina = 0;
+function alCambiarTamano() {
+  if (!activa || !actual) return;
+  const cuantos = porPagina();
+  if (cuantos === ultimoPorPagina) return;
+  const primero = actual.numeros[pagina * ultimoPorPagina];
+  ultimoPorPagina = cuantos;
+  if (primero !== undefined) pagina = paginaDe(primero);
+  pintar();
 }
 
 // ── Acciones ─────────────────────────────────────────────────────────────────
@@ -314,8 +377,8 @@ function agregarTablero() {
   actual.numeros = [...numeros, numero];
   el.agregarNumero.value = '';
   actualizarUrl();
+  pagina = paginaDe(numero);
   pintar();
-  el.tableros.querySelector(`[data-caja="${numero}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function quitarTablero(numero) {
@@ -388,6 +451,10 @@ export function iniciarJugador(funcionAvisar) {
   el.marcarTodos.checked = prefs.marcarEnTodos;
 
   el.tableros.addEventListener('click', (e) => {
+    const flecha = e.target.closest('[data-pagina]');
+    if (flecha) return irAPagina(pagina + Number(flecha.dataset.pagina));
+    const ir = e.target.closest('[data-ir]');
+    if (ir) return irAPagina(paginaDe(Number(ir.dataset.ir)));
     const q = e.target.closest('[data-quitar]');
     if (q) return quitarTablero(Number(q.dataset.quitar));
     const b = e.target.closest('.jugar-casilla');
@@ -437,6 +504,18 @@ export function iniciarJugador(funcionAvisar) {
     revisarGanadores();
   });
   canto.alCambiar(alCambiarCanto);
+  // Celular: deslizar a los lados cambia de página
+  let toque = null;
+  el.tableros.addEventListener('touchstart', (e) => { toque = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null; }, { passive: true });
+  el.tableros.addEventListener('touchend', (e) => {
+    if (!toque || !actual) return;
+    const dx = e.changedTouches[0].clientX - toque.x;
+    const dy = e.changedTouches[0].clientY - toque.y;
+    toque = null;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) irAPagina(pagina + (dx < 0 ? 1 : -1));
+  }, { passive: true });
+  let esperaTamano = null;
+  window.addEventListener('resize', () => { clearTimeout(esperaTamano); esperaTamano = setTimeout(alCambiarTamano, 150); });
   document.addEventListener('keydown', alPresionarTecla);
 
   iniciarPanelFichas(avisar);
