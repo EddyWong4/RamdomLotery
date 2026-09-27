@@ -730,3 +730,32 @@ input[type='search']:focus { border-color: var(--oro); }
 .tema-texto b { display: block; font-size: 15px; }
 .tema-texto small { font-size: 12px; color: var(--texto-suave); }
 .tema-marca { color: var(--oro); font-weight: 900; font-size: 18px; width: 18px; }
+
+/* ── Vista: Cómo jugar ──────────────────────────── */
+.instrucciones { max-width: 1100px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 18px; }
+.instrucciones section { scroll-margin-top: 80px; }
+.instrucciones-cabecera h2, .titulo-seccion { font-family: 'Playfair Display', serif; color: var(--oro); font-size: clamp(24px, 4vw, 34px); }
+.titulo-seccion { font-size: clamp(20px, 3vw, 26px); }
+.instrucciones p, .instrucciones li { line-height: 1.55; color: var(--texto-suave); }
+.instrucciones b { color: var(--texto); }
+.instrucciones a { color: var(--oro); }
+.instrucciones-cabecera { display: flex; flex-direction: column; gap: 10px; }
+.indice { display: flex; flex-wrap: wrap; gap: 8px; }
+.indice a { padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--borde); text-decoration: none; font-weight: 700; font-size: 14px; }
+.indice a:hover { border-color: var(--oro); }
+.pasos, .consejos, .forma-ganar ul { padding-left: 22px; display: flex; flex-direction: column; gap: 8px; margin: 0; }
+.formas { display: flex; flex-direction: column; gap: 10px; }
+.formas-ganar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .formas-ganar { grid-template-columns: 1fr; } }
+.forma-ganar h3 { font-size: 20px; color: var(--texto); display: flex; gap: 8px; align-items: center; }
+.forma-ganar p { margin: 0; }
+.figuras { display: flex; flex-wrap: wrap; gap: 14px; }
+.figuras figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.figuras figcaption { font-size: 12px; font-weight: 700; color: var(--texto-suave); text-align: center; }
+.mini-tablero { display: grid; grid-template-columns: repeat(4, 16px); gap: 3px; padding: 5px; border-radius: 6px; background: color-mix(in srgb, var(--tinta) 8%, transparent); border: 1px solid var(--borde); }
+.mini-tablero span { width: 16px; height: 21px; border-radius: 3px; background: color-mix(in srgb, var(--tinta) 14%, transparent); }
+.mini-tablero span.activa { background: var(--oro); box-shadow: 0 0 6px color-mix(in srgb, var(--oro) 60%, transparent); }
+.modos-juego { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.modos-juego article { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--tinta) 5%, transparent); }
+.modos-juego h3 { font-size: 16px; color: var(--texto); }
+.modos-juego p { margin: 0; font-size: 14px; }

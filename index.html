@@ -32,6 +32,7 @@
     <nav class="navegacion" aria-label="Secciones">
       <a href="#/" data-ruta="tableros">🃏 Tableros</a>
       <a href="#/cantar" data-ruta="cantar">📣 Cantar</a>
+      <a href="#/reglas" data-ruta="reglas">📖 Cómo jugar</a>
     </nav>
   </header>
 
@@ -59,6 +60,12 @@
       </span>
       <span class="pestana-texto">Cantar</span>
     </a>
+    <a href="#/reglas" data-ruta="reglas">
+      <span class="pestana-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg>
+      </span>
+      <span class="pestana-texto">Cómo jugar</span>
+    </a>
     <a href="#/jugar" data-ruta="jugar" id="pestana-jugar" hidden>
       <span class="pestana-icono" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><circle cx="12" cy="11" r="2.4" fill="currentColor" stroke="none"/><path d="M10.5 18.5h3" stroke-linecap="round"/></svg>
@@ -66,6 +73,78 @@
       <span class="pestana-texto">Jugar</span>
     </a>
   </nav>
+
+  <!-- ═══ Vista: Cómo jugar (instrucciones y formas de ganar) ═══ -->
+  <main class="instrucciones" data-vista="reglas" hidden>
+    <header class="instrucciones-cabecera">
+      <h2>Cómo jugar a la lotería</h2>
+      <p>La lotería mexicana se juega con una baraja de <b>54 cartas</b> y un tablero por jugador. Una persona <b>canta</b> las cartas y los demás las marcan en su tablero. Gana quien complete primero la figura acordada y grite <b>“¡Lotería!”</b>.</p>
+      <nav class="indice" aria-label="En esta sección">
+        <a href="#paso-a-paso" data-ancla>Paso a paso</a>
+        <a href="#formas" data-ancla>Formas de ganar</a>
+        <a href="#doble" data-ancla>Carta doble</a>
+        <a href="#con-la-app" data-ancla>Con esta app</a>
+        <a href="#consejos" data-ancla>Consejos</a>
+      </nav>
+    </header>
+
+    <section class="tarjeta" id="paso-a-paso">
+      <h2>Paso a paso</h2>
+      <ol class="pasos">
+        <li><b>Reparte los tableros.</b> Cada jugador toma uno (o varios, si quiere más oportunidades) y fichas para marcar: frijolitos, maíz, corcholatas o piedritas.</li>
+        <li><b>Acuerden la forma de ganar</b> antes de empezar: tabla llena, tradicional, en cruz o siete loco. También pueden apostar un premio o una cooperación.</li>
+        <li><b>El gritón canta las cartas.</b> Baraja el mazo y saca una carta a la vez diciendo su nombre (o un verso ingenioso, como “el que le cantó a San Pedro” para El Gallo).</li>
+        <li><b>Marca tus cartas.</b> Si la carta cantada está en tu tablero, pon una ficha encima. Si tienes la carta doble, marca sus dos casillas.</li>
+        <li><b>¡Lotería!</b> En cuanto completes la figura, grítalo. El juego se detiene y se revisa tu tablero contra las cartas cantadas.</li>
+        <li><b>Si es correcto, ganas.</b> Si te equivocaste, el juego sigue. Si dos personas completan con la misma carta, es empate y se reparte el premio (o se juega un desempate).</li>
+      </ol>
+    </section>
+
+    <section id="formas" class="formas">
+      <h2 class="titulo-seccion">Formas de ganar</h2>
+      <p class="ayuda">Los recuadros dorados muestran las casillas que hay que marcar (ejemplos en un tablero de 4 × 4).</p>
+      <div id="formas-ganar" class="formas-ganar"></div>
+    </section>
+
+    <section class="tarjeta" id="doble">
+      <h2>Tableros con carta doble</h2>
+      <p>En los tableros dobles una carta aparece <b>dos veces</b>. Cuando la cantan, se marcan <b>las dos casillas</b> de una vez: ayuda a completar figuras más rápido. En <b>siete loco</b> cuenta como 2 casillas.</p>
+      <p>La app reparte la carta doble para que, hasta 54 tableros, no se repita la misma en dos tableros distintos.</p>
+    </section>
+
+    <section class="tarjeta" id="con-la-app">
+      <h2>Jugar con esta app</h2>
+      <div class="modos-juego">
+        <article>
+          <h3>🖨️ Con tableros impresos</h3>
+          <p>En <a href="#/">Tableros</a> genera los que necesites y descarga el PDF (grande, S o XS). Imprime también las 54 cartas para cantar, o usa la vista Cantar.</p>
+        </article>
+        <article>
+          <h3>📣 Cantar desde la app</h3>
+          <p>En <a href="#/cantar">Cantar</a> toca la carta para sacar la siguiente o activa el modo automático con voz. Al final hay un sonido de fin.</p>
+        </article>
+        <article>
+          <h3>📱 Jugar en el celular</h3>
+          <p>Comparte el link o el QR de un tablero: cada jugador lo abre en su celular y marca tocando las cartas, con la ficha y el color que prefiera. Se puede jugar con varios tableros a la vez.</p>
+        </article>
+        <article>
+          <h3>✅ Revisar quién ganó</h3>
+          <p>En <a href="#/cantar">Cantar</a>, elige la forma de ganar, escribe el número del tablero y presiona <b>Verificar</b>. También puedes revisar todos los tableros de una vez.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="tarjeta" id="consejos">
+      <h2>Consejos</h2>
+      <ul class="consejos">
+        <li><b>Muchos jugadores o poco tiempo:</b> tradicional o siete loco, son partidas cortas.</li>
+        <li><b>Premio grande o última partida:</b> tabla llena.</li>
+        <li><b>Para variar:</b> en cruz es más difícil que una línea pero más rápida que tabla llena.</li>
+        <li><b>Niños pequeños:</b> tableros de 3 × 3 con tradicional; se gana rápido y todos participan.</li>
+        <li><b>¿Es justo mi juego?</b> El simulador de la sección Tableros juega miles de partidas para comprobar que ningún tablero tiene ventaja.</li>
+      </ul>
+    </section>
+  </main>
 
   <!-- ═══ Vista: Cantar (cantador + verificador) ═══ -->
   <main class="contenedor cantador" data-vista="cantar" hidden>

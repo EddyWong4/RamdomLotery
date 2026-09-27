@@ -85,6 +85,9 @@ canvas 2D, licencia **CC0** (dominio público). Se descargan en PNG, ZIP (`src/z
 por hoja, y la app las carga con el botón *Usar la baraja libre*. El Valiente, El Negrito y El Apache se reinterpretan de
 forma respetuosa (máscara de luchador, gatito negro, arco con plumas).
 
+**Cómo jugar** (`#/reglas`, `src/instrucciones.js`): instrucciones paso a paso, las 4 formas de ganar (tabla llena,
+tradicional, en cruz, siete loco) con diagramas generados desde `src/reglas.js`, carta doble, formas de jugar con la app y consejos.
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).
