@@ -197,6 +197,16 @@ function pintarOpcionDoble() {
   el.diagramaDoble.innerHTML = Array.from({ length: n * n }, (_, i) => `<i${marcadas.has(i) ? ' class="doble"' : ''}></i>`).join('');
 }
 
+// Cuántas veces es doble cada carta (hasta 54 tableros ninguna se repite como doble)
+function resumenDobles(tableros) {
+  const veces = new Map();
+  tableros.forEach((t) => t.doble && veces.set(t.doble.carta, (veces.get(t.doble.carta) ?? 0) + 1));
+  const max = Math.max(...veces.values());
+  if (max <= 1) return 'Carta doble distinta en cada tablero';
+  const min = veces.size < 54 ? 0 : Math.min(...veces.values());
+  return min === max ? `Cada carta es doble ${max} veces` : `Cada carta es doble ${min}–${max} veces`;
+}
+
 // ── Tableros ────────────────────────────────────────────────────────────────
 function pintarTableros() {
   const juego = estado.juego;
@@ -220,6 +230,7 @@ function pintarTableros() {
     `${juego.tableros.length} tableros ${n}×${n}`,
     `Código: ${escapar(juego.semilla)}`,
     juego.posicionDoble ? `Dobles: ${nombrePosicion(juego.posicionDoble)}` : null,
+    juego.posicionDoble ? resumenDobles(juego.tableros) : null,
     e.usoMin === e.usoMax ? `Cada carta sale ${e.usoMin} veces` : `Cada carta sale ${e.usoMin}–${e.usoMax} veces`,
     juego.tableros.length > 1 ? `Máx. ${e.maxComun} cartas en común entre tableros` : null,
   ].filter(Boolean).map((t) => `<span>${t}</span>`).join('');

@@ -64,9 +64,9 @@ function contarBits(x) {
 const enComun = (a, b) => contarBits(a.lo & b.lo) + contarBits(a.hi & b.hi);
 
 // Elige k cartas prefiriendo las menos usadas, con algo de azar para que no sea predecible
-function elegirCartas(k, uso, rng) {
+function elegirCartas(k, uso, rng, excluir = null) {
   const ids = [];
-  for (let id = 1; id <= TOTAL_CARTAS; id++) ids.push({ id, peso: uso[id] + rng() * RUIDO });
+  for (let id = 1; id <= TOTAL_CARTAS; id++) if (id !== excluir) ids.push({ id, peso: uso[id] + rng() * RUIDO });
   ids.sort((x, y) => x.peso - y.peso);
   return ids.slice(0, k).map((c) => c.id);
 }
@@ -102,6 +102,9 @@ export function generarTableros({ cantidad, tamano, semilla, posicionDoble = nul
   const k = tamano * tamano - (posicionDoble ? 1 : 0);
   const rng = crearRng(`${semilla}|${tamano}${posicionDoble ? `|${posicionDoble}` : ''}`);
   const uso = new Array(TOTAL_CARTAS + 1).fill(0);
+  // Veces que cada carta ha sido la doble: la doble se elige entre las que menos lo han sido,
+  // así en los primeros 54 tableros ninguna carta es doble dos veces, y después se reparte parejo
+  const usoDoble = new Array(TOTAL_CARTAS + 1).fill(0);
   const firmas = new Set();
   const mascaras = [];
   const tableros = [];
@@ -109,14 +112,24 @@ export function generarTableros({ cantidad, tamano, semilla, posicionDoble = nul
   while (tableros.length < cantidad) {
     let mejor = null;
 
+    const dobleDisponibles = [];
+    if (posiciones.length) {
+      const minimo = Math.min(...usoDoble.slice(1));
+      for (let id = 1; id <= TOTAL_CARTAS; id++) if (usoDoble[id] === minimo) dobleDisponibles.push(id);
+    }
+
     for (let intento = 0; intento < CANDIDATOS; intento++) {
-      const cartas = elegirCartas(k, uso, rng);
-      const m = mascara(cartas);
+      let cartas;
       let doble = null;
       if (posiciones.length) {
+        const id = dobleDisponibles[Math.floor(rng() * dobleDisponibles.length)];
         const posicion = posiciones[Math.floor(rng() * posiciones.length)];
-        doble = { id: cartas[Math.floor(rng() * cartas.length)], posicion, indices: indicesDoble(posicion, tamano) };
+        doble = { id, posicion, indices: indicesDoble(posicion, tamano) };
+        cartas = [id, ...elegirCartas(k - 1, uso, rng, id)];
+      } else {
+        cartas = elegirCartas(k, uso, rng);
       }
+      const m = mascara(cartas);
       const firma = `${m.hi}:${m.lo}${doble ? `:${doble.id}:${doble.posicion}` : ''}`;
       if (firmas.has(firma)) continue;
 
@@ -138,7 +151,10 @@ export function generarTableros({ cantidad, tamano, semilla, posicionDoble = nul
     mascaras.push(mejor.m);
     mejor.cartas.forEach((id) => uso[id]++);
     const tablero = { numero: tableros.length + 1, cartas: acomodar(mejor.cartas, tamano, mejor.doble, rng) };
-    if (mejor.doble) tablero.doble = { carta: mejor.doble.id, posicion: mejor.doble.posicion };
+    if (mejor.doble) {
+      tablero.doble = { carta: mejor.doble.id, posicion: mejor.doble.posicion };
+      usoDoble[mejor.doble.id]++;
+    }
     tableros.push(tablero);
   }
 
