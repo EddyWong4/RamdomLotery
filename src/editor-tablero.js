@@ -61,6 +61,31 @@ function pintarCartas() {
     }).join('') || '<p class="ayuda">Ninguna carta coincide.</p>';
 }
 
+// En pantalla grande: elige cuántas columnas dejan las 54 cartas lo más grandes posible sin salirse del espacio
+// (ancho y alto disponibles), para que se vean todas sin desplazarse y sin desperdiciar espacio.
+const PROPORCION = 1292 / 2048;
+const ESPACIO = 8;
+export function mejoresColumnas(ancho, alto, cantidad = CARTAS.length, minimo = 6, maximo = 16) {
+  let mejor = { columnas: maximo, ancho: 0 };
+  for (let c = minimo; c <= maximo; c++) {
+    const w = (ancho - (c - 1) * ESPACIO) / c;
+    const filas = Math.ceil(cantidad / c);
+    const altoTotal = filas * (w / PROPORCION) + (filas - 1) * ESPACIO;
+    if (altoTotal <= alto && w > mejor.ancho) mejor = { columnas: c, ancho: w };
+  }
+  return mejor.ancho ? mejor.columnas : maximo;
+}
+
+function ajustarColumnas() {
+  if (!el.dialogo.open || !window.matchMedia('(min-width: 761px)').matches) {
+    el.cartas.style.gridTemplateColumns = '';
+    return;
+  }
+  const alto = parseFloat(getComputedStyle(el.cartas).maxHeight) || el.cartas.clientHeight;
+  const ancho = el.cartas.clientWidth - 8; // relleno interior
+  el.cartas.style.gridTemplateColumns = `repeat(${mejoresColumnas(ancho, alto - 4)}, minmax(0, 1fr))`;
+}
+
 function pintar() {
   el.nombre.value = estado.nombre;
   el.tamano.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', Number(b.dataset.valor) === estado.n));
@@ -160,6 +185,7 @@ export function iniciarEditor() {
     pintarCartas();
   });
   el.cancelar.addEventListener('click', () => el.dialogo.close());
+  window.addEventListener('resize', ajustarColumnas);
   el.guardar.addEventListener('click', guardar);
 }
 
@@ -183,4 +209,5 @@ export function abrirEditor({ favorito = null, tamano = 4, nombreSugerido = '', 
   el.buscar.value = '';
   pintar();
   el.dialogo.showModal();
+  ajustarColumnas();
 }
