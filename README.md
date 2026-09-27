@@ -54,6 +54,9 @@ preferencias solo se reemplazan si el usuario lo confirma.
 **Temas de color** (`src/temas.css`, `src/temas.js`): Clásico (predeterminado), Talavera (claro), Cempasúchil, Mesa de juego y
 Papel picado (claro). Se eligen con el botón de la paleta y se recuerdan en el dispositivo. Todos los colores de la interfaz salen de
 variables del tema; una prueba revisa el contraste de texto (WCAG AA ≥ 4.5:1) de cada tema. Los PDF no cambian con el tema.
+Cada tema tiene un **fondo decorativo** propio (SVG dibujados para la app en `src/fondos/`): cartitas y soles (Clásico), azulejo
+de talavera, flores de cempasúchil, fieltro con frijolitos (Mesa de juego) y tira de papel picado con confeti. Se puede apagar
+con el interruptor "Fondo decorativo" de la ventana de temas.
 
 **Aspecto de app nativa:** en el celular la app se adapta al dispositivo (`src/plataforma.js` + `src/nativo.css`): barra superior
 fija, barra de pestañas abajo (Tableros, Cantar, Jugar), respeto del notch, interruptores y ventanas que suben desde abajo.

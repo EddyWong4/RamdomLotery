@@ -55,6 +55,22 @@ describe('temas de color', () => {
     expect(document.querySelector('meta[name="theme-color"]').getAttribute('content')).toBe(temaPorId('talavera').meta);
   });
 
+  it('el fondo decorativo está encendido por defecto y se puede apagar', async () => {
+    const { fondoGuardado, elegirFondo } = await import('../src/temas.js');
+    expect(fondoGuardado()).toBe(true);
+    elegirFondo(false);
+    expect(document.documentElement.dataset.fondo).toBe('no');
+    expect(fondoGuardado()).toBe(false);
+    elegirFondo(true);
+    expect(document.documentElement.dataset.fondo).toBeUndefined();
+  });
+
+  it.each(['clasico', 'talavera', 'cempasuchil', 'mesa', 'papel-picado'])('el tema %s tiene su fondo decorativo', (id) => {
+    const nombre = id === 'papel-picado' ? 'papel-picado-tira' : id;
+    expect(readFileSync(`src/fondos/${nombre}.svg`, 'utf8')).toMatch(/^<svg /);
+    expect(css).toContain(`./fondos/${nombre}.svg`);
+  });
+
   it('recuerda el tema elegido; uno desconocido vuelve al clásico', () => {
     expect(temaGuardado()).toBe('clasico');
     elegirTema('mesa');

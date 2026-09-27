@@ -24,6 +24,19 @@ export function aplicarTema(id, doc = document) {
 
 export const temaGuardado = () => temaPorId(almacen.cargarTema()).id;
 
+/** Fondo decorativo del tema (dibujo de fondo): encendido por defecto; se puede apagar para un fondo liso. */
+export function aplicarFondo(activo, doc = document) {
+  if (activo) delete doc.documentElement.dataset.fondo;
+  else doc.documentElement.dataset.fondo = 'no';
+}
+
+export const fondoGuardado = () => almacen.cargarFondoDecorativo() !== false;
+
+export function elegirFondo(activo) {
+  aplicarFondo(activo);
+  almacen.guardarFondoDecorativo(activo);
+}
+
 export function elegirTema(id) {
   const tema = aplicarTema(id);
   almacen.guardarTema(tema.id);

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <!-- Talavera: azulejo con flor de cuatro pétalos al centro y cuartos de círculo en las esquinas,
+       que al repetirse forman un segundo motivo entre azulejos -->
+  <g fill="#1e40af" fill-opacity="0.10">
+    <path d="M60 30c9 10 9 20 0 30-9-10-9-20 0-30zM60 90c-9-10-9-20 0-30 9 10 9 20 0 30zM30 60c10-9 20-9 30 0-10 9-20 9-30 0zM90 60c-10 9-20 9-30 0 10-9 20-9 30 0z"/>
+    <path d="M0 0h22a22 22 0 0 1-22 22zM120 0v22a22 22 0 0 1-22-22zM0 120v-22a22 22 0 0 1 22 22zM120 120h-22a22 22 0 0 1 22-22z"/>
+  </g>
+  <g fill="none" stroke="#1e40af" stroke-opacity="0.12" stroke-width="1.5">
+    <circle cx="60" cy="60" r="36"/>
+    <rect x="0.75" y="0.75" width="118.5" height="118.5"/>
+  </g>
+  <g fill="#b45309" fill-opacity="0.16">
+    <circle cx="60" cy="60" r="5"/>
+    <circle cx="60" cy="14" r="2.5"/><circle cx="60" cy="106" r="2.5"/>
+    <circle cx="14" cy="60" r="2.5"/><circle cx="106" cy="60" r="2.5"/>
+  </g>
+</svg>

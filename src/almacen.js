@@ -69,6 +69,8 @@ export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
 // Tema de color elegido
 export const cargarTema = () => leer('tema', null);
 export const guardarTema = (id) => escribir('tema', id);
+export const cargarFondoDecorativo = () => leer('fondo-decorativo', true);
+export const guardarFondoDecorativo = (activo) => escribir('fondo-decorativo', !!activo);
 
 // Tableros favoritos (hechos a mano o guardados desde un juego)
 export const cargarFavoritos = () => leer('favoritos', []);

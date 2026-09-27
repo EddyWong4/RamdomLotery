@@ -161,3 +161,50 @@ html[data-tema='papel-picado'] {
 /* En los temas claros las tarjetas llevan una sombra suave para separarse del fondo */
 html[data-tema='talavera'] .tarjeta,
 html[data-tema='papel-picado'] .tarjeta { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.04); }
+
+/* ═══ Fondos decorativos (dibujos propios en src/fondos/, muy tenues para no estorbar la lectura) ═══
+   Capa 1: el dibujo del tema, que se repite. Última capa: el brillo de arriba (degradado), fijo.
+   Con <html data-fondo="no"> (interruptor en la ventana de temas) queda solo el degradado. */
+body {
+  background-image: url('./fondos/clasico.svg'), radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%);
+  background-repeat: repeat, no-repeat;
+  background-size: 220px 220px, 100% 100%;
+  background-attachment: scroll, fixed;
+}
+html[data-tema='talavera'] body {
+  background-image: url('./fondos/talavera.svg'), radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%);
+  background-size: 120px 120px, 100% 100%;
+}
+html[data-tema='cempasuchil'] body {
+  background-image: url('./fondos/cempasuchil.svg'), radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%);
+  background-size: 240px 240px, 100% 100%;
+}
+html[data-tema='mesa'] body {
+  background-image: url('./fondos/mesa.svg'), radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 65%);
+  background-size: 260px 260px, 100% 100%;
+}
+/* Papel picado: la tira de banderitas arriba (solo en horizontal) + confeti en toda la página */
+html[data-tema='papel-picado'] body {
+  background-image: url('./fondos/papel-picado-tira.svg'), url('./fondos/papel-picado.svg'), radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%);
+  background-repeat: repeat-x, repeat, no-repeat;
+  background-size: 210px 72px, 200px 200px, 100% 100%;
+  background-position: 0 0, 0 0, 0 0;
+  background-attachment: scroll, scroll, fixed;
+}
+html[data-tema='papel-picado']:not([data-fondo='no']) .encabezado { padding-top: 84px; }
+@media (max-width: 860px) {
+  /* En el celular la tira va justo debajo de la barra superior, y el contenido empieza después */
+  html[data-tema='papel-picado'] body {
+    background-position: 0 calc(var(--barra-app-alto) + env(safe-area-inset-top)), 0 0, 0 0;
+  }
+  html[data-tema='papel-picado']:not([data-fondo='no']) main[data-vista] { padding-top: 76px; }
+}
+
+/* Sin fondo decorativo: solo el degradado del tema */
+html[data-fondo='no'] body {
+  background-image: radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: 0 0;
+  background-attachment: fixed;
+}

@@ -1,5 +1,5 @@
 // Ventana "Tema de color": muestra los temas con sus colores y aplica el elegido al momento.
-import { TEMAS, elegirTema } from './temas.js';
+import { TEMAS, elegirTema, elegirFondo, fondoGuardado } from './temas.js';
 
 let el;
 
@@ -16,7 +16,9 @@ function pintar() {
 }
 
 export function iniciarPanelTemas() {
-  el = { dialogo: document.getElementById('dialogo-temas'), lista: document.getElementById('lista-temas') };
+  el = { dialogo: document.getElementById('dialogo-temas'), lista: document.getElementById('lista-temas'), fondo: document.getElementById('fondo-decorativo') };
+  el.fondo.checked = fondoGuardado();
+  el.fondo.addEventListener('change', () => elegirFondo(el.fondo.checked));
   document.querySelectorAll('[data-abrir-temas]').forEach((b) => b.addEventListener('click', () => {
     pintar();
     el.dialogo.showModal();

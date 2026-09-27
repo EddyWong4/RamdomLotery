@@ -1,11 +1,12 @@
 import { aplicarPlataforma } from './plataforma.js';
-import { aplicarTema, temaGuardado } from './temas.js';
+import { aplicarTema, temaGuardado, aplicarFondo, fondoGuardado } from './temas.js';
 import { iniciarPanelTemas } from './panel-temas.js';
 import { cartaPorId } from './cartas.js';
 
 // Lo primero: marcar el dispositivo (iOS / Android / escritorio) para que el CSS lo adapte
 aplicarPlataforma();
 aplicarTema(temaGuardado());
+aplicarFondo(fondoGuardado());
 import { generarTableros, semillaAleatoria, MAX_TABLEROS } from './generador.js';
 import { crearPdfTableros, crearPdfBaraja, FORMATOS, PAPELES } from './pdf.js';
 import { simular, MODOS, JUGADAS } from './simulador.js';

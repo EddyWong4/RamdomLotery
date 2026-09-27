@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="96" viewBox="0 0 280 96">
+  <!-- Papel picado: tira de banderitas con orilla en zigzag y figuras recortadas (fill-rule evenodd = hoyos) -->
+  <path d="M0 6 Q70 14 140 6 T280 6" fill="none" stroke="#7a5566" stroke-opacity="0.5" stroke-width="1.5"/>
+  <g fill-rule="evenodd" fill-opacity="0.78">
+    <path fill="#d6246e" d="M8 9h56v62l-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6zM36 20l8 8-8 8-8-8zM20 44h6v6h-6zM46 44h6v6h-6zM28 56h16v4H28z"/>
+    <path fill="#0e7c86" d="M76 12h56v62l-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6zM104 24a8 8 0 1 1 0 16 8 8 0 0 1 0-16zM88 48l5 5-5 5-5-5zM120 48l5 5-5 5-5-5zM98 62h12v4H98z"/>
+    <path fill="#f4b400" d="M146 11h56v62l-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6zM174 22l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1zM156 48h8v4h-8zM184 48h8v4h-8zM166 58h16v4h-16z"/>
+    <path fill="#f77f00" d="M214 8h56v62l-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6-4.7 6-4.6-6zM242 18c6 4 6 12 0 16-6-4-6-12 0-16zM226 44a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM258 44a4 4 0 1 1 0 8 4 4 0 0 1 0-8zM234 56h16v4h-16z"/>
+  </g>
+</svg>

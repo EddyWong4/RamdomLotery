@@ -3,7 +3,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: radial-gradient(ellipse at top, var(--fondo-luz), var(--fondo) 60%) fixed, var(--fondo);
+  background-color: var(--fondo); /* imagen de fondo de cada tema: src/temas.css */
   color: var(--texto);
   font-family: 'Nunito', system-ui, sans-serif;
   min-height: 100vh;
