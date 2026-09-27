@@ -10,6 +10,7 @@ import { iniciarJugador, vistaJugar, refrescarJugador } from './jugador.js';
 import { iniciarCompartir, abrirCompartir } from './compartir.js';
 import { crearRespaldo, validarRespaldo, combinarDatos, traeDatosActuales } from './respaldo.js';
 import { iniciarPwa } from './pwa.js';
+import { agregarTablero, eliminarTablero, puedeAgregar, tablerosGenerados, tablerosEliminados } from './juego.js';
 import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
 const PREFERENCIAS_INICIALES = {
@@ -240,7 +241,7 @@ function pintarTableros() {
   const n = juego.tamano;
   const e = juego.estadisticas;
   el.estadisticas.innerHTML = [
-    `${juego.tableros.length} tableros ${n}×${n}`,
+    `${juego.tableros.length} tableros ${n}×${n}` + (tablerosEliminados(juego) ? ` (${tablerosEliminados(juego)} eliminados)` : ''),
     `Código: ${escapar(juego.semilla)}`,
     juego.posicionDoble ? `Dobles: ${nombrePosicion(juego.posicionDoble)}` : null,
     juego.posicionDoble ? resumenDobles(juego.tableros) : null,
@@ -261,12 +262,47 @@ function pintarTableros() {
 function pintarMasTableros() {
   const total = estado.juego?.tableros.length ?? 0;
   const faltan = total - Math.min(estado.visibles, total);
+  const agregar = estado.juego && puedeAgregar(estado.juego);
+
+  // La tarjeta "+" va al final de la rejilla, solo cuando ya se ven todos los tableros
+  el.tableros.querySelector('.tablero-agregar')?.remove();
+  if (faltan <= 0 && agregar) {
+    el.tableros.insertAdjacentHTML('beforeend', `
+      <button type="button" class="tablero-agregar" data-agregar title="Generar el tablero Nº ${String(tablerosGenerados(estado.juego) + 1).padStart(3, '0')} con el mismo código">
+        <span class="mas" aria-hidden="true">+</span>
+        <span>Agregar tablero</span>
+      </button>`);
+  }
+
   el.masTableros.hidden = faltan <= 0;
   if (faltan <= 0) return;
   el.masTableros.innerHTML = `
     <span>Mostrando ${formatoNumero(estado.visibles)} de ${formatoNumero(total)} tableros</span>
     <button type="button" class="btn-chico destacado" data-mas="pagina">Mostrar ${Math.min(POR_PAGINA, faltan)} más</button>
-    <button type="button" class="btn-chico" data-mas="todos">Mostrar todos</button>`;
+    <button type="button" class="btn-chico" data-mas="todos">Mostrar todos</button>
+    ${agregar ? '<button type="button" class="btn-chico" data-agregar>+ Agregar tablero</button>' : ''}`;
+}
+
+function agregarUnTablero() {
+  if (!estado.juego || !puedeAgregar(estado.juego)) return;
+  const todosVisibles = estado.visibles >= estado.juego.tableros.length;
+  estado.juego = agregarTablero(estado.juego);
+  const nuevo = estado.juego.tableros[estado.juego.tableros.length - 1];
+  if (todosVisibles) estado.visibles = estado.juego.tableros.length;
+  guardarJuegoActual();
+  pintarTableros();
+  if (todosVisibles) irATablero(nuevo.numero);
+  avisar(`Tablero Nº ${String(nuevo.numero).padStart(3, '0')} agregado`);
+}
+
+function eliminarUnTablero(numero) {
+  const etiqueta = `Nº ${String(numero).padStart(3, '0')}`;
+  if (!window.confirm(`¿Eliminar el tablero ${etiqueta}?\n\nLos demás conservan su número.`)) return;
+  estado.juego = eliminarTablero(estado.juego, numero);
+  estado.seleccion.delete(numero);
+  guardarJuegoActual();
+  pintarTableros();
+  avisar(`Tablero ${etiqueta} eliminado`);
 }
 
 function mostrarMasTableros(cuantos) {
@@ -304,6 +340,7 @@ function htmlTablero(t, { n, victoriasPorTablero, maxVictorias }) {
         ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
         <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
         <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
+        <button type="button" data-eliminar="${t.numero}" class="secundario" title="Eliminar este tablero" aria-label="Eliminar tablero ${numero}">🗑</button>
       </div>
       <div class="tablero-cartas" style="grid-template-columns:repeat(${n},1fr)">${cartas}</div>
     </article>`;
@@ -339,6 +376,7 @@ function generar() {
     id: `${Date.now()}`,
     tamano: p.tamano,
     posicionDoble,
+    generados: cantidad,
     semilla,
     tableros,
     estadisticas,
@@ -767,6 +805,9 @@ function conectarEventos() {
   el.tableros.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-pdf]');
     if (b) pdfUnTablero(Number(b.dataset.pdf));
+    const x = e.target.closest('button[data-eliminar]');
+    if (x) eliminarUnTablero(Number(x.dataset.eliminar));
+    if (e.target.closest('button[data-agregar]')) agregarUnTablero();
     const c = e.target.closest('button[data-compartir]');
     if (c) abrirCompartir(estado.juego, Number(c.dataset.compartir));
   });
@@ -774,6 +815,7 @@ function conectarEventos() {
   el.masTableros.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-mas]');
     if (b) mostrarMasTableros(b.dataset.mas === 'todos' ? Infinity : POR_PAGINA);
+    if (e.target.closest('button[data-agregar]')) agregarUnTablero();
   });
   el.btnSelTodos.addEventListener('click', () => {
     estado.seleccion = new Set(estado.juego.tableros.map((t) => t.numero));

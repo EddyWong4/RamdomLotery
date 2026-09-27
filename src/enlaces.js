@@ -2,12 +2,14 @@
 // y los parámetros con los que se generó, y el celular vuelve a generar exactamente el mismo tablero.
 import { generarTableros, TAMANOS, MAX_TABLEROS } from './generador.js';
 import { POSICIONES_DOBLE, POSICION_ALEATORIA, indicesDoble } from './posiciones.js';
+import { tablerosGenerados } from './juego.js';
 
 const POSICIONES_VALIDAS = new Set([...POSICIONES_DOBLE.map((p) => p.id), POSICION_ALEATORIA]);
 
 /** Parámetros del link para el tablero `numero` de un juego. */
 export function parametrosTablero(juego, numero) {
-  const p = new URLSearchParams({ c: juego.semilla, n: juego.tamano, k: juego.tableros.length, t: numero });
+  // k = tableros generados con el código (incluye eliminados), así el número del tablero siempre coincide
+  const p = new URLSearchParams({ c: juego.semilla, n: juego.tamano, k: tablerosGenerados(juego), t: numero });
   if (juego.posicionDoble) p.set('d', juego.posicionDoble);
   return p;
 }

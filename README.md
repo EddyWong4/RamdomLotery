@@ -16,6 +16,10 @@ Las esquinas centrales y los pares solo existen en 4×4 y 5×5; en 5×5 el “pa
 - Las preferencias, el juego actual y los juegos guardados se guardan en `localStorage` (solo en ese navegador).
 - Software libre: [Vite](https://vitejs.dev), [jsPDF](https://github.com/parallax/jsPDF), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) y [Vitest](https://vitest.dev) y [vite-plugin-pwa](https://vite-pwa-org.netlify.app) (todos MIT).
 
+**Agregar y eliminar tableros:** el botón 🗑 quita un tablero y la tarjeta **+** agrega el siguiente del mismo código
+(`src/juego.js`). Los tableros conservan su número (no se renumeran) y el nuevo cumple las mismas reglas (único, reparto parejo,
+doble distinta), así los tableros impresos y los links compartidos siguen coincidiendo.
+
 **Simulador de partidas** (`src/simulador.js`): juega 100, 1,000 o 10,000 partidas con los tableros generados
 (forma de ganar: tabla llena, línea o cuatro esquinas), muestra el tablero que más veces ganó y las victorias de cada uno.
 Una prueba de chi-cuadrada indica si las diferencias son normales del azar o si algún tablero tiene ventaja real.
@@ -102,6 +106,7 @@ src/
   enlaces.js     links reproducibles de tableros
   jugador.js     vista Jugar: tablero en el celular
   compartir.js   ventana con link y código QR
+  juego.js       agregar / eliminar tableros de un juego
   respaldo.js    formato, validación y combinación de respaldos
   pwa.js         service worker y aviso de nueva versión
   pdf.js         dibujo de tableros y hojas con jsPDF

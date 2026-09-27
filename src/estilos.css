@@ -289,6 +289,35 @@ select option { background: var(--fondo-2); }
   gap: 14px;
 }
 
+.tablero-agregar {
+  min-height: 220px;
+  border: 2.5px dashed rgba(249, 199, 79, 0.45);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--texto-suave);
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.tablero-agregar .mas {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--rojo);
+  color: var(--rojo);
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 86px;
+  transition: transform 0.15s, background 0.15s;
+}
+.tablero-agregar:hover { border-color: var(--oro); background: rgba(249, 199, 79, 0.08); color: var(--texto); }
+.tablero-agregar:hover .mas { transform: scale(1.06); background: rgba(230, 57, 70, 0.12); }
+
 .mas-tableros { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin-top: 16px; font-size: 13px; color: var(--texto-suave); }
 .mas-tableros[hidden] { display: none; }
 
@@ -305,7 +334,7 @@ select option { background: var(--fondo-2); }
   gap: 6px;
 }
 .tablero.seleccionado { border-color: var(--oro); }
-.tablero-cabecera { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.tablero-cabecera { display: flex; align-items: center; gap: 6px 8px; flex-wrap: wrap; font-size: 13px; }
 .tablero-cabecera label { white-space: nowrap; display: flex; align-items: center; gap: 6px; font-weight: 900; cursor: pointer; flex: 1; }
 .tablero-cabecera input { accent-color: #8b1a1a; width: 16px; height: 16px; }
 .tablero-cabecera button {
