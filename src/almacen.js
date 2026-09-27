@@ -69,6 +69,10 @@ export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
 // Tema de color elegido
 export const cargarTema = () => leer('tema', null);
 export const guardarTema = (id) => escribir('tema', id);
+// Aviso de que la app pronto tendrá un pago mínimo: una vez cerrado ya no se muestra arriba
+export const avisoPagoCerrado = () => leer('aviso-pago-cerrado', false);
+export const cerrarAvisoPago = () => escribir('aviso-pago-cerrado', true);
+
 export const cargarFondoDecorativo = () => leer('fondo-decorativo', true);
 export const guardarFondoDecorativo = (activo) => escribir('fondo-decorativo', !!activo);
 

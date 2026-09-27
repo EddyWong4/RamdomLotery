@@ -36,6 +36,13 @@
     </nav>
   </header>
 
+  <!-- Aviso: la app es gratis por ahora (se puede cerrar; en el pie de página siempre queda la leyenda) -->
+  <div id="aviso-pago" class="aviso-pago" role="note" hidden>
+    <span aria-hidden="true">🎁</span>
+    <p>Por el momento la aplicación es <b>gratis</b>. En un futuro cercano requerirá un <b>pago mínimo</b>.</p>
+    <button type="button" id="aviso-pago-cerrar" class="btn-chico" aria-label="Cerrar aviso">Entendido</button>
+  </div>
+
   <!-- Celular: barra superior fija con el título de la sección (estilo iOS o Material según el dispositivo) -->
   <header class="barra-app">
     <span class="barra-app-marca" aria-hidden="true">Lotería</span>
@@ -594,6 +601,7 @@
   </main>
 
   <footer class="pie-pagina">
+    <p class="leyenda-pago">🎁 Por el momento la aplicación es <b>gratis</b>. En un futuro cercano requerirá un <b>pago mínimo</b>.</p>
     <span id="version" class="version"></span>
     <span id="visitas" class="version visitas" hidden></span>
   </footer>

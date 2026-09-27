@@ -900,3 +900,21 @@ input[type='search']:focus { border-color: var(--oro); }
 .jugar-canto .canto-opciones .btn-icono svg { width: 18px; height: 18px; }
 .jugar-canto .canto-intervalo { gap: 2px; }
 .jugar-canto .canto-intervalo select { min-height: 0; font-size: 14px; }
+
+/* ── Aviso: gratis por ahora, pago mínimo en el futuro ── */
+.aviso-pago {
+  display: flex; align-items: center; gap: 12px; max-width: 1400px; margin: 10px auto 0; padding: 10px 16px;
+  width: calc(100% - 32px); border-radius: var(--radio); border: 1.5px solid color-mix(in srgb, var(--oro) 55%, transparent);
+  background: color-mix(in srgb, var(--oro) 12%, var(--tarjeta)); color: var(--texto);
+}
+.aviso-pago[hidden] { display: none; }
+.aviso-pago > span { font-size: 22px; }
+.aviso-pago p { flex: 1; margin: 0; font-size: 14px; line-height: 1.4; }
+.aviso-pago b { color: var(--oro); }
+.aviso-pago .btn-chico { flex: none; }
+.leyenda-pago { flex-basis: 100%; margin: 0 0 4px; font-size: 13px; color: var(--texto-suave); }
+.leyenda-pago b { color: var(--texto); }
+@media (max-width: 860px) {
+  .aviso-pago { margin-top: 8px; width: calc(100% - 24px); padding: 10px 12px; }
+  .aviso-pago p { font-size: 13px; }
+}

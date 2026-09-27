@@ -937,6 +937,14 @@ registrarVista('tableros', { titulo: 'Tableros' });
 registrarVista('cantar', vistaCantar);
 registrarVista('jugar', vistaJugar);
 registrarVista('reglas', vistaInstrucciones);
+
+// Aviso de pago futuro: arriba hasta que se cierre; la leyenda del pie de página queda siempre
+const avisoPago = $('#aviso-pago');
+avisoPago.hidden = almacen.avisoPagoCerrado();
+$('#aviso-pago-cerrar').addEventListener('click', () => {
+  avisoPago.hidden = true;
+  almacen.cerrarAvisoPago();
+});
 iniciarInstrucciones();
 iniciarRutas();
 iniciarPwa(avisar);
