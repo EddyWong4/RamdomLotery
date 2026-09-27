@@ -48,6 +48,13 @@ npm run imagenes -- -Origen "C:\ruta\a\las\cartas"
 
 Los nombres de las cartas están en `src/cartas.js`.
 
+## Versión
+
+El pie de página muestra `v<versión> · <commit> · <fecha de compilación>`. La versión sale de `package.json`
+y el commit y la fecha se agregan solos al compilar (`vite.config.js`). Para una nueva versión:
+
+- `1.1.0 → 1.1.1` correcciones · `1.1.0 → 1.2.0` funciones nuevas · `1.x → 2.0.0` cambios grandes
+
 ## Publicar en GitHub Pages
 
 El flujo `.github/workflows/deploy.yml` compila y publica la app en cada `push` a `main`.

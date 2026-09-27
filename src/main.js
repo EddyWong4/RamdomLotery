@@ -683,9 +683,19 @@ function conectarEventos() {
   });
 }
 
+// ── Versión (la inyecta vite.config.js al compilar) ─────────────────────────
+function pintarVersion() {
+  const fecha = new Date(__APP_FECHA__).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+  const partes = [`<b>v${__APP_VERSION__}</b>`, __APP_COMMIT__, fecha].filter(Boolean);
+  const version = document.getElementById('version');
+  version.innerHTML = partes.join(' · ');
+  version.title = `Versión ${__APP_VERSION__}${__APP_COMMIT__ ? `, commit ${__APP_COMMIT__}` : ''}, compilada el ${new Date(__APP_FECHA__).toLocaleString('es-MX')}`;
+}
+
 // ── Inicio ──────────────────────────────────────────────────────────────────
 el.papel.innerHTML = Object.entries(PAPELES).map(([k, v]) => `<option value="${k}">${v.nombre}</option>`).join('');
 el.cantidad.max = MAX_TABLEROS;
+pintarVersion();
 pintarFormulario();
 pintarJuegosGuardados();
 conectarEventos();
