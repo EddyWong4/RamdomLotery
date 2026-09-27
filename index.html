@@ -125,7 +125,7 @@
         </article>
         <article>
           <h3>📱 Jugar en el celular</h3>
-          <p>Comparte el link o el QR de un tablero: cada jugador lo abre en su celular y marca tocando las cartas, con la ficha y el color que prefiera. Se puede jugar con varios tableros a la vez.</p>
+          <p>Comparte el link o el QR de un tablero: cada jugador lo abre en su celular y marca tocando las cartas, con la ficha y el color que prefiera. Se puede jugar con varios tableros a la vez. Con <b>📣 Cantar aquí</b> también cantas las cartas desde la misma pantalla, y con <b>Marcar solas</b> las fichas se ponen al cantar.</p>
         </article>
         <article>
           <h3>✅ Revisar quién ganó</h3>
@@ -225,7 +225,10 @@
             <h2 id="jugar-titulo">Mis tableros</h2>
             <p class="ayuda" id="jugar-detalle"></p>
           </div>
-          <button type="button" id="btn-limpiar-marcas" class="btn-chico">Limpiar marcas</button>
+          <div class="jugar-cabecera-botones">
+            <button type="button" id="btn-cantar-aqui" class="btn-chico" aria-pressed="false">📣 Cantar aquí</button>
+            <button type="button" id="btn-limpiar-marcas" class="btn-chico">Limpiar marcas</button>
+          </div>
         </div>
         <div class="jugar-agregar">
           <label class="campo">
@@ -276,7 +279,33 @@
         </div>
       </details>
 
-      <div id="jugar-tableros" class="jugar-tableros"></div>
+      <div class="jugar-mesa">
+        <!-- Cantador dentro de la vista Jugar: misma partida que la vista Cantar -->
+        <aside id="jugar-canto" class="tarjeta jugar-canto" hidden aria-label="Cantar cartas">
+          <div class="canto-cabecera">
+            <b id="canto-progreso">Carta 0 de 54</b>
+            <span class="canto-cabecera-botones">
+              <button type="button" id="canto-mas" class="btn-chico" aria-expanded="false" aria-controls="canto-opciones" aria-label="Opciones del cantador">⋯</button>
+              <button type="button" id="canto-cerrar" class="btn-chico" aria-label="Ocultar el cantador">✕</button>
+            </span>
+          </div>
+          <div class="canto-carta" id="canto-carta" role="button" tabindex="0" title="Toca la carta para sacar la siguiente"></div>
+          <p class="canto-nombre" id="canto-nombre" aria-live="polite"></p>
+          <div class="canto-botones">
+            <button type="button" id="canto-anterior" class="btn-secundario" aria-label="Carta anterior">◀</button>
+            <button type="button" id="canto-siguiente" class="btn-principal">Siguiente ▶</button>
+          </div>
+          <div class="canto-opciones" id="canto-opciones">
+            <button type="button" id="canto-auto" class="btn-chico">▶ Automático</button>
+            <label class="check"><input type="checkbox" id="canto-voz" /> Voz</label>
+            <label class="check"><input type="checkbox" id="canto-sonidos" /> Sonidos</label>
+            <label class="check"><input type="checkbox" id="canto-marcar" /> Marcar solas</label>
+            <button type="button" id="canto-nueva" class="btn-chico destacado">Nueva partida</button>
+          </div>
+          <div class="canto-recientes" id="canto-recientes" aria-label="Últimas cartas cantadas"></div>
+        </aside>
+        <div id="jugar-tableros" class="jugar-tableros"></div>
+      </div>
       <p class="ayuda jugar-ayuda" id="jugar-ayuda"></p>
     </div>
   </main>

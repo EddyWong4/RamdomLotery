@@ -759,3 +759,67 @@ input[type='search']:focus { border-color: var(--oro); }
 .modos-juego article { display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: color-mix(in srgb, var(--tinta) 5%, transparent); }
 .modos-juego h3 { font-size: 16px; color: var(--texto); }
 .modos-juego p { margin: 0; font-size: 14px; }
+
+/* ── Jugar: tablero a la medida de la pantalla y cantador integrado ─ */
+.jugar-cabecera-botones { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.jugar-cabecera-botones .btn-chico.activo { border-color: var(--oro); color: var(--oro); background: color-mix(in srgb, var(--oro) 15%, transparent); }
+.jugar-mesa { display: flex; gap: 16px; align-items: flex-start; justify-content: center; }
+.jugar-mesa .jugar-tableros { flex: 1; min-width: 0; }
+.jugar-casilla.cantada:not(.marcada) { box-shadow: inset 0 0 0 3px var(--oro); }
+
+.jugar-canto { width: 270px; flex: none; position: sticky; top: 16px; gap: 10px; }
+.jugar-canto[hidden] { display: none; }
+.canto-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.canto-cabecera b { color: var(--oro); font-size: 15px; }
+.canto-cabecera .btn-chico { padding: 3px 10px; }
+.canto-cabecera-botones { display: flex; gap: 6px; }
+#canto-mas { display: none; }
+.canto-carta { aspect-ratio: 1292 / 2048; width: 100%; max-height: 42vh; margin: 0 auto; border-radius: 10px; overflow: hidden; background: var(--papel); display: flex; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); user-select: none; -webkit-tap-highlight-color: transparent; }
+.canto-carta:active { transform: scale(0.98); }
+.canto-carta:focus-visible { outline: 3px solid var(--oro); outline-offset: 3px; }
+.canto-carta.terminada { cursor: default; }
+.canto-carta img { width: 100%; height: 100%; object-fit: cover; display: block; animation: aparecer 0.35s ease; }
+.canto-carta .carta-vacia { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--papel-2); color: var(--tinta-carta); text-align: center; }
+.canto-carta .carta-vacia b { font-size: 56px; line-height: 1; }
+.canto-carta .carta-vacia span { font-size: 15px; font-weight: 800; color: var(--tinta-carta-suave); margin-top: 6px; }
+.canto-inicio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 22px; color: var(--tinta-carta); background: var(--papel-2); }
+.canto-inicio small { font-family: inherit; font-size: 12px; font-weight: 700; color: var(--tinta-carta-suave); }
+.canto-nombre { text-align: center; font-weight: 800; color: var(--texto); min-height: 1.4em; margin: 0; }
+.canto-botones { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.canto-opciones { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 14px; }
+.canto-recientes { display: flex; gap: 5px; }
+.canto-recientes:empty { display: none; }
+.canto-recientes > * { width: calc((100% - 20px) / 5); aspect-ratio: 1292 / 2048; object-fit: cover; border-radius: 4px; opacity: 0.8; }
+.canto-recientes .carta-vacia { display: flex; align-items: center; justify-content: center; background: var(--papel-2); color: var(--tinta-carta); font-size: 13px; }
+
+/* Pantalla grande: el tablero completo cabe a lo alto, sin tener que desplazarse.
+   Alto del tablero ≈ ancho / proporción de la carta; se reserva espacio para el encabezado del tablero. */
+@media (min-width: 700px) {
+  .jugar-tablero-caja { width: 100%; max-width: calc((100dvh - 110px) * 0.62); justify-self: center; }
+  .jugar-tableros { justify-items: center; }
+}
+
+/* Celular: el cantador queda arriba, compacto y fijo mientras se desplazan los tableros */
+@media (max-width: 860px) {
+  .jugar-mesa { flex-direction: column; align-items: stretch; }
+  .jugar-canto {
+    width: auto; top: calc(var(--barra-app-alto, 0px) + env(safe-area-inset-top) + 6px); z-index: 5;
+    display: grid; grid-template-columns: 74px 1fr; grid-template-areas: "carta cab" "carta nombre" "carta botones" "opciones opciones";
+    gap: 6px 12px; padding: 10px 12px;
+    background: var(--vidrio, var(--fondo)); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  }
+  .jugar-canto[hidden] { display: none; }
+  .canto-cabecera { grid-area: cab; }
+  .canto-carta { grid-area: carta; max-height: none; border-radius: 6px; }
+  .canto-carta .carta-vacia b { font-size: 26px; }
+  .canto-carta .carta-vacia span { font-size: 9px; }
+  .canto-inicio { font-size: 12px; padding: 4px; }
+  .canto-inicio small { display: none; }
+  .canto-nombre { grid-area: nombre; text-align: left; }
+  .canto-botones { grid-area: botones; }
+  .canto-opciones { grid-area: opciones; font-size: 13px; display: none; }
+  .jugar-canto.con-opciones .canto-opciones { display: flex; }
+  #canto-mas { display: inline-flex; }
+  .canto-recientes { display: none; }
+}

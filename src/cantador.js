@@ -17,6 +17,8 @@ let partida;
 let temporizador = null;
 let pendiente = null; // voz o sonido programados (se cancelan al retroceder o salir)
 let activa = false;
+const oyentes = new Set(); // otras vistas que cantan con esta misma partida (la vista Jugar)
+const avisarOyentes = (avanzo = false) => oyentes.forEach((fn) => fn({ avanzo }));
 
 const escapar = (s) =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -144,6 +146,7 @@ function cambiar(nueva) {
   el.resultado.innerHTML = '';
   el.revisar.innerHTML = '';
   cancelarPendiente();
+  avisarOyentes(avanzo);
   if (!avanzo) return;
 
   const nombre = cartaPorId(cartaActual(partida)).nombre;
@@ -167,6 +170,7 @@ function detenerAuto() {
   clearInterval(temporizador);
   temporizador = null;
   pintarAuto();
+  avisarOyentes();
 }
 
 function alternarAuto() {
@@ -175,12 +179,13 @@ function alternarAuto() {
   avanzar();
   temporizador = setInterval(avanzar, prefs.intervalo * 1000);
   pintarAuto();
+  avisarOyentes();
 }
 
 function empezarNuevaPartida() {
   cancelarPendiente();
   if (partida.cantadas > 0 && !terminada(partida) &&
-    !window.confirm(`Van ${partida.cantadas} cartas cantadas. ¿Empezar una partida nueva?`)) return;
+    !window.confirm(`Van ${partida.cantadas} cartas cantadas. ¿Empezar una partida nueva?`)) return false;
   detenerAuto();
   partida = nuevaPartida();
   guardar();
@@ -188,6 +193,8 @@ function empezarNuevaPartida() {
   el.revisar.innerHTML = '';
   pintarEscenario();
   pintarHistorial();
+  avisarOyentes();
+  return true;
 }
 
 // ── Verificador ──────────────────────────────────────────────────────────────
@@ -345,6 +352,28 @@ export const vistaCantar = {
     cancelarPendiente();
     if (hayVoz()) speechSynthesis.cancel();
   },
+};
+
+/**
+ * Control del canto para otras vistas (Jugar): comparten la misma partida, preferencias, voz y sonidos.
+ * alCambiar(fn) avisa con { avanzo } cada vez que cambia la partida o el modo automático.
+ */
+export const canto = {
+  partida: () => partida,
+  automatico: () => !!temporizador,
+  prefs: () => ({ ...prefs }),
+  avanzar() { despertarAudio(); if (!terminada(partida)) avanzar(); },
+  retroceder,
+  alternarAuto() { despertarAudio(); alternarAuto(); },
+  detener() { detenerAuto(); cancelarPendiente(); if (hayVoz()) speechSynthesis.cancel(); },
+  nuevaPartida: () => empezarNuevaPartida(),
+  cambiarPreferencia(clave, valor) {
+    prefs[clave] = valor;
+    guardarPrefs();
+    if (clave === 'sonidos' && valor) { despertarAudio(); sonidoInicio(); }
+  },
+  despertarAudio,
+  alCambiar(fn) { oyentes.add(fn); return () => oyentes.delete(fn); },
 };
 
 /** Para que la vista se repinte si cambian las imágenes cargadas. */
