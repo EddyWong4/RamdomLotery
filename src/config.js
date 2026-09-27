@@ -7,4 +7,4 @@
  * para que la app pueda mostrar el número.
  * Vacío = contador apagado: no se registra ni se muestra nada.
  */
-export const GOATCOUNTER = '';
+export const GOATCOUNTER = 'eddywong';
