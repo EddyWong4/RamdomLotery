@@ -484,6 +484,36 @@ select option { background: var(--fondo-2); }
   border-radius: 50px; padding: 0 5px; line-height: 16px; min-width: 16px; text-align: center;
 }
 
+/* ── Jugar en el celular ────────────────────────── */
+.jugar { max-width: 640px; margin: 0 auto; padding: 16px; }
+.jugar-cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.jugar-cabecera h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--oro); }
+.jugar-tablero { display: grid; gap: 5px; background: var(--papel); padding: 8px; border-radius: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45); }
+.jugar-casilla { position: relative; padding: 0; border: none; background: none; border-radius: 4px; overflow: hidden; touch-action: manipulation; }
+.jugar-casilla > img, .jugar-casilla > .carta-vacia { width: 100%; aspect-ratio: 1292 / 2048; object-fit: cover; display: block; }
+.jugar-casilla > .carta-vacia { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f3e6cf; color: #8b1a1a; text-align: center; padding: 2px; }
+.jugar-casilla > .carta-vacia b { font-size: clamp(18px, 6vw, 34px); line-height: 1; }
+.jugar-casilla > .carta-vacia span { font-size: clamp(8px, 2.4vw, 12px); color: #5a3a2a; margin-top: 4px; }
+.jugar-casilla.marcada::after {
+  content: ''; position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c98a4b, #7a4a1f); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.55);
+  animation: frijol 0.2s ease;
+}
+@keyframes frijol { from { transform: translate(-50%, -50%) scale(0.3); } }
+.jugar-ayuda { margin-top: 12px; text-align: center; }
+#jugar-contenido[hidden] { display: none; }
+
+/* ── Ventana compartir ──────────────────────────── */
+.dialogo { margin: auto; border: 1.5px solid var(--borde); border-radius: var(--radio); background: #3b1a0c; color: var(--texto); padding: 0; width: min(92vw, 380px); }
+.dialogo::backdrop { background: rgba(0, 0, 0, 0.6); }
+.dialogo-contenido { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+.dialogo-contenido h2 { font-size: 13px; color: var(--oro); text-transform: uppercase; letter-spacing: 2px; }
+.compartir-qr { background: #fff; border-radius: 10px; padding: 8px; width: min(100%, 240px); align-self: center; }
+.compartir-qr svg { display: block; width: 100%; height: auto; }
+.dialogo .btn-archivo { text-decoration: none; }
+.tablero-cabecera button.secundario { background: rgba(139, 26, 26, 0.12); color: #8b1a1a; }
+.tablero-cabecera button.secundario:hover { background: rgba(139, 26, 26, 0.22); }
+
 /* ── Pie de página ──────────────────────────────── */
 .pie-pagina { text-align: center; padding: 8px 16px 24px; }
 .version {

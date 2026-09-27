@@ -6,6 +6,8 @@ import * as imagenes from './imagenes.js';
 import { POSICION_ALEATORIA, posicionesDisponibles, indicesDoble, nombrePosicion } from './posiciones.js';
 import * as almacen from './almacen.js';
 import { registrarVista, iniciarRutas } from './rutas.js';
+import { iniciarJugador, vistaJugar, refrescarJugador } from './jugador.js';
+import { iniciarCompartir, abrirCompartir } from './compartir.js';
 import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
 const PREFERENCIAS_INICIALES = {
@@ -256,6 +258,7 @@ function pintarTableros() {
         <div class="tablero-cabecera">
           <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="Seleccionar tablero ${numero}"> Nº ${numero}</label>
           ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
+          <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
           <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
         </div>
         <div class="tablero-cartas" style="grid-template-columns:repeat(${n},1fr)">${cartas}</div>
@@ -663,6 +666,8 @@ function conectarEventos() {
   el.tableros.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-pdf]');
     if (b) pdfUnTablero(Number(b.dataset.pdf));
+    const c = e.target.closest('button[data-compartir]');
+    if (c) abrirCompartir(estado.juego, Number(c.dataset.compartir));
   });
 
   el.btnSelTodos.addEventListener('click', () => {
@@ -702,12 +707,16 @@ pintarFormulario();
 pintarJuegosGuardados();
 conectarEventos();
 iniciarCantador();
+iniciarJugador();
+iniciarCompartir();
 registrarVista('tableros');
 registrarVista('cantar', vistaCantar);
+registrarVista('jugar', vistaJugar);
 iniciarRutas();
 // Los tableros se pintan cuando se sabe de dónde salen las imágenes (incluidas, guardadas o ninguna)
 imagenes.iniciarImagenes().finally(() => {
   pintarPanelImagenes();
   pintarTableros();
   refrescarCantador();
+  refrescarJugador();
 });

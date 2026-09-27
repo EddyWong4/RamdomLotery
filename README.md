@@ -14,7 +14,7 @@ Las esquinas centrales y los pares solo existen en 4×4 y 5×5; en 5×5 el “pa
 
 - Sin base de datos ni servidor: todo corre en el navegador.
 - Las preferencias, el juego actual y los juegos guardados se guardan en `localStorage` (solo en ese navegador).
-- Software libre: [Vite](https://vitejs.dev) (MIT) y [jsPDF](https://github.com/parallax/jsPDF) (MIT).
+- Software libre: [Vite](https://vitejs.dev), [jsPDF](https://github.com/parallax/jsPDF), [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) y [Vitest](https://vitest.dev) (todos MIT).
 
 **Simulador de partidas** (`src/simulador.js`): juega 100, 1,000 o 10,000 partidas con los tableros generados
 (forma de ganar: tabla llena, línea o cuatro esquinas), muestra el tablero que más veces ganó y las victorias de cada uno.
@@ -25,6 +25,10 @@ Se recomiendan al menos ~20 victorias esperadas por tablero (p. ej. 1,000 partid
 (cada 3–15 s), con voz opcional del navegador. Muestra el historial de cartas cantadas y la partida se conserva al recargar.
 El **verificador** revisa un tablero del juego actual (llena, línea o esquinas) contra las cartas cantadas, resalta las casillas
 y puede revisar todos los tableros para saber quién ya ganó.
+
+**Tableros en el celular:** el botón 📱 de cada tablero muestra un link y un código QR (`#/jugar?c=…&n=…&k=…&t=…`).
+El celular vuelve a generar el mismo tablero a partir del código del juego (sin servidor) y el jugador marca las cartas tocándolas;
+las marcas se guardan en su navegador. Con carta doble, tocarla marca sus dos casillas.
 
 ## Uso
 
@@ -86,7 +90,10 @@ src/
   reglas.js      formas de ganar y verificación de un tablero
   partida.js     baraja del cantador (con semilla)
   cantador.js    vista Cantar: cantador y verificador
-  rutas.js       navegación entre vistas (#/, #/cantar)
+  rutas.js       navegación entre vistas (#/, #/cantar, #/jugar)
+  enlaces.js     links reproducibles de tableros
+  jugador.js     vista Jugar: tablero en el celular
+  compartir.js   ventana con link y código QR
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)

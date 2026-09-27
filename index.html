@@ -83,6 +83,39 @@
     </aside>
   </main>
 
+  <!-- ═══ Vista: Jugar (un tablero en el celular, abierto desde un link) ═══ -->
+  <main class="jugar" data-vista="jugar" hidden>
+    <div id="jugar-error" class="tarjeta" hidden>
+      <h2>Link no válido</h2>
+      <p class="ayuda">Este link de tablero está incompleto o dañado. Pide a quien organiza el juego que te lo comparta de nuevo.</p>
+    </div>
+    <div id="jugar-contenido">
+      <div class="jugar-cabecera">
+        <div>
+          <h2 id="jugar-titulo"></h2>
+          <p class="ayuda" id="jugar-detalle"></p>
+        </div>
+        <button type="button" id="btn-limpiar-marcas" class="btn-chico">Limpiar marcas</button>
+      </div>
+      <div id="jugar-tablero" class="jugar-tablero"></div>
+      <p class="ayuda jugar-ayuda" id="jugar-ayuda">Toca una carta cuando la canten para ponerle un frijolito. Tócala otra vez para quitarlo.</p>
+    </div>
+  </main>
+
+  <dialog id="dialogo-compartir" class="dialogo">
+    <form method="dialog" class="dialogo-contenido">
+      <h2 id="compartir-titulo">Compartir tablero</h2>
+      <p class="ayuda">El jugador abre este link o escanea el código con la cámara del celular para jugar el tablero en pantalla.</p>
+      <div id="compartir-qr" class="compartir-qr" aria-label="Código QR del tablero"></div>
+      <input id="compartir-enlace" type="text" readonly aria-label="Link del tablero" />
+      <div class="botones-iguales">
+        <button type="button" id="btn-copiar-enlace" class="btn-secundario">Copiar link</button>
+        <a id="btn-abrir-enlace" class="btn-principal btn-archivo" target="_blank" rel="noopener">Abrir</a>
+      </div>
+      <button type="submit" class="btn-enlace">Cerrar</button>
+    </form>
+  </dialog>
+
   <!-- ═══ Vista: Tableros (generar, imprimir, simular) ═══ -->
   <main class="contenedor" data-vista="tableros">
     <aside class="panel-lateral">

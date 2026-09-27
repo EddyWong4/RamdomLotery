@@ -30,6 +30,15 @@ export const guardarJuegoActual = (juego) => escribir('juego-actual', juego);
 
 export const listarJuegos = () => leer('juegos', []);
 
+// Marcas del jugador en cada tablero compartido: { clave: [índices de casillas] }
+export const cargarMarcas = (clave) => leer('marcas', {})[clave] ?? [];
+export function guardarMarcas(clave, indices) {
+  const todas = leer('marcas', {});
+  if (indices.length) todas[clave] = indices;
+  else delete todas[clave];
+  return escribir('marcas', todas);
+}
+
 export const cargarPartida = () => leer('partida', null);
 export const guardarPartida = (partida) => escribir('partida', partida);
 
