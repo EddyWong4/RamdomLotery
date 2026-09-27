@@ -32,8 +32,9 @@ export function leerTotal(json) {
  */
 export async function iniciarVisitas(elemento, win = window, codigo = GOATCOUNTER) {
   if (!contadorActivo(codigo)) return;
+  if (!debeContar(win.location.hostname)) return;
   const ruta = win.location.pathname || '/';
-  if (debeContar(win.location.hostname)) {
+  {
     const url = urlRegistro(codigo, {
       ruta,
       titulo: win.document.title,

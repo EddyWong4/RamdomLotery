@@ -76,6 +76,11 @@ La visita se registra con su "píxel" (sin cargar scripts de terceros), una vez 
 al pie de la página. No cuenta en localhost ni sin internet. Se activa poniendo el código del sitio en `src/config.js`
 (`GOATCOUNTER`) y activando *Allow adding visitor counts on your website* en la configuración del sitio en GoatCounter.
 
+**Kit de promoción** (`promo/`, publicado en `…/RamdomLotery/promo/`): genera 8 imágenes verticales 1080 × 1920 para
+TikTok / Reels / Shorts, en los colores de cualquiera de los 5 temas, con QR a la app. Las ilustraciones de cartas
+(`promo/ilustraciones.js`: sol, luna, corazón, estrella, nopal, pescado, sandía, paraguas, campana, maceta) son originales
+de este proyecto y se pueden usar libremente. Tipografías Playfair Display y Nunito (licencia OFL).
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).
