@@ -294,8 +294,9 @@ export function iniciarCantador() {
       el.cartaGrande.click();
     }
   });
-  el.siguiente.addEventListener('pointerdown', despertarAudio);
-  el.auto.addEventListener('pointerdown', despertarAudio);
+  // Cualquier toque en la vista Cantar desbloquea el audio (Safari solo lo permite en clic / toque, no en pointerdown).
+  // En fase de captura: se ejecuta antes que el botón que canta la carta.
+  document.querySelector('[data-vista="cantar"]').addEventListener('click', despertarAudio, true);
   el.sonidos.addEventListener('change', () => {
     prefs.sonidos = el.sonidos.checked;
     guardarPrefs();
