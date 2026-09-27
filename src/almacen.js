@@ -22,7 +22,26 @@ function escribir(clave, valor) {
   }
 }
 
-export const cargarPreferencias = (porDefecto) => ({ ...porDefecto, ...leer('preferencias', {}) });
+/** Todos los datos guardados por la app (para el respaldo): { clave: valor } */
+export function leerTodo() {
+  const datos = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const clave = localStorage.key(i);
+      if (clave?.startsWith(PREFIJO)) datos[clave.slice(PREFIJO.length)] = leer(clave.slice(PREFIJO.length), null);
+    }
+  } catch {
+    // almacenamiento bloqueado: respaldo vacío
+  }
+  return datos;
+}
+
+/** Escribe varias claves a la vez; devuelve false si alguna no se pudo guardar. */
+export function escribirTodo(datos) {
+  return Object.entries(datos).every(([clave, valor]) => escribir(clave, valor));
+}
+
+export const cargarPreferencias =(porDefecto) => ({ ...porDefecto, ...leer('preferencias', {}) });
 export const guardarPreferencias = (prefs) => escribir('preferencias', prefs);
 
 export const cargarJuegoActual = () => leer('juego-actual', null);

@@ -198,6 +198,44 @@ export async function cargarArchivos(archivos, alProgresar) {
   return { cargadas, ignorados, errores, bajaResolucion: bajaResolucion.sort((a, b) => a - b) };
 }
 
+// ── Respaldo ─────────────────────────────────────────────────────────────────
+/** Número de cartas con imagen guardada en este navegador (las incluidas con la app no cuentan). */
+export const imagenesGuardadas = () => guardadas.size;
+
+const aDataUrl = (blob) => new Promise((resolver, rechazar) => {
+  const lector = new FileReader();
+  lector.onload = () => resolver(lector.result);
+  lector.onerror = () => rechazar(lector.error);
+  lector.readAsDataURL(blob);
+});
+
+/** { id: { imagen: dataURL, miniatura: dataURL } } de las imágenes guardadas en el navegador. */
+export async function exportarImagenes() {
+  const salida = {};
+  for (const [id, d] of guardadas) {
+    salida[id] = { imagen: await aDataUrl(d.imagen), miniatura: await aDataUrl(d.miniatura) };
+  }
+  return salida;
+}
+
+/** Guarda en IndexedDB las imágenes de un respaldo (ya validado). Devuelve cuántas se importaron. */
+export async function importarImagenes(mapa) {
+  let cuantas = 0;
+  for (const [clave, img] of Object.entries(mapa)) {
+    const id = Number(clave);
+    const datos = {
+      imagen: await (await fetch(img.imagen)).blob(),
+      miniatura: await (await fetch(img.miniatura)).blob(),
+      nombreOriginal: `respaldo-${id}`,
+    };
+    await transaccion('readwrite', (almacen) => almacen.put(datos, id));
+    registrar(id, datos);
+    cuantas++;
+  }
+  if (fuente !== 'incluidas' && guardadas.size) fuente = 'navegador';
+  return cuantas;
+}
+
 export async function borrarImagenes() {
   await transaccion('readwrite', (almacen) => almacen.clear());
   urlsMiniatura.forEach((url) => URL.revokeObjectURL(url));

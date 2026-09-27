@@ -245,6 +245,17 @@
         <p class="ayuda">Se guardan solo en este navegador.</p>
         <ul id="lista-juegos" class="lista-juegos"></ul>
       </section>
+
+      <!-- Respaldo -->
+      <section class="tarjeta">
+        <h2>Respaldo</h2>
+        <p class="ayuda">Descarga un archivo con tus juegos guardados, preferencias y la partida del cantador para no perderlos o pasarlos a otro dispositivo.</p>
+        <label class="check"><input type="checkbox" id="respaldo-imagenes" /> Incluir imágenes de las cartas <small class="ayuda" id="respaldo-imagenes-nota"></small></label>
+        <div class="botones-iguales">
+          <button type="button" id="btn-descargar-respaldo" class="btn-secundario">Descargar respaldo</button>
+          <label class="btn-secundario btn-archivo">Restaurar…<input type="file" id="input-respaldo" accept=".json,application/json" hidden /></label>
+        </div>
+      </section>
     </aside>
 
     <section class="resultados">

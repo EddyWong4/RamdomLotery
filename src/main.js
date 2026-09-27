@@ -8,6 +8,7 @@ import * as almacen from './almacen.js';
 import { registrarVista, iniciarRutas } from './rutas.js';
 import { iniciarJugador, vistaJugar, refrescarJugador } from './jugador.js';
 import { iniciarCompartir, abrirCompartir } from './compartir.js';
+import { crearRespaldo, validarRespaldo, combinarDatos, traeDatosActuales } from './respaldo.js';
 import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
 const PREFERENCIAS_INICIALES = {
@@ -35,6 +36,10 @@ const el = {
   btnSemilla: $('#btn-semilla'),
   btnGenerar: $('#btn-generar'),
   alcance: $('#alcance'),
+  respaldoImagenes: $('#respaldo-imagenes'),
+  respaldoImagenesNota: $('#respaldo-imagenes-nota'),
+  btnDescargarRespaldo: $('#btn-descargar-respaldo'),
+  inputRespaldo: $('#input-respaldo'),
   panelImagenes: $('#panel-imagenes'),
   estadoImagenes: $('#estado-imagenes'),
   inputCarpeta: $('#input-carpeta'),
@@ -379,6 +384,7 @@ function pdfUnTablero(numero) {
 
 // ── Imágenes de las cartas ──────────────────────────────────────────────────
 function pintarPanelImagenes() {
+  pintarRespaldo();
   const fuente = imagenes.fuenteImagenes();
   el.panelImagenes.hidden = fuente === 'incluidas';
   if (fuente === 'incluidas') return;
@@ -565,6 +571,57 @@ function irATablero(numero) {
   art.classList.add('resaltar');
 }
 
+// ── Respaldo ────────────────────────────────────────────────────────────────
+function pintarRespaldo() {
+  const cuantas = imagenes.imagenesGuardadas();
+  const incluidas = imagenes.fuenteImagenes() === 'incluidas';
+  el.respaldoImagenes.disabled = cuantas === 0;
+  if (cuantas === 0) el.respaldoImagenes.checked = false;
+  el.respaldoImagenesNota.textContent = incluidas
+    ? '(esta copia usa las imágenes incluidas; no hace falta respaldarlas)'
+    : cuantas ? `(${cuantas} cartas, aumenta el tamaño del archivo)` : '(no hay imágenes cargadas)';
+}
+
+async function descargarRespaldo() {
+  if (estado.ocupado) return;
+  await conOcupado('Preparando respaldo…', async () => {
+    const conImagenes = el.respaldoImagenes.checked;
+    const respaldo = crearRespaldo(almacen.leerTodo(), conImagenes ? await imagenes.exportarImagenes() : null, __APP_VERSION__);
+    const blob = new Blob([JSON.stringify(respaldo)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `loteria-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  }, 'Error al crear el respaldo');
+}
+
+async function restaurarRespaldo(archivo) {
+  if (!archivo || estado.ocupado) return;
+  let respaldo;
+  try {
+    respaldo = validarRespaldo(JSON.parse(await archivo.text()));
+  } catch (err) {
+    avisar(err instanceof SyntaxError ? 'El archivo no es un respaldo válido.' : err.message, 5000);
+    return;
+  }
+
+  const cuantasImagenes = Object.keys(respaldo.imagenes ?? {}).length;
+  const juegos = respaldo.datos.juegos?.length ?? 0;
+  const resumen = [`${juegos} juegos guardados`, cuantasImagenes ? `${cuantasImagenes} imágenes de cartas` : null].filter(Boolean).join(' y ');
+  if (!window.confirm(`Respaldo del ${new Date(respaldo.fecha).toLocaleString('es-MX')} con ${resumen}.\n\nSe agregarán a lo que ya tienes, sin borrar nada. ¿Continuar?`)) return;
+  const reemplazarActual = traeDatosActuales(respaldo.datos) &&
+    window.confirm('¿Reemplazar también el juego actual, las preferencias y la partida del cantador por los del respaldo?\n\nAceptar = reemplazar · Cancelar = conservar los tuyos');
+
+  await conOcupado('Restaurando respaldo…', async () => {
+    const { datos } = combinarDatos(almacen.leerTodo(), respaldo.datos, { reemplazarActual });
+    if (!almacen.escribirTodo(datos)) throw new Error('no hay espacio suficiente en el navegador');
+    if (cuantasImagenes && imagenes.fuenteImagenes() !== 'incluidas') await imagenes.importarImagenes(respaldo.imagenes);
+  }, 'Error al restaurar');
+  // Se recarga para que todas las vistas lean los datos restaurados
+  location.reload();
+}
+
 // ── Juegos guardados ────────────────────────────────────────────────────────
 function pintarJuegosGuardados() {
   const juegos = almacen.listarJuegos();
@@ -617,6 +674,12 @@ function cargarJuego(id) {
 function conectarEventos() {
   alElegir(el.tamano, (v) => { estado.prefs.tamano = Number(v); marcarSegmentado(el.tamano, v); pintarOpcionDoble(); guardarPrefs(); });
   alElegir(el.alcance, (v) => { estado.prefs.alcance = v; guardarPrefs(); pintarPanelPdf(); });
+  el.btnDescargarRespaldo.addEventListener('click', descargarRespaldo);
+  el.inputRespaldo.addEventListener('change', () => {
+    const archivo = el.inputRespaldo.files[0];
+    el.inputRespaldo.value = '';
+    restaurarRespaldo(archivo);
+  });
   el.inputCarpeta.addEventListener('change', () => cargarImagenesDesde(el.inputCarpeta));
   el.inputArchivos.addEventListener('change', () => cargarImagenesDesde(el.inputArchivos));
   el.btnBorrarImagenes.addEventListener('click', async () => {

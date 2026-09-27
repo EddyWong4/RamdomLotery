@@ -30,6 +30,10 @@ y puede revisar todos los tableros para saber quién ya ganó.
 El celular vuelve a generar el mismo tablero a partir del código del juego (sin servidor) y el jugador marca las cartas tocándolas;
 las marcas se guardan en su navegador. Con carta doble, tocarla marca sus dos casillas.
 
+**Respaldo:** descarga un archivo `.json` con los juegos guardados, preferencias, partida del cantador, marcas de tableros
+y, opcionalmente, las imágenes cargadas. Al restaurarlo se agregan los juegos sin borrar los existentes; el juego actual y las
+preferencias solo se reemplazan si el usuario lo confirma.
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) 18 o superior.
@@ -94,6 +98,7 @@ src/
   enlaces.js     links reproducibles de tableros
   jugador.js     vista Jugar: tablero en el celular
   compartir.js   ventana con link y código QR
+  respaldo.js    formato, validación y combinación de respaldos
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)
