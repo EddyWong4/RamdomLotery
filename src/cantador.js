@@ -4,16 +4,18 @@ import * as almacen from './almacen.js';
 import * as imagenes from './imagenes.js';
 import { MODOS, verificarTablero } from './reglas.js';
 import { svgFicha } from './fichas.js';
+import { sonidoInicio, sonidoFin, despertarAudio, duracion, MELODIA_INICIO } from './sonidos.js';
 import { fichaActiva } from './mis-fichas.js';
 import { nuevaPartida, siguiente, anterior, cartasCantadas, cartaActual, terminada, esPartidaValida } from './partida.js';
 
-const PREFS_INICIALES = { intervalo: 5, voz: false, modo: 'llena' };
+const PREFS_INICIALES = { intervalo: 5, voz: false, sonidos: true, modo: 'llena' };
 
 const $ = (sel) => document.querySelector(sel);
 let el;
 let prefs;
 let partida;
 let temporizador = null;
+let pendiente = null; // voz o sonido programados (se cancelan al retroceder o salir)
 let activa = false;
 
 const escapar = (s) =>
@@ -40,10 +42,22 @@ function guardarPrefs() {
 // ── Voz (API del navegador, sin servidor) ────────────────────────────────────
 const hayVoz = () => 'speechSynthesis' in window;
 
-function decir(texto) {
-  if (!prefs.voz || !hayVoz()) return;
+/** Dice el texto si la voz está activa. `alTerminar` se llama al acabar de hablar (o enseguida si no hay voz). */
+function decir(texto, alTerminar = null) {
+  if (!prefs.voz || !hayVoz()) {
+    alTerminar?.();
+    return;
+  }
   speechSynthesis.cancel();
   const frase = new SpeechSynthesisUtterance(texto);
+  if (alTerminar) {
+    let listo = false;
+    const una = () => { if (!listo) { listo = true; alTerminar(); } };
+    frase.onend = una;
+    frase.onerror = una;
+    // Por si el navegador nunca avisa que terminó de hablar
+    pendiente = setTimeout(una, 4000);
+  }
   const voces = speechSynthesis.getVoices();
   frase.voice = voces.find((v) => v.lang === 'es-MX') ?? voces.find((v) => v.lang.startsWith('es')) ?? null;
   frase.lang = frase.voice?.lang ?? 'es-MX';
@@ -60,10 +74,14 @@ function pintarEscenario() {
   el.siguiente.textContent = partida.cantadas === 0 ? 'Empezar ▶' : terminada(partida) ? 'Se cantaron todas' : 'Siguiente carta ▶';
 
   if (!id) {
-    el.cartaGrande.innerHTML = '<div class="carta-grande-inicio">¡Corre y se va!<small>Presiona “Empezar” para cantar la primera carta</small></div>';
+    el.cartaGrande.innerHTML = '<div class="carta-grande-inicio">¡Corre y se va!<small>Toca aquí o presiona “Empezar” para cantar la primera carta</small></div>';
     el.cartaNombre.textContent = '';
+    el.cartaGrande.setAttribute('aria-label', 'Empezar la partida: cantar la primera carta');
+    el.cartaGrande.classList.remove('terminada');
     return;
   }
+  el.cartaGrande.classList.toggle('terminada', terminada(partida));
+  el.cartaGrande.setAttribute('aria-label', terminada(partida) ? 'Se cantaron todas las cartas' : 'Sacar la siguiente carta');
   const c = cartaPorId(id);
   const url = imagenes.urlImagen(id);
   el.cartaGrande.innerHTML = url
@@ -106,10 +124,16 @@ function pintarTodo() {
   el.intervalo.value = String(prefs.intervalo);
   el.voz.checked = prefs.voz;
   el.voz.disabled = !hayVoz();
+  el.sonidos.checked = prefs.sonidos;
   el.modo.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b.dataset.valor === prefs.modo));
 }
 
 // ── Acciones ─────────────────────────────────────────────────────────────────
+function cancelarPendiente() {
+  clearTimeout(pendiente);
+  pendiente = null;
+}
+
 function cambiar(nueva) {
   if (nueva === partida) return;
   const avanzo = nueva.cantadas > partida.cantadas;
@@ -119,7 +143,20 @@ function cambiar(nueva) {
   pintarHistorial();
   el.resultado.innerHTML = '';
   el.revisar.innerHTML = '';
-  if (avanzo) decir(cartaPorId(cartaActual(partida)).nombre);
+  cancelarPendiente();
+  if (!avanzo) return;
+
+  const nombre = cartaPorId(cartaActual(partida)).nombre;
+  if (partida.cantadas === 1 && prefs.sonidos) {
+    // Arranca la partida: sonido de inicio y después la voz dice la primera carta
+    sonidoInicio();
+    pendiente = setTimeout(() => decir(nombre), duracion(MELODIA_INICIO) * 1000);
+  } else if (terminada(partida)) {
+    // Última carta: primero se dice y después suena el cierre
+    decir(nombre, () => prefs.sonidos && (pendiente = setTimeout(sonidoFin, 250)));
+  } else {
+    decir(nombre);
+  }
   if (terminada(partida)) detenerAuto();
 }
 
@@ -141,6 +178,7 @@ function alternarAuto() {
 }
 
 function empezarNuevaPartida() {
+  cancelarPendiente();
   if (partida.cantadas > 0 && !terminada(partida) &&
     !window.confirm(`Van ${partida.cantadas} cartas cantadas. ¿Empezar una partida nueva?`)) return;
   detenerAuto();
@@ -200,6 +238,7 @@ function alPresionarTecla(e) {
   const enCampo = e.target.closest('input, select, textarea, button');
   if ((e.key === ' ' || e.key === 'ArrowRight') && !enCampo) {
     e.preventDefault();
+    despertarAudio();
     avanzar();
   } else if (e.key === 'ArrowLeft' && !enCampo) {
     e.preventDefault();
@@ -219,6 +258,7 @@ export function iniciarCantador() {
     auto: $('#btn-automatico'),
     intervalo: $('#intervalo'),
     voz: $('#voz'),
+    sonidos: $('#sonidos'),
     nueva: $('#btn-nueva-partida'),
     verificarAyuda: $('#verificar-ayuda'),
     numero: $('#verificar-numero'),
@@ -242,6 +282,27 @@ export function iniciarCantador() {
     prefs.intervalo = Number(el.intervalo.value);
     guardarPrefs();
     if (temporizador) { detenerAuto(); alternarAuto(); }
+  });
+  // La carta es la baraja: tocarla saca la siguiente
+  el.cartaGrande.addEventListener('click', () => {
+    despertarAudio();
+    if (!terminada(partida)) avanzar();
+  });
+  el.cartaGrande.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      el.cartaGrande.click();
+    }
+  });
+  el.siguiente.addEventListener('pointerdown', despertarAudio);
+  el.auto.addEventListener('pointerdown', despertarAudio);
+  el.sonidos.addEventListener('change', () => {
+    prefs.sonidos = el.sonidos.checked;
+    guardarPrefs();
+    if (prefs.sonidos) {
+      despertarAudio();
+      sonidoInicio();
+    }
   });
   el.voz.addEventListener('change', () => {
     prefs.voz = el.voz.checked;
@@ -276,6 +337,7 @@ export const vistaCantar = {
   alSalir() {
     activa = false;
     detenerAuto();
+    cancelarPendiente();
     if (hayVoz()) speechSynthesis.cancel();
   },
 };

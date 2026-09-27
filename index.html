@@ -30,7 +30,7 @@
         <span class="ayuda" id="cantador-codigo"></span>
       </div>
 
-      <div class="carta-grande" id="carta-grande" aria-live="polite"></div>
+      <div class="carta-grande" id="carta-grande" role="button" tabindex="0" aria-live="polite" title="Toca la carta para sacar la siguiente"></div>
       <p class="carta-grande-nombre" id="carta-grande-nombre"></p>
 
       <div class="escenario-botones">
@@ -49,10 +49,11 @@
             <option value="15">15 s</option>
           </select>
         </label>
+        <label class="check"><input type="checkbox" id="sonidos" /> Sonidos</label>
         <label class="check"><input type="checkbox" id="voz" /> Decir en voz alta</label>
         <button type="button" id="btn-nueva-partida" class="btn-chico destacado">Nueva partida</button>
       </div>
-      <p class="ayuda">Atajos de teclado: <b>espacio</b> o <b>→</b> siguiente carta · <b>←</b> anterior.</p>
+      <p class="ayuda">Toca la carta para sacar la siguiente. Atajos: <b>espacio</b> o <b>→</b> siguiente carta · <b>←</b> anterior.</p>
     </section>
 
     <aside class="cantador-lateral">

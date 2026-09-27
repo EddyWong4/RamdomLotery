@@ -469,6 +469,11 @@ select option { background: var(--fondo-2); }
   box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
   display: flex;
 }
+.carta-grande { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; -webkit-tap-highlight-color: transparent; user-select: none; }
+.carta-grande:hover { transform: translateY(-3px) rotate(-0.6deg); box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6); }
+.carta-grande:active { transform: scale(0.98); }
+.carta-grande:focus-visible { outline: 3px solid var(--oro); outline-offset: 4px; }
+.carta-grande.terminada { cursor: default; transform: none; }
 .carta-grande img { width: 100%; height: 100%; object-fit: cover; display: block; animation: aparecer 0.35s ease; }
 .carta-grande .carta-vacia { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #8b1a1a; background: #f3e6cf; animation: aparecer 0.35s ease; }
 .carta-grande .carta-vacia b { font-size: 96px; line-height: 1; }

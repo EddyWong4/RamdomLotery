@@ -26,7 +26,8 @@ Una prueba de chi-cuadrada indica si las diferencias son normales del azar o si 
 Se recomiendan al menos ~20 victorias esperadas por tablero (p. ej. 1,000 partidas para 10–50 tableros).
 
 **Cantador** (sección *Cantar*, `#/cantar`): canta las 54 cartas en orden aleatorio, una por una o en automático
-(cada 3–15 s), con voz opcional del navegador. Muestra el historial de cartas cantadas y la partida se conserva al recargar.
+(cada 3–15 s), con voz opcional del navegador. Tocar la carta saca la siguiente (como una baraja). Al empezar suena una
+fanfarria ascendente y al cantar la carta 54 un cierre descendente con campana (Web Audio, sin archivos; se pueden apagar). Muestra el historial de cartas cantadas y la partida se conserva al recargar.
 El **verificador** revisa un tablero del juego actual (llena, línea o esquinas) contra las cartas cantadas, resalta las casillas
 y puede revisar todos los tableros para saber quién ya ganó.
 
@@ -107,6 +108,7 @@ src/
   reglas.js      formas de ganar y verificación de un tablero
   partida.js     baraja del cantador (con semilla)
   cantador.js    vista Cantar: cantador y verificador
+  sonidos.js     sonidos de inicio y fin de partida (Web Audio)
   rutas.js       navegación entre vistas (#/, #/cantar, #/jugar)
   enlaces.js     links reproducibles de tableros
   jugador.js     vista Jugar: uno o varios tableros en el celular
