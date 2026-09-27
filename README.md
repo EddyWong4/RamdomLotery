@@ -64,6 +64,10 @@ En iPhone/iPad usa el estilo iOS (San Francisco, barras translúcidas, control s
 (Roboto, indicador en píldora, snackbar); en la computadora no cambia. Se conservan los colores de la lotería.
 Para probar otro estilo: `?plataforma=ios`, `android` o `escritorio` en la dirección.
 
+**Botón "Instalar app"** (`src/instalar.js`): en Chrome/Edge/Samsung (Android y computadora) abre la ventana nativa de
+instalación; en iPhone/iPad y Safari de Mac muestra una guía con los pasos (Compartir → Agregar a pantalla de inicio / Archivo →
+Agregar al Dock). Se oculta si la app ya está instalada o si el navegador no permite instalar.
+
 **Sin internet (PWA):** después de la primera visita la app funciona sin conexión y se puede instalar en el celular o la
 computadora ("Agregar a pantalla de inicio" / "Instalar"). Cuando se publica una versión nueva aparece un aviso para actualizar.
 
@@ -149,6 +153,7 @@ src/
   pwa.js         service worker y aviso de nueva versión
   plataforma.js  detección de iOS / Android / escritorio
   visitas.js     contador de visitas (GoatCounter)
+  instalar.js    botón "Instalar app" y guías por dispositivo
   config.js      configuración del sitio publicado (código de GoatCounter)
   nativo.css     estilos de app nativa en el celular
   temas.css      colores de los 5 temas

@@ -245,6 +245,8 @@ html[data-plataforma='android'] {
 
 /* Botón de tema en la barra superior del celular */
 @media (max-width: 860px) {
-  .barra-app .btn-tema { margin-left: auto; width: 36px; height: 36px; background: transparent; border: none; }
-  html[data-plataforma='ios'] .barra-app .btn-tema { position: absolute; right: calc(12px + env(safe-area-inset-right)); bottom: 8px; }
+  .acciones-barra { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+  .barra-app .btn-tema { width: 36px; height: 36px; background: transparent; border: none; }
+  .barra-app .btn-instalar-icono { color: var(--oro); }
+  html[data-plataforma='ios'] .acciones-barra { position: absolute; right: calc(8px + env(safe-area-inset-right)); bottom: 8px; }
 }

@@ -2,6 +2,7 @@ import { aplicarPlataforma } from './plataforma.js';
 import { aplicarTema, temaGuardado, aplicarFondo, fondoGuardado } from './temas.js';
 import { iniciarPanelTemas } from './panel-temas.js';
 import { iniciarVisitas } from './visitas.js';
+import { iniciarInstalacion } from './instalar.js';
 import { cartaPorId } from './cartas.js';
 
 // Lo primero: marcar el dispositivo (iOS / Android / escritorio) para que el CSS lo adapte
@@ -916,6 +917,7 @@ registrarVista('cantar', vistaCantar);
 registrarVista('jugar', vistaJugar);
 iniciarRutas();
 iniciarPwa(avisar);
+iniciarInstalacion(avisar);
 iniciarVisitas(document.getElementById('visitas'));
 // Los tableros se pintan cuando se sabe de dónde salen las imágenes (incluidas, guardadas o ninguna)
 imagenes.iniciarImagenes().finally(() => {

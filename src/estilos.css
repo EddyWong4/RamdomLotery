@@ -700,7 +700,21 @@ input[type='search']:focus { border-color: var(--oro); }
 }
 .btn-tema svg { width: 22px; height: 22px; }
 .btn-tema:hover { border-color: var(--oro); }
-.encabezado .btn-tema { position: absolute; right: 16px; top: 16px; }
+.acciones-encabezado { position: absolute; right: 16px; top: 16px; display: flex; align-items: center; gap: 8px; }
+.btn-tema[hidden], .btn-instalar[hidden] { display: none; }
+
+/* ── Instalar app ───────────────────────────────── */
+.btn-instalar {
+  display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 12px;
+  border: none; border-radius: 50px; background: var(--oro); color: var(--sobre-oro);
+  font-weight: 800; font-size: 14px; box-shadow: 0 3px 12px color-mix(in srgb, var(--oro) 35%, transparent);
+}
+.btn-instalar svg { width: 20px; height: 20px; }
+.btn-instalar:hover { filter: brightness(1.08); }
+.instalar-pasos { display: flex; flex-direction: column; gap: 10px; padding-left: 22px; font-size: 15px; line-height: 1.45; }
+.instalar-pasos li::marker { color: var(--oro); font-weight: 900; }
+.icono-guia { display: inline-flex; vertical-align: -5px; width: 22px; height: 22px; padding: 2px; border-radius: 6px; background: var(--hundido); color: var(--oro); }
+.icono-guia svg { width: 100%; height: 100%; }
 .dialogo-temas { width: min(92vw, 420px); }
 .lista-temas { display: flex; flex-direction: column; gap: 8px; }
 .tema-opcion {

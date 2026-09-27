@@ -24,7 +24,10 @@
 <body>
   <!-- Computadora: encabezado grande con la navegación arriba -->
   <header class="encabezado">
-    <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+    <div class="acciones-encabezado">
+      <button type="button" class="btn-instalar" data-instalar hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg><span>Instalar app</span></button>
+      <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+    </div>
     <h1>Lotería <span>Generador de tableros</span></h1>
     <nav class="navegacion" aria-label="Secciones">
       <a href="#/" data-ruta="tableros">🃏 Tableros</a>
@@ -36,7 +39,10 @@
   <header class="barra-app">
     <span class="barra-app-marca" aria-hidden="true">Lotería</span>
     <span class="barra-app-titulo" id="titulo-app">Tableros</span>
-    <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+    <div class="acciones-barra">
+      <button type="button" class="btn-tema btn-instalar-icono" data-instalar hidden aria-label="Instalar app" title="Instalar app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M5 15v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"/></svg></button>
+      <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
+    </div>
   </header>
 
   <!-- Celular: barra de pestañas abajo -->
@@ -206,6 +212,16 @@
         <a id="btn-abrir-enlace" class="btn-principal btn-archivo" target="_blank" rel="noopener">Abrir</a>
       </div>
       <button type="submit" class="btn-enlace">Cerrar</button>
+    </form>
+  </dialog>
+
+  <!-- Guía para instalar la app donde el navegador no tiene instalación directa (iPhone, iPad, Safari en Mac) -->
+  <dialog id="dialogo-instalar" class="dialogo">
+    <form method="dialog" class="dialogo-contenido">
+      <h2 id="instalar-titulo">Instalar la app</h2>
+      <p class="ayuda">Queda como una app más: con su ícono, en pantalla completa y funciona sin internet.</p>
+      <ol id="instalar-pasos" class="instalar-pasos"></ol>
+      <button type="submit" class="btn-principal">Entendido</button>
     </form>
   </dialog>
 
