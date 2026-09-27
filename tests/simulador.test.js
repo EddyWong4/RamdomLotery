@@ -46,3 +46,20 @@ describe('simulador', () => {
     expect((await simular(tableros, { jugadas: 1000, modo: 'llena', semilla: 'S' })).muestraSuficiente).toBe(true);
   });
 });
+
+describe('simulador con las formas nuevas', () => {
+  const { tableros } = generarTableros({ cantidad: 12, tamano: 4, semilla: 'NUEVAS' });
+  it.each(['tradicional', 'cruz', 'siete'])('%s: cada partida tiene ganador y es reproducible', async (modo) => {
+    const a = await simular(tableros, { jugadas: 300, modo, semilla: 'N' });
+    const b = await simular(tableros, { jugadas: 300, modo, semilla: 'N' });
+    expect(a.victorias).toEqual(b.victorias);
+    expect(a.victorias.reduce((x, y) => x + y, 0)).toBeGreaterThanOrEqual(300);
+  });
+  it('siete loco gana antes que tabla llena y cruz', async () => {
+    const siete = await simular(tableros, { jugadas: 300, modo: 'siete', semilla: 'N' });
+    const cruz = await simular(tableros, { jugadas: 300, modo: 'cruz', semilla: 'N' });
+    const llena = await simular(tableros, { jugadas: 300, modo: 'llena', semilla: 'N' });
+    expect(siete.promedioCartas).toBeLessThan(cruz.promedioCartas);
+    expect(cruz.promedioCartas).toBeLessThan(llena.promedioCartas);
+  });
+});

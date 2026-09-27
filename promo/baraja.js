@@ -56,8 +56,9 @@ async function descargarZip() {
 
 async function descargarPdf() {
   const pdf = new jsPDF({ unit: 'mm', format: 'letter' });
-  const ancho = 62; // mm por carta: 3 columnas en una hoja carta
-  const alto = ancho / PROPORCION_CARTA;
+  // 3 × 3 cartas por hoja carta: el alto manda (3 filas + 12 mm de margen arriba y abajo)
+  const alto = (279.4 - 24) / 3;
+  const ancho = alto * PROPORCION_CARTA;
   const x0 = (215.9 - ancho * 3) / 2;
   const y0 = (279.4 - alto * 3) / 2;
   for (let n = 1; n <= 54; n++) {

@@ -12,6 +12,10 @@ aplicarFondo(fondoGuardado());
 import { generarTableros, semillaAleatoria, MAX_TABLEROS } from './generador.js';
 import { crearPdfTableros, crearPdfBaraja, FORMATOS, PAPELES } from './pdf.js';
 import { simular, MODOS, JUGADAS } from './simulador.js';
+import { normalizarModo } from './reglas.js';
+
+// Las formas de ganar "línea" y "esquinas" de versiones anteriores ahora son parte de "tradicional"
+const normalizarPrefs = (p) => ({ ...p, modo: normalizarModo(p.modo) });
 import * as imagenes from './imagenes.js';
 import { POSICION_ALEATORIA, posicionesDisponibles, indicesDoble, nombrePosicion } from './posiciones.js';
 import * as almacen from './almacen.js';
@@ -93,7 +97,7 @@ const el = {
 };
 
 const estado = {
-  prefs: almacen.cargarPreferencias(PREFERENCIAS_INICIALES),
+  prefs: normalizarPrefs(almacen.cargarPreferencias(PREFERENCIAS_INICIALES)),
   juego: almacen.cargarJuegoActual(), // { id, tamano, semilla, tableros, estadisticas, creado }
   seleccion: new Set(),
   ocupado: false,

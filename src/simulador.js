@@ -1,6 +1,6 @@
 import { TOTAL_CARTAS } from './cartas.js';
 import { crearRng } from './generador.js';
-import { MODOS, gruposGanadores } from './reglas.js';
+import { MODOS, gruposGanadores, casillasMinimas } from './reglas.js';
 
 export { MODOS };
 export const JUGADAS = [100, 1000, 10000];
@@ -32,7 +32,10 @@ export async function simular(tableros, { jugadas, modo, semilla, alProgresar })
 
   // Todo en arreglos planos: el tablero b usa los grupos [inicioTablero[b], inicioTablero[b+1])
   // y el grupo g usa las cartas [inicioGrupo[g], inicioGrupo[g+1])
-  const listas = tableros.map((t) => gruposGanadores(t.cartas, modo));
+  // Siete loco no tiene grupos fijos: gana quien marca k casillas cualesquiera (una carta doble marca 2)
+  const minimo = B ? casillasMinimas(Math.round(Math.sqrt(tableros[0].cartas.length)), modo) : null;
+  const listas = tableros.map((t) => (minimo !== null ? [t.cartas] : gruposGanadores(t.cartas, modo)));
+  const menores = new Int16Array(minimo ?? 1);
   const inicioTablero = new Int32Array(B + 1);
   const inicioGrupo = [0];
   const cartas = [];
@@ -67,7 +70,19 @@ export async function simular(tableros, { jugadas, modo, semilla, alProgresar })
       // El tablero gana en el turno en que completa su primer grupo
       // (se deja de revisar un grupo en cuanto ya no puede mejorar ni empatar al mejor)
       let fin = 99;
-      for (let g = inicioTablero[b], gFin = inicioTablero[b + 1]; g < gFin; g++) {
+      if (minimo !== null) {
+        // Turno en que se marca la k-ésima casilla: los k turnos más chicos, con inserción
+        let llenos = 0;
+        const g = inicioTablero[b];
+        for (let k = inicioGrupoPlano[g], kFin = inicioGrupoPlano[g + 1]; k < kFin; k++) {
+          const t = turno[cartasPlano[k]];
+          if (llenos === minimo && t >= menores[minimo - 1]) continue;
+          let i = llenos < minimo ? llenos++ : minimo - 1;
+          while (i > 0 && menores[i - 1] > t) { menores[i] = menores[i - 1]; i--; }
+          menores[i] = t;
+        }
+        fin = menores[minimo - 1];
+      } else for (let g = inicioTablero[b], gFin = inicioTablero[b + 1]; g < gFin; g++) {
         const tope = fin - 1 < mejor ? fin - 1 : mejor;
         let ultimo = 0;
         for (let k = inicioGrupoPlano[g], kFin = inicioGrupoPlano[g + 1]; k < kFin; k++) {

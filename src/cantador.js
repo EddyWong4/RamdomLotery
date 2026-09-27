@@ -2,7 +2,7 @@
 import { CARTAS, cartaPorId } from './cartas.js';
 import * as almacen from './almacen.js';
 import * as imagenes from './imagenes.js';
-import { MODOS, verificarTablero } from './reglas.js';
+import { MODOS, verificarTablero, normalizarModo } from './reglas.js';
 import { svgFicha } from './fichas.js';
 import { sonidoInicio, sonidoFin, despertarAudio, duracion, MELODIA_INICIO } from './sonidos.js';
 import { fichaActiva } from './mis-fichas.js';
@@ -207,7 +207,9 @@ function verificar(numero = Number(el.numero.value)) {
   const estado = r.gano
     ? `<p class="verificar-estado si">🎉 ¡Lotería! El tablero <b>${numeroTablero(numero)}</b> ganó con <b>${MODOS[prefs.modo].nombre.toLowerCase()}</b>.</p>`
     : `<p class="verificar-estado no">Todavía no gana (${MODOS[prefs.modo].nombre.toLowerCase()}). ` +
-      (r.faltan.length <= 6
+      (r.casillasFaltantes !== null
+        ? `Le falta${r.casillasFaltantes > 1 ? 'n' : ''} <b>${r.casillasFaltantes}</b> casilla${r.casillasFaltantes > 1 ? 's' : ''} (cualquiera).`
+        : r.faltan.length <= 6
         ? `Le falta${r.faltan.length > 1 ? 'n' : ''}: <b>${r.faltan.map((id) => escapar(cartaPorId(id).nombre)).join(', ')}</b>.`
         : `Le faltan <b>${r.faltan.length}</b> cartas.`) +
       '</p>';
@@ -271,6 +273,7 @@ export function iniciarCantador() {
     historial: $('#historial'),
   };
   prefs = almacen.cargarPreferenciasCantador(PREFS_INICIALES);
+  prefs.modo = normalizarModo(prefs.modo);
   const guardada = almacen.cargarPartida();
   partida = esPartidaValida(guardada) ? guardada : nuevaPartida();
 
