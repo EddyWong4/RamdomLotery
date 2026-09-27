@@ -26,6 +26,7 @@ export default defineConfig({
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         promo: fileURLToPath(new URL('./promo/index.html', import.meta.url)),
+        baraja: fileURLToPath(new URL('./promo/baraja.html', import.meta.url)),
       },
     },
   },

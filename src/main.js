@@ -501,6 +501,21 @@ function pintarPanelImagenes() {
 async function cargarImagenesDesde(input) {
   const archivos = [...input.files];
   input.value = '';
+  await cargarImagenes(archivos);
+}
+
+// Dibuja las 54 cartas de la baraja libre (ilustraciones originales, CC0) y las guarda como si el usuario las hubiera elegido
+async function usarBarajaLibre() {
+  if (estado.ocupado) return;
+  avisar('Dibujando la baraja libre…', 60000);
+  const baraja = await import('./baraja-libre.js');
+  await baraja.cargarTipografias();
+  const archivos = [];
+  for (let n = 1; n <= 54; n++) archivos.push(new File([await baraja.imagenCarta(n, 900)], `${n}.jpg`, { type: 'image/jpeg' }));
+  await cargarImagenes(archivos);
+}
+
+async function cargarImagenes(archivos) {
   if (!archivos.length || estado.ocupado) return;
   estado.ocupado = true;
   pintarPanelPdf();
@@ -789,6 +804,7 @@ function conectarEventos() {
   });
   el.inputCarpeta.addEventListener('change', () => cargarImagenesDesde(el.inputCarpeta));
   el.inputArchivos.addEventListener('change', () => cargarImagenesDesde(el.inputArchivos));
+  $('#btn-baraja-libre').addEventListener('click', usarBarajaLibre);
   el.btnBorrarImagenes.addEventListener('click', async () => {
     if (!window.confirm('¿Borrar las imágenes de las cartas guardadas en este navegador?')) return;
     await imagenes.borrarImagenes();

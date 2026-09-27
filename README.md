@@ -77,9 +77,13 @@ al pie de la página. No cuenta en localhost ni sin internet. Se activa poniendo
 (`GOATCOUNTER`) y activando *Allow adding visitor counts on your website* en la configuración del sitio en GoatCounter.
 
 **Kit de promoción** (`promo/`, publicado en `…/RamdomLotery/promo/`): genera 8 imágenes verticales 1080 × 1920 para
-TikTok / Reels / Shorts, en los colores de cualquiera de los 5 temas, con QR a la app. Las ilustraciones de cartas
-(`promo/ilustraciones.js`: sol, luna, corazón, estrella, nopal, pescado, sandía, paraguas, campana, maceta) son originales
-de este proyecto y se pueden usar libremente. Tipografías Playfair Display y Nunito (licencia OFL).
+TikTok / Reels / Shorts, en los colores de cualquiera de los 5 temas, con QR a la app. Las ilustraciones salen de la
+baraja libre. Tipografías Playfair Display y Nunito (licencia OFL).
+
+**Baraja libre** (`src/baraja-libre.js`, página `…/RamdomLotery/promo/baraja.html`): 54 ilustraciones originales en
+canvas 2D, licencia **CC0** (dominio público). Se descargan en PNG, ZIP (`src/zip.js`, sin dependencias) o PDF de 9 cartas
+por hoja, y la app las carga con el botón *Usar la baraja libre*. El Valiente, El Negrito y El Apache se reinterpretan de
+forma respetuosa (máscara de luchador, gatito negro, arco con plumas).
 
 ## Uso
 

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baraja libre · Lotería</title>
+  <meta name="description" content="54 cartas de lotería con ilustraciones originales de uso libre (CC0). Descárgalas en PNG, ZIP o PDF para imprimir." />
+  <link rel="icon" href="../icono.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root { color-scheme: dark; --fondo: #1b0d05; --tarjeta: rgba(255,255,255,.06); --borde: rgba(255,200,100,.22); --oro: #f9c74f; --texto: #fff6e8; --suave: #cdb8a3; }
+    * { box-sizing: border-box; margin: 0; }
+    body { background: var(--fondo); color: var(--texto); font-family: Nunito, system-ui, sans-serif; padding: 24px 16px 60px; }
+    main { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(30px, 5vw, 44px); color: var(--oro); }
+    h2 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--oro); margin-bottom: 10px; }
+    p, li { color: var(--suave); line-height: 1.5; }
+    b { color: var(--texto); }
+    a { color: var(--oro); }
+    .tarjeta { background: var(--tarjeta); border: 1.5px solid var(--borde); border-radius: 16px; padding: 18px; }
+    .acciones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .principal { background: linear-gradient(135deg, #dc2f3f, #c1121f); color: #fff; border: none; border-radius: 50px; padding: 12px 22px; font: 900 15px Nunito, sans-serif; cursor: pointer; }
+    .secundario { background: none; border: 2px solid var(--oro); color: var(--oro); border-radius: 50px; padding: 10px 20px; font: 900 15px Nunito, sans-serif; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: wait; }
+    #estado { font-weight: 800; color: var(--texto); min-height: 1.5em; }
+    .cartas { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+    figure { display: flex; flex-direction: column; gap: 6px; }
+    canvas { width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,.5); background: #fffaf0; }
+    figure button { background: none; border: 1.5px solid var(--oro); color: var(--oro); border-radius: 50px; padding: 5px 10px; font: 800 12px Nunito, sans-serif; cursor: pointer; }
+    ul { padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Baraja libre</h1>
+      <p>Las <b>54 cartas</b> de la lotería con <b>ilustraciones originales</b>, hechas para <a href="../">Tableros de Lotería</a>. Son de <b>uso libre</b>: descárgalas, imprímelas y úsalas como quieras.</p>
+    </header>
+
+    <section class="tarjeta">
+      <h2>Descargar</h2>
+      <div class="acciones">
+        <button type="button" class="principal" id="zip">Todas en ZIP (PNG)</button>
+        <button type="button" class="secundario" id="pdf">PDF para imprimir</button>
+        <span id="estado"></span>
+      </div>
+      <p style="margin-top:10px">El PDF trae 9 cartas por hoja tamaño carta con guías de corte. Los archivos del ZIP empiezan con el número de la carta, así puedes cargarlos directo en la app (o solo presiona <b>“Usar la baraja libre”</b> ahí).</p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Las 54 cartas</h2>
+      <div class="cartas" id="cartas"></div>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Licencia: dominio público (CC0 1.0)</h2>
+      <ul>
+        <li>Puedes <b>usarlas, copiarlas, modificarlas, imprimirlas y venderlas</b> sin pedir permiso ni dar crédito (aunque el crédito se agradece 💛).</li>
+        <li>Son dibujos originales: no copian ninguna baraja comercial.</li>
+        <li>Algunas cartas se reinterpretaron con respeto: <b>El Valiente</b> es una máscara de luchador, <b>El Negrito</b> un gatito negro y <b>El Apache</b> un arco con flecha y plumas.</li>
+      </ul>
+    </section>
+  </main>
+  <script type="module" src="./baraja.js"></script>
+</body>
+</html>
