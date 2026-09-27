@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { generarTableros } from '../src/generador.js';
-import { parametrosTablero, enlaceTablero, leerParametros, tableroDesdeParametros, claveTablero } from '../src/enlaces.js';
+import {
+  parametrosTablero, enlaceTablero, leerParametros, tableroDesdeParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior,
+} from '../src/enlaces.js';
 
 const juegoDe = (opciones) => {
   const { tableros } = generarTableros(opciones);
@@ -36,6 +38,29 @@ describe('links de tableros', () => {
     'c=A&n=3&k=10&t=1&d=par-superior',
   ])('rechaza parámetros inválidos: %s', (consulta) => {
     expect(leerParametros(new URLSearchParams(consulta))).toBeNull();
+  });
+
+  it('un link puede llevar varios tableros y los regenera todos', () => {
+    const juego = juegoDe({ cantidad: 30, tamano: 4, semilla: 'VARIOS', posicionDoble: 'esquinas-inferiores' });
+    const datos = leerParametros(parametrosTablero(juego, [3, 17, 30]));
+    expect(datos.numeros).toEqual([3, 17, 30]);
+    const mapa = tablerosDesdeParametros(datos);
+    [3, 17, 30].forEach((n) => expect(mapa.get(n)).toEqual(juego.tableros[n - 1]));
+    expect(enlaceTablero(juego, [3, 17], 'https://x/')).toContain('t=3%2C17');
+  });
+
+  it('tableros duplicados en el link cuentan una vez; más de 12 se rechaza', () => {
+    expect(leerParametros(new URLSearchParams('c=A&n=4&k=20&t=2,2,5')).numeros).toEqual([2, 5]);
+    const muchos = Array.from({ length: 13 }, (_, i) => i + 1).join(',');
+    expect(leerParametros(new URLSearchParams(`c=A&n=4&k=20&t=${muchos}`))).toBeNull();
+    expect(leerParametros(new URLSearchParams('c=A&n=4&k=20&t=2,99'))).toBeNull();
+  });
+
+  it('la clave no depende de la cantidad (el tablero no cambia si el juego crece)', () => {
+    const a = leerParametros(new URLSearchParams('c=A&n=4&k=10&t=3'));
+    const b = leerParametros(new URLSearchParams('c=A&n=4&k=11&t=3'));
+    expect(claveTablero(a)).toBe(claveTablero(b));
+    expect(claveTableroAnterior(a)).not.toBe(claveTableroAnterior(b));
   });
 
   it('la clave distingue tableros y juegos', () => {

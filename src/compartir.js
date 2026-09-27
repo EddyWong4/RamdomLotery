@@ -42,9 +42,14 @@ export function iniciarCompartir() {
   el.dialogo.addEventListener('click', (e) => { if (e.target === el.dialogo) el.dialogo.close(); });
 }
 
-export function abrirCompartir(juego, numero) {
-  const url = enlaceTablero(juego, numero, baseApp());
-  el.titulo.textContent = `Compartir tablero Nº ${String(numero).padStart(3, '0')}`;
+/** Comparte uno o varios tableros en un solo link / QR. */
+export function abrirCompartir(juego, numeros) {
+  const lista = Array.isArray(numeros) ? numeros : [numeros];
+  const url = enlaceTablero(juego, lista, baseApp());
+  const nombres = lista.map((n) => `Nº ${String(n).padStart(3, '0')}`);
+  el.titulo.textContent = lista.length === 1
+    ? `Compartir tablero ${nombres[0]}`
+    : `Compartir ${lista.length} tableros (${nombres.length > 4 ? `${nombres.slice(0, 4).join(', ')}…` : nombres.join(', ')})`;
   el.enlace.value = url;
   el.abrir.href = url;
   el.qr.innerHTML = codigoQr(url);

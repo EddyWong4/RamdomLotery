@@ -495,13 +495,9 @@ select option { background: var(--fondo-2); }
 .verificar-estado.si { background: rgba(249, 199, 79, 0.16); border: 1.5px solid var(--oro); }
 .verificar-tablero { display: grid; gap: 3px; background: var(--papel); padding: 6px; border-radius: 10px; margin-top: 10px; max-width: 320px; }
 .verificar-casilla { position: relative; }
-.verificar-casilla > * { width: 100%; aspect-ratio: 1292 / 2048; object-fit: cover; display: block; border-radius: 2px; opacity: 0.45; }
-.verificar-casilla.marcada > * { opacity: 1; }
-.verificar-casilla.marcada::after {
-  content: ''; position: absolute; left: 50%; top: 50%; width: 38%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c98a4b, #7a4a1f); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-}
-.verificar-casilla.ganadora > * { box-shadow: 0 0 0 3px var(--rojo); }
+.verificar-casilla > :not(.ficha-capa) { width: 100%; aspect-ratio: 1292 / 2048; object-fit: cover; display: block; border-radius: 2px; opacity: 0.45; }
+.verificar-casilla.marcada > :not(.ficha-capa) { opacity: 1; }
+.verificar-casilla.ganadora > :not(.ficha-capa) { box-shadow: 0 0 0 3px var(--rojo); }
 .btn-enlace.en-linea { padding: 0; font-size: inherit; }
 
 .historial { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 4px; }
@@ -517,7 +513,22 @@ select option { background: var(--fondo-2); }
 }
 
 /* ── Jugar en el celular ────────────────────────── */
-.jugar { max-width: 640px; margin: 0 auto; padding: 16px; }
+.jugar { max-width: 1200px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+#jugar-contenido { display: flex; flex-direction: column; gap: 14px; }
+.jugar-barra { max-width: 640px; width: 100%; align-self: center; }
+.jugar-barra .jugar-cabecera { margin-bottom: 0; }
+.jugar-barra .jugar-cabecera h2 { text-transform: none; letter-spacing: 0; font-size: 26px; }
+.jugar-agregar .con-boton .btn-principal { flex-shrink: 0; padding: 9px 16px; font-size: 14px; }
+.jugar-tableros { display: grid; gap: 16px; grid-template-columns: minmax(0, 640px); justify-content: center; }
+@media (min-width: 900px) {
+  .jugar-tableros[data-cantidad="2"], .jugar-tableros[data-cantidad="3"] { grid-template-columns: repeat(2, minmax(0, 560px)); }
+}
+@media (min-width: 1300px) {
+  .jugar-tableros[data-cantidad="3"] { grid-template-columns: repeat(3, minmax(0, 420px)); }
+}
+.jugar-tablero-caja header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.jugar-tablero-caja header b { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--oro); }
+.jugar-tablero-caja header .btn-chico { margin-left: auto; padding: 3px 10px; }
 .jugar-cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
 .jugar-cabecera h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--oro); }
 .jugar-tablero { display: grid; gap: 5px; background: var(--papel); padding: 8px; border-radius: 14px; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45); }
@@ -526,13 +537,39 @@ select option { background: var(--fondo-2); }
 .jugar-casilla > .carta-vacia { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f3e6cf; color: #8b1a1a; text-align: center; padding: 2px; }
 .jugar-casilla > .carta-vacia b { font-size: clamp(18px, 6vw, 34px); line-height: 1; }
 .jugar-casilla > .carta-vacia span { font-size: clamp(8px, 2.4vw, 12px); color: #5a3a2a; margin-top: 4px; }
-.jugar-casilla.marcada::after {
-  content: ''; position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%);
-  border-radius: 50%; background: radial-gradient(circle at 35% 35%, #c98a4b, #7a4a1f); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.55);
-  animation: frijol 0.2s ease;
+.jugar-ayuda { text-align: center; }
+
+/* ── Fichas ─────────────────────────────────────── */
+.ficha-capa { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.ficha-capa:empty { display: none; }
+.ficha-capa .ficha { filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); animation: poner-ficha 0.18s ease; }
+@keyframes poner-ficha { from { transform: scale(0.3); } }
+.ficha { display: block; height: auto; }
+
+.fichas-panel { max-width: 640px; width: 100%; align-self: center; }
+.fichas-panel summary { cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 800; list-style: none; }
+.fichas-panel summary::-webkit-details-marker { display: none; }
+.fichas-panel summary::after { content: '▾'; margin-left: auto; color: var(--texto-suave); transition: transform 0.2s; }
+.fichas-panel[open] summary::after { transform: rotate(180deg); }
+.ficha-muestra { display: inline-flex; width: 28px; height: 28px; }
+.ficha-muestra .ficha { width: 100%; }
+.fichas-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; }
+.ficha-opcion {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px;
+  background: var(--papel); border: 3px solid transparent; border-radius: 12px; color: #3c140a; font-size: 11px; font-weight: 800;
 }
-@keyframes frijol { from { transform: translate(-50%, -50%) scale(0.3); } }
-.jugar-ayuda { margin-top: 12px; text-align: center; }
+.ficha-opcion .ficha-muestra { width: 40px; height: 40px; }
+.ficha-opcion.activa { border-color: var(--oro); box-shadow: 0 0 0 2px rgba(249, 199, 79, 0.35); }
+.ficha-opcion-nombre { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ficha-editor { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--borde); padding-top: 12px; }
+.ficha-editor [hidden] { display: none !important; }
+.colores { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.colores-muestras { display: flex; gap: 6px; flex-wrap: wrap; }
+.colores-muestras button { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.35); }
+.colores-muestras button.activo { outline: 3px solid var(--oro); outline-offset: 2px; }
+.colores input[type='color'] { width: 44px; height: 34px; padding: 0; border: 2px solid rgba(255, 255, 255, 0.25); border-radius: 8px; background: none; cursor: pointer; }
+input[type='range'] { accent-color: var(--oro); width: 100%; }
+.ficha-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
 #jugar-contenido[hidden] { display: none; }
 
 /* ── Ventana compartir ──────────────────────────── */

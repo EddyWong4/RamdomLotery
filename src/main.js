@@ -8,6 +8,7 @@ import * as almacen from './almacen.js';
 import { registrarVista, iniciarRutas } from './rutas.js';
 import { iniciarJugador, vistaJugar, refrescarJugador } from './jugador.js';
 import { iniciarCompartir, abrirCompartir } from './compartir.js';
+import { MAX_TABLEROS_JUGADOR } from './enlaces.js';
 import { crearRespaldo, validarRespaldo, combinarDatos, traeDatosActuales } from './respaldo.js';
 import { iniciarPwa } from './pwa.js';
 import { agregarTablero, eliminarTablero, puedeAgregar, tablerosGenerados, tablerosEliminados } from './juego.js';
@@ -73,6 +74,7 @@ const el = {
   btnSelTodos: $('#btn-sel-todos'),
   btnSelNinguno: $('#btn-sel-ninguno'),
   btnGuardar: $('#btn-guardar'),
+  btnCompartirSeleccion: $('#btn-compartir-seleccion'),
   vacio: $('#vacio'),
   tableros: $('#tableros'),
   masTableros: $('#mas-tableros'),
@@ -169,6 +171,10 @@ function pintarPanelPdf() {
 
   const hayTableros = tablerosAImprimir().length > 0;
   el.btnVerPdf.disabled = !hayTableros || estado.ocupado;
+  el.btnCompartirSeleccion.disabled = seleccionados === 0 || seleccionados > MAX_TABLEROS_JUGADOR;
+  el.btnCompartirSeleccion.title = seleccionados > MAX_TABLEROS_JUGADOR
+    ? `Se pueden compartir hasta ${MAX_TABLEROS_JUGADOR} tableros juntos`
+    : 'Un solo link / QR para jugar los tableros seleccionados en el celular';
   el.btnDescargarPdf.disabled = !hayTableros || estado.ocupado;
   el.btnBaraja.disabled = estado.ocupado;
 
@@ -824,6 +830,10 @@ function conectarEventos() {
   });
   el.btnSelNinguno.addEventListener('click', () => { estado.seleccion.clear(); actualizarSeleccionVisual(); });
   el.btnGuardar.addEventListener('click', guardarJuegoEnLista);
+  el.btnCompartirSeleccion.addEventListener('click', () => {
+    const numeros = estado.juego.tableros.map((t) => t.numero).filter((n) => estado.seleccion.has(n));
+    if (numeros.length) abrirCompartir(estado.juego, numeros);
+  });
 
   el.listaJuegos.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-accion]');
@@ -854,7 +864,7 @@ pintarFormulario();
 pintarJuegosGuardados();
 conectarEventos();
 iniciarCantador();
-iniciarJugador();
+iniciarJugador(avisar);
 iniciarCompartir();
 registrarVista('tableros');
 registrarVista('cantar', vistaCantar);

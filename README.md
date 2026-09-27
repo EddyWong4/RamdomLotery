@@ -30,9 +30,14 @@ Se recomiendan al menos ~20 victorias esperadas por tablero (p. ej. 1,000 partid
 El **verificador** revisa un tablero del juego actual (llena, línea o esquinas) contra las cartas cantadas, resalta las casillas
 y puede revisar todos los tableros para saber quién ya ganó.
 
-**Tableros en el celular:** el botón 📱 de cada tablero muestra un link y un código QR (`#/jugar?c=…&n=…&k=…&t=…`).
-El celular vuelve a generar el mismo tablero a partir del código del juego (sin servidor) y el jugador marca las cartas tocándolas;
-las marcas se guardan en su navegador. Con carta doble, tocarla marca sus dos casillas.
+**Tableros en el celular:** el botón 📱 de cada tablero (o *Compartir seleccionados*) muestra un link y un código QR
+(`#/jugar?c=…&n=…&k=…&t=3,7,12`) con uno o varios tableros (hasta 12). El celular los vuelve a generar a partir del código del
+juego (sin servidor). El jugador puede agregar o quitar tableros del mismo juego, marca las cartas tocándolas y, si quiere, la carta
+se marca en todos sus tableros a la vez. Las marcas se guardan en su navegador.
+
+**Fichas:** círculo (predeterminado), frijol, corcholata, moneda, tache, palomita, estrella, emoji o una imagen propia, con color,
+tamaño y opacidad a elegir (`src/fichas.js`). Se pueden crear varias, **exportar e importar** en un archivo `.json`
+(se validan al importar y no se duplican) y también viajan en el respaldo general.
 
 **Respaldo:** descarga un archivo `.json` con los juegos guardados, preferencias, partida del cantador, marcas de tableros
 y, opcionalmente, las imágenes cargadas. Al restaurarlo se agregan los juegos sin borrar los existentes; el juego actual y las
@@ -104,8 +109,11 @@ src/
   cantador.js    vista Cantar: cantador y verificador
   rutas.js       navegación entre vistas (#/, #/cantar, #/jugar)
   enlaces.js     links reproducibles de tableros
-  jugador.js     vista Jugar: tablero en el celular
+  jugador.js     vista Jugar: uno o varios tableros en el celular
   compartir.js   ventana con link y código QR
+  fichas.js      tipos de ficha, dibujo SVG, validación y archivo de fichas
+  mis-fichas.js  fichas guardadas del usuario y ficha activa
+  panel-fichas.js panel para elegir / personalizar / exportar / importar fichas
   juego.js       agregar / eliminar tableros de un juego
   respaldo.js    formato, validación y combinación de respaldos
   pwa.js         service worker y aviso de nueva versión

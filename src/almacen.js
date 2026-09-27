@@ -58,6 +58,14 @@ export function guardarMarcas(clave, indices) {
   return escribir('marcas', todas);
 }
 
+// Fichas (marcadores) del jugador y preferencias de la vista Jugar
+export const cargarFichas = () => leer('fichas', null);
+export const guardarFichas = (fichas) => escribir('fichas', fichas);
+export const cargarFichaActiva = () => leer('ficha-activa', null);
+export const guardarFichaActiva = (id) => escribir('ficha-activa', id);
+export const cargarPreferenciasJugador = (porDefecto) => ({ ...porDefecto, ...leer('jugador', {}) });
+export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
+
 export const cargarPartida = () => leer('partida', null);
 export const guardarPartida = (partida) => escribir('partida', partida);
 

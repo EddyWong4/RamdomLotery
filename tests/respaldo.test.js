@@ -60,6 +60,14 @@ describe('respaldo', () => {
       expect(resumen.reemplazados).toEqual(['preferencias', 'juego-actual']);
     });
 
+    it('agrega las fichas del respaldo sin perder las propias', () => {
+      const mia = { id: 'mia', nombre: 'Mía', tipo: 'estrella', color: '#123456', tamano: 60, opacidad: 1 };
+      const suya = { id: 'suya', nombre: 'Suya', tipo: 'emoji', emoji: '🌽', tamano: 70, opacidad: 1 };
+      const { datos, resumen } = combinarDatos({ fichas: [mia] }, { fichas: [suya, { tipo: 'invalida' }] });
+      expect(datos.fichas.map((f) => f.id)).toEqual(['predeterminada', 'mia', 'suya']);
+      expect(resumen.fichasNuevas).toBe(1);
+    });
+
     it('detecta si el respaldo trae datos actuales', () => {
       expect(traeDatosActuales(respaldo)).toBe(true);
       expect(traeDatosActuales({ juegos: [] })).toBe(false);

@@ -3,6 +3,8 @@ import { CARTAS, cartaPorId } from './cartas.js';
 import * as almacen from './almacen.js';
 import * as imagenes from './imagenes.js';
 import { MODOS, verificarTablero } from './reglas.js';
+import { svgFicha } from './fichas.js';
+import { fichaActiva } from './mis-fichas.js';
 import { nuevaPartida, siguiente, anterior, cartasCantadas, cartaActual, terminada, esPartidaValida } from './partida.js';
 
 const PREFS_INICIALES = { intervalo: 5, voz: false, modo: 'llena' };
@@ -172,9 +174,10 @@ function verificar(numero = Number(el.numero.value)) {
         : `Le faltan <b>${r.faltan.length}</b> cartas.`) +
       '</p>';
 
+  const ficha = svgFicha(fichaActiva());
   const casillas = tablero.cartas.map((id, i) => {
     const clase = ['verificar-casilla', marcadas.has(i) ? 'marcada' : '', ganadoras.has(i) ? 'ganadora' : ''].filter(Boolean).join(' ');
-    return `<div class="${clase}">${cartaHtml(id)}</div>`;
+    return `<div class="${clase}">${cartaHtml(id)}${marcadas.has(i) ? `<span class="ficha-capa">${ficha}</span>` : ''}</div>`;
   }).join('');
 
   el.resultado.innerHTML = `${estado}<div class="verificar-tablero" style="grid-template-columns:repeat(${n},1fr)">${casillas}</div>`;

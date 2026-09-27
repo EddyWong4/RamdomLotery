@@ -86,29 +86,79 @@
     </aside>
   </main>
 
-  <!-- ═══ Vista: Jugar (un tablero en el celular, abierto desde un link) ═══ -->
+  <!-- ═══ Vista: Jugar (uno o varios tableros en el celular, abiertos desde un link) ═══ -->
   <main class="jugar" data-vista="jugar" hidden>
     <div id="jugar-error" class="tarjeta" hidden>
       <h2>Link no válido</h2>
       <p class="ayuda">Este link de tablero está incompleto o dañado. Pide a quien organiza el juego que te lo comparta de nuevo.</p>
     </div>
     <div id="jugar-contenido">
-      <div class="jugar-cabecera">
-        <div>
-          <h2 id="jugar-titulo"></h2>
-          <p class="ayuda" id="jugar-detalle"></p>
+      <section class="tarjeta jugar-barra">
+        <div class="jugar-cabecera">
+          <div>
+            <h2 id="jugar-titulo">Mis tableros</h2>
+            <p class="ayuda" id="jugar-detalle"></p>
+          </div>
+          <button type="button" id="btn-limpiar-marcas" class="btn-chico">Limpiar marcas</button>
         </div>
-        <button type="button" id="btn-limpiar-marcas" class="btn-chico">Limpiar marcas</button>
-      </div>
-      <div id="jugar-tablero" class="jugar-tablero"></div>
-      <p class="ayuda jugar-ayuda" id="jugar-ayuda">Toca una carta cuando la canten para ponerle un frijolito. Tócala otra vez para quitarlo.</p>
+        <div class="jugar-agregar">
+          <label class="campo">
+            <span>Jugar con otro tablero del mismo juego</span>
+            <div class="con-boton">
+              <input id="jugar-agregar-numero" type="number" min="1" inputmode="numeric" placeholder="Nº de tablero" />
+              <button type="button" id="btn-jugar-agregar" class="btn-principal">+ Tablero</button>
+            </div>
+          </label>
+        </div>
+        <label class="check"><input type="checkbox" id="marcar-todos" /> Al tocar una carta, marcarla en todos mis tableros</label>
+      </section>
+
+      <details class="tarjeta fichas-panel" id="fichas-panel">
+        <summary><span>🎯 Ficha:</span> <span id="ficha-actual-muestra" class="ficha-muestra"></span> <b id="ficha-actual-nombre"></b></summary>
+        <div id="fichas-lista" class="fichas-lista" role="radiogroup" aria-label="Fichas"></div>
+
+        <div class="ficha-editor">
+          <div class="fila-campos">
+            <label class="campo"><span>Nombre</span><input id="ficha-nombre" type="text" maxlength="30" /></label>
+            <label class="campo"><span>Tipo</span><select id="ficha-tipo"></select></label>
+          </div>
+          <div class="campo" id="ficha-campo-color">
+            <span>Color</span>
+            <div class="colores">
+              <div id="ficha-colores" class="colores-muestras"></div>
+              <input id="ficha-color" type="color" aria-label="Otro color" title="Otro color" />
+            </div>
+          </div>
+          <label class="campo" id="ficha-campo-emoji"><span>Emoji</span><input id="ficha-emoji" type="text" maxlength="8" placeholder="🌽" /></label>
+          <div class="campo" id="ficha-campo-imagen">
+            <span>Imagen (PNG con fondo transparente se ve mejor)</span>
+            <label class="btn-secundario btn-archivo">Elegir imagen…<input id="ficha-imagen" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden /></label>
+          </div>
+          <div class="fila-campos">
+            <label class="campo"><span>Tamaño <b id="ficha-tamano-valor"></b></span><input id="ficha-tamano" type="range" min="30" max="100" step="5" /></label>
+            <label class="campo"><span>Opacidad <b id="ficha-opacidad-valor"></b></span><input id="ficha-opacidad" type="range" min="20" max="100" step="5" /></label>
+          </div>
+          <div class="ficha-acciones">
+            <button type="button" id="btn-ficha-nueva" class="btn-chico">+ Nueva ficha</button>
+            <button type="button" id="btn-ficha-eliminar" class="btn-chico">Eliminar esta ficha</button>
+          </div>
+        </div>
+
+        <div class="botones-iguales">
+          <button type="button" id="btn-fichas-exportar" class="btn-secundario">Exportar fichas</button>
+          <label class="btn-secundario btn-archivo">Importar fichas…<input id="input-fichas" type="file" accept=".json,application/json" hidden /></label>
+        </div>
+      </details>
+
+      <div id="jugar-tableros" class="jugar-tableros"></div>
+      <p class="ayuda jugar-ayuda" id="jugar-ayuda"></p>
     </div>
   </main>
 
   <dialog id="dialogo-compartir" class="dialogo">
     <form method="dialog" class="dialogo-contenido">
       <h2 id="compartir-titulo">Compartir tablero</h2>
-      <p class="ayuda">El jugador abre este link o escanea el código con la cámara del celular para jugar el tablero en pantalla.</p>
+      <p class="ayuda">El jugador abre este link o escanea el código con la cámara del celular para jugar en pantalla. Desde ahí puede agregar más tableros y elegir su ficha.</p>
       <div id="compartir-qr" class="compartir-qr" aria-label="Código QR del tablero"></div>
       <input id="compartir-enlace" type="text" readonly aria-label="Link del tablero" />
       <div class="botones-iguales">
@@ -267,6 +317,7 @@
         <div class="acciones">
           <button type="button" id="btn-sel-todos" class="btn-chico">Seleccionar todos</button>
           <button type="button" id="btn-sel-ninguno" class="btn-chico">Quitar selección</button>
+          <button type="button" id="btn-compartir-seleccion" class="btn-chico" title="Un solo link / QR para jugar los tableros seleccionados en el celular">📱 Compartir seleccionados</button>
           <button type="button" id="btn-guardar" class="btn-chico destacado">Guardar juego</button>
         </div>
       </div>
