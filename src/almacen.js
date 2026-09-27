@@ -30,6 +30,12 @@ export const guardarJuegoActual = (juego) => escribir('juego-actual', juego);
 
 export const listarJuegos = () => leer('juegos', []);
 
+export const cargarPartida = () => leer('partida', null);
+export const guardarPartida = (partida) => escribir('partida', partida);
+
+export const cargarPreferenciasCantador = (porDefecto) => ({ ...porDefecto, ...leer('cantador', {}) });
+export const guardarPreferenciasCantador = (prefs) => escribir('cantador', prefs);
+
 export function guardarJuego(juego) {
   const juegos = listarJuegos().filter((j) => j.id !== juego.id);
   juegos.unshift(juego);

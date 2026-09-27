@@ -13,9 +13,78 @@
 <body>
   <header class="encabezado">
     <h1>Lotería <span>Generador de tableros</span></h1>
+    <nav class="navegacion" aria-label="Secciones">
+      <a href="#/" data-ruta="tableros">🃏 Tableros</a>
+      <a href="#/cantar" data-ruta="cantar">📣 Cantar</a>
+    </nav>
   </header>
 
-  <main class="contenedor">
+  <!-- ═══ Vista: Cantar (cantador + verificador) ═══ -->
+  <main class="contenedor cantador" data-vista="cantar" hidden>
+    <section class="tarjeta escenario">
+      <div class="escenario-cabecera">
+        <h2 id="cantador-progreso">Carta 0 de 54</h2>
+        <span class="ayuda" id="cantador-codigo"></span>
+      </div>
+
+      <div class="carta-grande" id="carta-grande" aria-live="polite"></div>
+      <p class="carta-grande-nombre" id="carta-grande-nombre"></p>
+
+      <div class="escenario-botones">
+        <button type="button" id="btn-anterior" class="btn-secundario" title="Atajo: flecha izquierda">◀ Anterior</button>
+        <button type="button" id="btn-siguiente" class="btn-principal btn-grande" title="Atajo: espacio o flecha derecha">Siguiente carta ▶</button>
+      </div>
+
+      <div class="escenario-opciones">
+        <button type="button" id="btn-automatico" class="btn-chico">▶ Automático</button>
+        <label class="campo-en-linea">cada
+          <select id="intervalo">
+            <option value="3">3 s</option>
+            <option value="5">5 s</option>
+            <option value="8">8 s</option>
+            <option value="10">10 s</option>
+            <option value="15">15 s</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" id="voz" /> Decir en voz alta</label>
+        <button type="button" id="btn-nueva-partida" class="btn-chico destacado">Nueva partida</button>
+      </div>
+      <p class="ayuda">Atajos de teclado: <b>espacio</b> o <b>→</b> siguiente carta · <b>←</b> anterior.</p>
+    </section>
+
+    <aside class="cantador-lateral">
+      <section class="tarjeta">
+        <h2>Verificar un tablero</h2>
+        <p class="ayuda" id="verificar-ayuda"></p>
+        <div class="fila-campos alinear-fin">
+          <label class="campo">
+            <span>Nº de tablero</span>
+            <input id="verificar-numero" type="number" min="1" inputmode="numeric" placeholder="Ej. 12" />
+          </label>
+          <button type="button" id="btn-verificar" class="btn-principal">Verificar</button>
+        </div>
+        <div class="campo">
+          <span>Forma de ganar</span>
+          <div class="segmentado" id="verificar-modo">
+            <button type="button" data-valor="llena">Llena</button>
+            <button type="button" data-valor="linea">Línea</button>
+            <button type="button" data-valor="esquinas">Esquinas</button>
+          </div>
+        </div>
+        <div id="verificar-resultado" class="verificar-resultado" aria-live="polite"></div>
+        <button type="button" id="btn-revisar-todos" class="btn-enlace">¿Quién ya ganó? Revisar todos los tableros</button>
+        <div id="revisar-resultado" class="ayuda"></div>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Cartas cantadas <span id="cantadas-cuenta"></span></h2>
+        <div id="historial" class="historial"></div>
+      </section>
+    </aside>
+  </main>
+
+  <!-- ═══ Vista: Tableros (generar, imprimir, simular) ═══ -->
+  <main class="contenedor" data-vista="tableros">
     <aside class="panel-lateral">
       <!-- Imágenes de las cartas (solo cuando la app no las incluye) -->
       <section class="tarjeta" id="panel-imagenes" hidden>

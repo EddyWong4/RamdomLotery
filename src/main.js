@@ -5,6 +5,8 @@ import { simular, MODOS, JUGADAS } from './simulador.js';
 import * as imagenes from './imagenes.js';
 import { POSICION_ALEATORIA, posicionesDisponibles, indicesDoble, nombrePosicion } from './posiciones.js';
 import * as almacen from './almacen.js';
+import { registrarVista, iniciarRutas } from './rutas.js';
+import { iniciarCantador, vistaCantar, refrescarCantador } from './cantador.js';
 
 const PREFERENCIAS_INICIALES = {
   tamano: 4,
@@ -699,8 +701,13 @@ pintarVersion();
 pintarFormulario();
 pintarJuegosGuardados();
 conectarEventos();
+iniciarCantador();
+registrarVista('tableros');
+registrarVista('cantar', vistaCantar);
+iniciarRutas();
 // Los tableros se pintan cuando se sabe de dónde salen las imágenes (incluidas, guardadas o ninguna)
 imagenes.iniciarImagenes().finally(() => {
   pintarPanelImagenes();
   pintarTableros();
+  refrescarCantador();
 });

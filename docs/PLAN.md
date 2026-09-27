@@ -27,7 +27,7 @@ Objetivo: agregar el modo de juego completo **sin perder nada de lo que ya funci
 | Fase | Versión | Qué | Estado |
 |---|---|---|---|
 | 0 | 1.1.1 | Pruebas automáticas (Vitest) + pruebas en CI | ✅ |
-| 1 | 1.2.0 | Modo **Cantador** + **Verificador de ganador** | ⏳ |
+| 1 | 1.2.0 | Modo **Cantador** + **Verificador de ganador** | ✅ |
 | 2 | 1.3.0 | **Tableros en el celular** (link / QR, marcar cartas tocando) | ⏳ |
 | 3 | 1.4.0 | **Respaldo**: exportar / importar juegos, preferencias e imágenes | ⏳ |
 | 4 | 1.5.0 | **Sin internet (PWA)**: funciona offline e instalable | ⏳ |

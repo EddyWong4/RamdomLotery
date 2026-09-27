@@ -40,6 +40,8 @@ async function transaccion(modo, trabajo) {
 }
 
 function registrar(id, datos) {
+  const anterior = guardadas.get(id);
+  if (anterior?.urlGrande) URL.revokeObjectURL(anterior.urlGrande);
   guardadas.set(id, datos);
   if (urlsMiniatura.has(id)) URL.revokeObjectURL(urlsMiniatura.get(id));
   urlsMiniatura.set(id, URL.createObjectURL(datos.miniatura));
@@ -91,6 +93,15 @@ export function cartasSinImagen() {
 export function urlMiniatura(id) {
   if (fuente === 'incluidas') return cartaPorId(id).miniatura;
   return urlsMiniatura.get(id) ?? null;
+}
+
+/** URL de la imagen grande (para el cantador), o null si la carta no tiene imagen. */
+export function urlImagen(id) {
+  if (fuente === 'incluidas') return cartaPorId(id).imagen;
+  const datos = guardadas.get(id);
+  if (!datos) return null;
+  if (!datos.urlGrande) datos.urlGrande = URL.createObjectURL(datos.imagen);
+  return datos.urlGrande;
 }
 
 /** Bytes JPEG para el PDF, o null si la carta no tiene imagen. */
@@ -191,6 +202,7 @@ export async function borrarImagenes() {
   await transaccion('readwrite', (almacen) => almacen.clear());
   urlsMiniatura.forEach((url) => URL.revokeObjectURL(url));
   urlsMiniatura.clear();
+  guardadas.forEach((d) => d.urlGrande && URL.revokeObjectURL(d.urlGrande));
   guardadas.clear();
   cacheBytes.clear();
   if (fuente !== 'incluidas') fuente = 'ninguna';

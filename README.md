@@ -21,6 +21,11 @@ Las esquinas centrales y los pares solo existen en 4×4 y 5×5; en 5×5 el “pa
 Una prueba de chi-cuadrada indica si las diferencias son normales del azar o si algún tablero tiene ventaja real.
 Se recomiendan al menos ~20 victorias esperadas por tablero (p. ej. 1,000 partidas para 10–50 tableros).
 
+**Cantador** (sección *Cantar*, `#/cantar`): canta las 54 cartas en orden aleatorio, una por una o en automático
+(cada 3–15 s), con voz opcional del navegador. Muestra el historial de cartas cantadas y la partida se conserva al recargar.
+El **verificador** revisa un tablero del juego actual (llena, línea o esquinas) contra las cartas cantadas, resalta las casillas
+y puede revisar todos los tableros para saber quién ya ganó.
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) 18 o superior.
@@ -29,6 +34,7 @@ Requiere [Node.js](https://nodejs.org) 18 o superior.
 npm install
 npm run dev          # abre http://localhost:5173
 npm run build        # genera la carpeta dist/ para publicar en cualquier hosting estático
+npm test             # pruebas automáticas (Vitest)
 ```
 
 ## Imágenes de las cartas
@@ -77,9 +83,15 @@ src/
   generador.js   algoritmo de tableros (aleatorio con semilla)
   posiciones.js  posiciones de la carta doble
   simulador.js   simulación de partidas y prueba de equidad
+  reglas.js      formas de ganar y verificación de un tablero
+  partida.js     baraja del cantador (con semilla)
+  cantador.js    vista Cantar: cantador y verificador
+  rutas.js       navegación entre vistas (#/, #/cantar)
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)
   main.js        interfaz
 scripts/preparar-imagenes.ps1   renombra y redimensiona las imágenes
+tests/                          pruebas automáticas
+docs/PLAN.md                    plan de mejoras
 ```

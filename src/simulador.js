@@ -1,34 +1,9 @@
 import { TOTAL_CARTAS } from './cartas.js';
 import { crearRng } from './generador.js';
+import { MODOS, gruposGanadores } from './reglas.js';
 
+export { MODOS };
 export const JUGADAS = [100, 1000, 10000];
-
-export const MODOS = {
-  llena: { nombre: 'Tabla llena', corto: 'Llena' },
-  linea: { nombre: 'Línea (fila, columna o diagonal)', corto: 'Línea' },
-  esquinas: { nombre: 'Cuatro esquinas', corto: 'Esquinas' },
-};
-
-// Grupos de cartas que un tablero debe completar para ganar (basta con completar uno).
-// Se usan conjuntos: con carta doble, cantarla marca sus dos casillas.
-function gruposGanadores(cartas, modo) {
-  const n = Math.round(Math.sqrt(cartas.length));
-  const celda = (f, c) => cartas[f * n + c];
-  const unicos = (lista) => [...new Set(lista)];
-  const rango = [...Array(n).keys()];
-
-  if (modo === 'llena') return [unicos(cartas)];
-  if (modo === 'esquinas') return [unicos([celda(0, 0), celda(0, n - 1), celda(n - 1, 0), celda(n - 1, n - 1)])];
-
-  const grupos = [];
-  rango.forEach((i) => {
-    grupos.push(unicos(rango.map((j) => celda(i, j)))); // fila
-    grupos.push(unicos(rango.map((j) => celda(j, i)))); // columna
-  });
-  grupos.push(unicos(rango.map((i) => celda(i, i))));
-  grupos.push(unicos(rango.map((i) => celda(i, n - 1 - i))));
-  return grupos;
-}
 
 // ── Prueba de chi-cuadrada: ¿las diferencias entre tableros son normales del azar? ─
 function normalAcumulada(z) {
