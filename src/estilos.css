@@ -793,7 +793,8 @@ input[type='search']:focus { border-color: var(--oro); }
 .canto-inicio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; text-align: center; font-family: 'Playfair Display', serif; font-weight: 900; font-size: 22px; color: var(--tinta-carta); background: var(--papel-2); }
 .canto-inicio small { font-family: inherit; font-size: 12px; font-weight: 700; color: var(--tinta-carta-suave); }
 .canto-nombre { text-align: center; font-weight: 800; color: var(--texto); min-height: 1.4em; margin: 0; }
-.canto-botones { display: grid; grid-template-columns: auto 1fr; gap: 8px; }
+.canto-botones { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; }
+.canto-botones .btn-icono { min-width: 46px; }
 .canto-opciones { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 14px; }
 .canto-recientes { display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 4px; min-height: 40px; }
 .canto-recientes:empty::before { content: 'Todavía no sale ninguna carta.'; font-size: 13px; color: var(--texto-suave); align-self: center; }
