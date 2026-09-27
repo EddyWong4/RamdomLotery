@@ -28,6 +28,7 @@ const PREFERENCIAS_INICIALES = {
 };
 
 const ANCHO_VISTA = { 2: '190px', 3: '220px', 4: '250px', 5: '280px' };
+const POR_PAGINA = 48; // tableros por página en la vista previa
 
 const $ = (sel) => document.querySelector(sel);
 const el = {
@@ -73,6 +74,7 @@ const el = {
   btnGuardar: $('#btn-guardar'),
   vacio: $('#vacio'),
   tableros: $('#tableros'),
+  masTableros: $('#mas-tableros'),
   aviso: $('#aviso'),
 };
 
@@ -82,6 +84,7 @@ const estado = {
   seleccion: new Set(),
   ocupado: false,
   verTodaLaSimulacion: false,
+  visibles: POR_PAGINA, // tableros mostrados en la vista previa
 };
 if (estado.juego?.seleccion) estado.seleccion = new Set(estado.juego.seleccion);
 
@@ -246,33 +249,64 @@ function pintarTableros() {
   ].filter(Boolean).map((t) => `<span>${t}</span>`).join('');
 
   el.tableros.style.setProperty('--ancho-tablero', ANCHO_VISTA[n]);
-  el.tableros.innerHTML = juego.tableros.map((t) => {
-    const sel = estado.seleccion.has(t.numero);
-    const numero = String(t.numero).padStart(3, '0');
-    const cartas = t.cartas.map((id) => {
-      const c = cartaPorId(id);
-      const doble = id === t.doble?.carta;
-      const titulo = `${id}. ${escapar(c.nombre)}${doble ? ' (doble)' : ''}`;
-      const url = imagenes.urlMiniatura(id);
-      if (!url) return `<div class="carta-vacia${doble ? ' doble' : ''}" title="${titulo}"><b>${id}</b><span>${escapar(c.nombre)}</span></div>`;
-      return `<img src="${url}"${doble ? ' class="doble"' : ''} alt="${escapar(c.nombre)}" title="${titulo}" loading="lazy" decoding="async">`;
-    }).join('');
-    const victorias = victoriasPorTablero.get(t.numero);
-    const campeon = victorias !== undefined && victorias === maxVictorias;
-    return `
-      <article class="tablero${sel ? ' seleccionado' : ''}${campeon ? ' campeon' : ''}" data-numero="${t.numero}">
-        <div class="tablero-cabecera">
-          <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="Seleccionar tablero ${numero}"> Nº ${numero}</label>
-          ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
-          <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
-          <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
-        </div>
-        <div class="tablero-cartas" style="grid-template-columns:repeat(${n},1fr)">${cartas}</div>
-      </article>`;
-  }).join('');
+  const contexto = { n, victoriasPorTablero, maxVictorias };
+  el.tableros.innerHTML = juego.tableros.slice(0, estado.visibles).map((t) => htmlTablero(t, contexto)).join('');
+  pintarMasTableros();
 
   pintarSimulacion();
   pintarPanelPdf();
+}
+
+// Con muchos tableros la vista previa se muestra por partes para no crear miles de imágenes a la vez
+function pintarMasTableros() {
+  const total = estado.juego?.tableros.length ?? 0;
+  const faltan = total - Math.min(estado.visibles, total);
+  el.masTableros.hidden = faltan <= 0;
+  if (faltan <= 0) return;
+  el.masTableros.innerHTML = `
+    <span>Mostrando ${formatoNumero(estado.visibles)} de ${formatoNumero(total)} tableros</span>
+    <button type="button" class="btn-chico destacado" data-mas="pagina">Mostrar ${Math.min(POR_PAGINA, faltan)} más</button>
+    <button type="button" class="btn-chico" data-mas="todos">Mostrar todos</button>`;
+}
+
+function mostrarMasTableros(cuantos) {
+  const juego = estado.juego;
+  const desde = estado.visibles;
+  estado.visibles = Math.min(juego.tableros.length, desde + cuantos);
+  const sim = simulacionVigente();
+  const contexto = {
+    n: juego.tamano,
+    victoriasPorTablero: new Map(sim ? sim.tableros.map((num, i) => [num, sim.victorias[i]]) : []),
+    maxVictorias: sim ? Math.max(...sim.victorias) : -1,
+  };
+  // Se agregan solo los nuevos, sin volver a pintar los que ya están
+  el.tableros.insertAdjacentHTML('beforeend', juego.tableros.slice(desde, estado.visibles).map((t) => htmlTablero(t, contexto)).join(''));
+  pintarMasTableros();
+}
+
+function htmlTablero(t, { n, victoriasPorTablero, maxVictorias }) {
+  const sel = estado.seleccion.has(t.numero);
+  const numero = String(t.numero).padStart(3, '0');
+  const cartas = t.cartas.map((id) => {
+    const c = cartaPorId(id);
+    const doble = id === t.doble?.carta;
+    const titulo = `${id}. ${escapar(c.nombre)}${doble ? ' (doble)' : ''}`;
+    const url = imagenes.urlMiniatura(id);
+    if (!url) return `<div class="carta-vacia${doble ? ' doble' : ''}" title="${titulo}"><b>${id}</b><span>${escapar(c.nombre)}</span></div>`;
+    return `<img src="${url}"${doble ? ' class="doble"' : ''} alt="${escapar(c.nombre)}" title="${titulo}" loading="lazy" decoding="async">`;
+  }).join('');
+  const victorias = victoriasPorTablero.get(t.numero);
+  const campeon = victorias !== undefined && victorias === maxVictorias;
+  return `
+    <article class="tablero${sel ? ' seleccionado' : ''}${campeon ? ' campeon' : ''}" data-numero="${t.numero}">
+      <div class="tablero-cabecera">
+        <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="Seleccionar tablero ${numero}"> Nº ${numero}</label>
+        ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
+        <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
+        <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
+      </div>
+      <div class="tablero-cartas" style="grid-template-columns:repeat(${n},1fr)">${cartas}</div>
+    </article>`;
 }
 
 function actualizarSeleccionVisual() {
@@ -311,6 +345,7 @@ function generar() {
     creado: new Date().toISOString(),
   };
   estado.seleccion = new Set();
+  estado.visibles = POR_PAGINA;
   guardarJuegoActual();
   pintarTableros();
   avisar(`${cantidad} tableros ${p.tamano}×${p.tamano} generados`);
@@ -564,6 +599,7 @@ async function simularPartidas() {
 }
 
 function irATablero(numero) {
+  if (numero > estado.visibles) mostrarMasTableros(Math.ceil((numero - estado.visibles) / POR_PAGINA) * POR_PAGINA);
   const art = el.tableros.querySelector(`.tablero[data-numero="${numero}"]`);
   if (!art) return;
   art.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -662,6 +698,7 @@ function cargarJuego(id) {
   if (!juego) return;
   estado.juego = juego;
   estado.seleccion = new Set(juego.seleccion || []);
+  estado.visibles = POR_PAGINA;
   Object.assign(estado.prefs, { tamano: juego.tamano, cantidad: juego.tableros.length, semilla: juego.semilla, dobles: !!juego.posicionDoble });
   if (juego.posicionDoble) estado.prefs.posicionDoble = juego.posicionDoble;
   guardarPrefs();
@@ -734,6 +771,10 @@ function conectarEventos() {
     if (c) abrirCompartir(estado.juego, Number(c.dataset.compartir));
   });
 
+  el.masTableros.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-mas]');
+    if (b) mostrarMasTableros(b.dataset.mas === 'todos' ? Infinity : POR_PAGINA);
+  });
   el.btnSelTodos.addEventListener('click', () => {
     estado.seleccion = new Set(estado.juego.tableros.map((t) => t.numero));
     estado.prefs.alcance = 'seleccion';

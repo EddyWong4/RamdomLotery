@@ -31,7 +31,7 @@ Objetivo: agregar el modo de juego completo **sin perder nada de lo que ya funci
 | 2 | 1.3.0 | **Tableros en el celular** (link / QR, marcar cartas tocando) | ✅ |
 | 3 | 1.4.0 | **Respaldo**: exportar / importar juegos, preferencias e imágenes | ✅ |
 | 4 | 1.5.0 | **Sin internet (PWA)**: funciona offline e instalable | ✅ |
-| 5 | 1.5.1 | **Rendimiento**: vista previa por páginas con muchos tableros | ⏳ |
+| 5 | 1.5.1 | **Rendimiento**: vista previa por páginas con muchos tableros | ✅ |
 
 ### Fase 0 — Red de seguridad
 - Vitest (MIT). Pruebas de `generador`, `posiciones`, `simulador`, `almacen`, `pdf` (humo: hojas por formato, textos).
