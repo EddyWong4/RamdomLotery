@@ -151,14 +151,17 @@ function pintarCanto() {
   el.cantoNombre.textContent = c ? `${id}. ${c.nombre}` : '';
   el.cantoAnterior.disabled = p.cantadas === 0;
   el.cantoSiguiente.disabled = terminada(p);
-  el.cantoSiguiente.textContent = p.cantadas === 0 ? 'Empezar ▶' : terminada(p) ? 'Se cantaron todas' : 'Siguiente ▶';
-  el.cantoAuto.textContent = canto.automatico() ? '⏸ Pausar' : '▶ Automático';
-  el.cantoAuto.classList.toggle('activo', canto.automatico());
+  el.cantoSiguiente.querySelector('span').textContent = p.cantadas === 0 ? 'Empezar' : terminada(p) ? 'Se cantaron todas' : 'Siguiente';
+  const auto = canto.automatico();
+  el.cantoAuto.setAttribute('aria-pressed', auto);
+  el.cantoAuto.title = auto ? 'Pausar' : 'Automático';
+  el.cantoAuto.setAttribute('aria-label', auto ? 'Pausar el modo automático' : 'Cantar automáticamente');
   const pc = canto.prefs();
-  el.cantoVoz.checked = pc.voz;
+  el.cantoVoz.setAttribute('aria-pressed', !!pc.voz);
   el.cantoVoz.disabled = !('speechSynthesis' in window);
-  el.cantoSonidos.checked = pc.sonidos;
-  el.cantoMarcar.checked = !!prefs.marcarSolas;
+  el.cantoSonidos.setAttribute('aria-pressed', !!pc.sonidos);
+  el.cantoMarcar.setAttribute('aria-pressed', !!prefs.marcarSolas);
+  el.cantoIntervalo.value = String(pc.intervalo);
   const modo = normalizarModo(pc.modo);
   el.cantoModo.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b.dataset.valor === modo));
 
@@ -376,6 +379,7 @@ export function iniciarJugador(funcionAvisar) {
     cantoVoz: $('#canto-voz'),
     cantoSonidos: $('#canto-sonidos'),
     cantoMarcar: $('#canto-marcar'),
+    cantoIntervalo: $('#canto-intervalo'),
     cantoRecientes: $('#canto-recientes'),
     cantoModo: $('#canto-modo'),
     cantoCuenta: $('#canto-cuenta'),
@@ -412,12 +416,16 @@ export function iniciarJugador(funcionAvisar) {
   el.cantoAnterior.addEventListener('click', () => canto.retroceder());
   el.cantoAuto.addEventListener('click', () => canto.alternarAuto());
   $('#canto-nueva').addEventListener('click', nuevaPartidaCanto);
-  el.cantoVoz.addEventListener('change', () => canto.cambiarPreferencia('voz', el.cantoVoz.checked));
-  el.cantoSonidos.addEventListener('change', () => canto.cambiarPreferencia('sonidos', el.cantoSonidos.checked));
-  el.cantoMarcar.addEventListener('change', () => {
-    prefs.marcarSolas = el.cantoMarcar.checked;
+  // Botones que se prenden y apagan (aria-pressed)
+  const pulsado = (b) => b.getAttribute('aria-pressed') !== 'true';
+  el.cantoVoz.addEventListener('click', () => { canto.cambiarPreferencia('voz', pulsado(el.cantoVoz)); pintarCanto(); });
+  el.cantoSonidos.addEventListener('click', () => { canto.cambiarPreferencia('sonidos', pulsado(el.cantoSonidos)); pintarCanto(); });
+  el.cantoMarcar.addEventListener('click', () => {
+    prefs.marcarSolas = pulsado(el.cantoMarcar);
     almacen.guardarPreferenciasJugador(prefs);
+    pintarCanto();
   });
+  el.cantoIntervalo.addEventListener('change', () => canto.cambiarPreferencia('intervalo', Number(el.cantoIntervalo.value)));
   // Safari solo permite el audio después de un toque: cualquier clic en el cantador lo desbloquea (fase de captura)
   el.canto.addEventListener('click', () => canto.despertarAudio(), true);
   el.cantoModo.addEventListener('click', (e) => {

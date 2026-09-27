@@ -371,6 +371,11 @@ export const canto = {
     prefs[clave] = valor;
     guardarPrefs();
     if (clave === 'sonidos' && valor) { despertarAudio(); sonidoInicio(); }
+    // Nuevo tiempo entre cartas: el automático sigue corriendo con el intervalo nuevo (sin cantar una carta extra)
+    if (clave === 'intervalo') {
+      el.intervalo.value = String(valor);
+      if (temporizador) { clearInterval(temporizador); temporizador = setInterval(avanzar, valor * 1000); }
+    }
   },
   despertarAudio,
   alCambiar(fn) { oyentes.add(fn); return () => oyentes.delete(fn); },

@@ -864,6 +864,38 @@ input[type='search']:focus { border-color: var(--oro); }
   .canto-nombre { grid-area: nombre; text-align: left; }
   .canto-botones { grid-area: botones; }
   .canto-opciones { grid-area: opciones; font-size: 13px; display: none; }
+  .jugar-canto .canto-opciones { justify-content: flex-start; }
   .jugar-canto.con-opciones .canto-opciones, .jugar-canto.con-opciones .canto-modos { display: flex; }
   #canto-mas { display: inline-flex; }
 }
+
+/* ── Botones con icono del cantador en Jugar ───── */
+.btn-icono {
+  display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+  min-width: 42px; height: 42px; padding: 0 10px; border-radius: 50px;
+  background: color-mix(in srgb, var(--tinta) 8%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--tinta) 15%, transparent);
+  color: var(--texto); cursor: pointer; font: 700 13px var(--fuente-ui, Nunito), sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-icono svg { width: 20px; height: 20px; flex: none; }
+.btn-icono:hover:not(:disabled) { border-color: var(--oro); }
+.btn-icono:disabled { opacity: 0.4; cursor: default; }
+.btn-icono[aria-pressed='true'] { background: color-mix(in srgb, var(--oro) 20%, transparent); border-color: var(--oro); color: var(--oro); }
+.btn-icono.destacado { color: var(--oro); }
+#canto-auto .icono-pausa, #canto-auto[aria-pressed='true'] .icono-play { display: none; }
+#canto-auto[aria-pressed='true'] .icono-pausa { display: inline-flex; }
+#canto-auto span { display: inline-flex; }
+.canto-intervalo { padding-right: 4px; }
+.canto-intervalo select { background: transparent; border: none; color: inherit; font: inherit; padding: 0 2px; min-height: 0; cursor: pointer; }
+.canto-intervalo select option { color: #222; }
+.btn-con-icono { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn-con-icono svg { width: 20px; height: 20px; }
+.canto-botones .btn-icono { height: auto; min-height: 44px; }
+.jugar-canto .canto-opciones { gap: 6px; justify-content: space-between; }
+/* Una sola fila de iconos en cualquier pantalla */
+.jugar-canto .canto-opciones { flex-wrap: nowrap; gap: 5px; }
+.jugar-canto .canto-opciones .btn-icono { min-width: 0; height: 40px; min-height: 40px; padding: 0 7px; flex: 1 1 auto; }
+.jugar-canto .canto-opciones .btn-icono svg { width: 18px; height: 18px; }
+.jugar-canto .canto-intervalo { gap: 2px; }
+.jugar-canto .canto-intervalo select { min-height: 0; font-size: 14px; }
