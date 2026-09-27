@@ -66,6 +66,10 @@ export const guardarFichaActiva = (id) => escribir('ficha-activa', id);
 export const cargarPreferenciasJugador = (porDefecto) => ({ ...porDefecto, ...leer('jugador', {}) });
 export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
 
+// Último link de tableros abierto en este dispositivo (para la pestaña "Jugar")
+export const cargarUltimoJugar = () => leer('ultimo-jugar', null);
+export const guardarUltimoJugar = (hash) => escribir('ultimo-jugar', hash);
+
 export const cargarPartida = () => leer('partida', null);
 export const guardarPartida = (partida) => escribir('partida', partida);
 

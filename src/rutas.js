@@ -1,11 +1,11 @@
 // Navegación entre vistas con el hash de la URL (#/, #/cantar, #/jugar?...): funciona en GitHub Pages sin servidor.
 
-const vistas = new Map(); // nombre -> { alEntrar, alSalir }
+const vistas = new Map(); // nombre -> { alEntrar, alSalir, titulo }
 let actual = null;
 
 /** Registra una vista: su <main data-vista="nombre"> se muestra cuando la ruta coincide. */
-export function registrarVista(nombre, { alEntrar, alSalir } = {}) {
-  vistas.set(nombre, { alEntrar, alSalir });
+export function registrarVista(nombre, { alEntrar, alSalir, titulo = '' } = {}) {
+  vistas.set(nombre, { alEntrar, alSalir, titulo });
 }
 
 /** Ruta actual: { nombre, parametros: URLSearchParams } */
@@ -26,6 +26,10 @@ function mostrar() {
     if (activa) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
+
+  // Título de la barra superior en el celular
+  const titulo = document.getElementById('titulo-app');
+  if (titulo) titulo.textContent = vistas.get(nombre)?.titulo ?? '';
 
   const cambio = actual !== nombre;
   actual = nombre;

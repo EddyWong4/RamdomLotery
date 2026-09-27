@@ -5,8 +5,11 @@ import { enlaceTablero } from './enlaces.js';
 const $ = (sel) => document.querySelector(sel);
 let el;
 
-/** Dirección de la app sin el # (funciona igual en localhost y en GitHub Pages). */
-const baseApp = () => location.href.split('#')[0];
+/**
+ * Dirección de la app sin el # ni parámetros (funciona igual en localhost y en GitHub Pages).
+ * Sin parámetros: un "?plataforma=…" de prueba no debe viajar en el link al celular de otro.
+ */
+const baseApp = () => `${location.origin}${location.pathname}`;
 
 function codigoQr(texto) {
   const qr = qrcode(0, 'M');

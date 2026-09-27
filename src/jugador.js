@@ -37,6 +37,7 @@ function actualizarUrl() {
   const p = new URLSearchParams({ c: datos.semilla, n: datos.tamano, k: datos.cantidad, t: numeros.join(',') });
   if (datos.posicionDoble) p.set('d', datos.posicionDoble);
   history.replaceState(null, '', `#/jugar?${p}`);
+  recordarUltimoJugar(`#/jugar?${p}`);
 }
 
 // ── Pintado ──────────────────────────────────────────────────────────────────
@@ -165,7 +166,21 @@ function limpiar() {
 }
 
 // ── Inicio ───────────────────────────────────────────────────────────────────
+// La pestaña "Jugar" (celular) aparece cuando ya se abrió un link de tableros y lleva al último
+function recordarUltimoJugar(hash) {
+  almacen.guardarUltimoJugar(hash);
+  pintarPestanaJugar(hash);
+}
+
+function pintarPestanaJugar(hash = almacen.cargarUltimoJugar()) {
+  const pestana = document.getElementById('pestana-jugar');
+  if (!pestana) return;
+  pestana.hidden = !hash;
+  if (hash) pestana.href = hash;
+}
+
 export function iniciarJugador(funcionAvisar) {
+  pintarPestanaJugar();
   avisar = funcionAvisar;
   el = {
     error: $('#jugar-error'),
@@ -220,8 +235,10 @@ export const vistaJugar = {
         marcas: new Map(datos.numeros.map((n) => [n, cargarMarcas(datos, n)])),
       };
     }
+    recordarUltimoJugar(location.hash);
     pintar();
   },
+  titulo: 'Jugar',
 };
 
 export function refrescarJugador() {

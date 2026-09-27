@@ -45,6 +45,12 @@ tamaño y opacidad a elegir (`src/fichas.js`). Se pueden crear varias, **exporta
 y, opcionalmente, las imágenes cargadas. Al restaurarlo se agregan los juegos sin borrar los existentes; el juego actual y las
 preferencias solo se reemplazan si el usuario lo confirma.
 
+**Aspecto de app nativa:** en el celular la app se adapta al dispositivo (`src/plataforma.js` + `src/nativo.css`): barra superior
+fija, barra de pestañas abajo (Tableros, Cantar, Jugar), respeto del notch, interruptores y ventanas que suben desde abajo.
+En iPhone/iPad usa el estilo iOS (San Francisco, barras translúcidas, control segmentado) y en Android el estilo Material 3
+(Roboto, indicador en píldora, snackbar); en la computadora no cambia. Se conservan los colores de la lotería.
+Para probar otro estilo: `?plataforma=ios`, `android` o `escritorio` en la dirección.
+
 **Sin internet (PWA):** después de la primera visita la app funciona sin conexión y se puede instalar en el celular o la
 computadora ("Agregar a pantalla de inicio" / "Instalar"). Cuando se publica una versión nueva aparece un aviso para actualizar.
 
@@ -120,6 +126,8 @@ src/
   juego.js       agregar / eliminar tableros de un juego
   respaldo.js    formato, validación y combinación de respaldos
   pwa.js         service worker y aviso de nueva versión
+  plataforma.js  detección de iOS / Android / escritorio
+  nativo.css     estilos de app nativa en el celular
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)

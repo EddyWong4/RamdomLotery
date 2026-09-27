@@ -1,4 +1,8 @@
+import { aplicarPlataforma } from './plataforma.js';
 import { cartaPorId } from './cartas.js';
+
+// Lo primero: marcar el dispositivo (iOS / Android / escritorio) para que el CSS lo adapte
+aplicarPlataforma();
 import { generarTableros, semillaAleatoria, MAX_TABLEROS } from './generador.js';
 import { crearPdfTableros, crearPdfBaraja, FORMATOS, PAPELES } from './pdf.js';
 import { simular, MODOS, JUGADAS } from './simulador.js';
@@ -866,7 +870,7 @@ conectarEventos();
 iniciarCantador();
 iniciarJugador(avisar);
 iniciarCompartir();
-registrarVista('tableros');
+registrarVista('tableros', { titulo: 'Tableros' });
 registrarVista('cantar', vistaCantar);
 registrarVista('jugar', vistaJugar);
 iniciarRutas();

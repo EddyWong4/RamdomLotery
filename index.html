@@ -2,18 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Tableros de Lotería</title>
   <meta name="description" content="Genera tableros de Lotería Mexicana de 2x2 a 5x5 y descárgalos en PDF para imprimir." />
   <meta name="theme-color" content="#2d1206" />
+  <!-- Como app instalada: pantalla completa, barra de estado sobre el fondo, nombre corto bajo el ícono -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Lotería" />
+  <meta name="format-detection" content="telephone=no" />
   <link rel="icon" href="/icono.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/estilos.css" />
+  <link rel="stylesheet" href="/src/nativo.css" />
 </head>
 <body>
+  <!-- Computadora: encabezado grande con la navegación arriba -->
   <header class="encabezado">
     <h1>Lotería <span>Generador de tableros</span></h1>
     <nav class="navegacion" aria-label="Secciones">
@@ -21,6 +29,34 @@
       <a href="#/cantar" data-ruta="cantar">📣 Cantar</a>
     </nav>
   </header>
+
+  <!-- Celular: barra superior fija con el título de la sección (estilo iOS o Material según el dispositivo) -->
+  <header class="barra-app" aria-hidden="true">
+    <span class="barra-app-marca">Lotería</span>
+    <span class="barra-app-titulo" id="titulo-app">Tableros</span>
+  </header>
+
+  <!-- Celular: barra de pestañas abajo -->
+  <nav class="barra-pestanas" aria-label="Secciones">
+    <a href="#/" data-ruta="tableros">
+      <span class="pestana-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M12 3v18M4 12h16"/></svg>
+      </span>
+      <span class="pestana-texto">Tableros</span>
+    </a>
+    <a href="#/cantar" data-ruta="cantar">
+      <span class="pestana-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+      </span>
+      <span class="pestana-texto">Cantar</span>
+    </a>
+    <a href="#/jugar" data-ruta="jugar" id="pestana-jugar" hidden>
+      <span class="pestana-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><circle cx="12" cy="11" r="2.4" fill="currentColor" stroke="none"/><path d="M10.5 18.5h3" stroke-linecap="round"/></svg>
+      </span>
+      <span class="pestana-texto">Jugar</span>
+    </a>
+  </nav>
 
   <!-- ═══ Vista: Cantar (cantador + verificador) ═══ -->
   <main class="contenedor cantador" data-vista="cantar" hidden>

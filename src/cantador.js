@@ -331,6 +331,7 @@ export function iniciarCantador() {
 }
 
 export const vistaCantar = {
+  titulo: 'Cantar',
   alEntrar() {
     activa = true;
     pintarTodo();
