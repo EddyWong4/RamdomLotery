@@ -51,6 +51,10 @@ tamaño y opacidad a elegir (`src/fichas.js`). Se pueden crear varias, **exporta
 y, opcionalmente, las imágenes cargadas. Al restaurarlo se agregan los juegos sin borrar los existentes; el juego actual y las
 preferencias solo se reemplazan si el usuario lo confirma.
 
+**Temas de color** (`src/temas.css`, `src/temas.js`): Clásico (predeterminado), Talavera (claro), Cempasúchil, Mesa de juego y
+Papel picado (claro). Se eligen con el botón de la paleta y se recuerdan en el dispositivo. Todos los colores de la interfaz salen de
+variables del tema; una prueba revisa el contraste de texto (WCAG AA ≥ 4.5:1) de cada tema. Los PDF no cambian con el tema.
+
 **Aspecto de app nativa:** en el celular la app se adapta al dispositivo (`src/plataforma.js` + `src/nativo.css`): barra superior
 fija, barra de pestañas abajo (Tableros, Cantar, Jugar), respeto del notch, interruptores y ventanas que suben desde abajo.
 En iPhone/iPad usa el estilo iOS (San Francisco, barras translúcidas, control segmentado) y en Android el estilo Material 3
@@ -137,6 +141,9 @@ src/
   pwa.js         service worker y aviso de nueva versión
   plataforma.js  detección de iOS / Android / escritorio
   nativo.css     estilos de app nativa en el celular
+  temas.css      colores de los 5 temas
+  temas.js       lista de temas, aplicar y recordar
+  panel-temas.js ventana para elegir el tema
   pdf.js         dibujo de tableros y hojas con jsPDF
   almacen.js     persistencia en localStorage
   imagenes.js    imágenes de las cartas (incluidas o cargadas por el usuario en IndexedDB)

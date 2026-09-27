@@ -8,7 +8,7 @@ export const VERSION_FORMATO = 1;
 
 // Datos que se "combinan" (no se pierde nada de lo que ya hay) y los que se reemplazan solo si el usuario lo pide
 const COMBINABLES = ['juegos', 'marcas', 'fichas', 'favoritos'];
-const REEMPLAZABLES = ['preferencias', 'juego-actual', 'partida', 'cantador', 'ficha-activa', 'jugador'];
+const REEMPLAZABLES = ['preferencias', 'juego-actual', 'partida', 'cantador', 'ficha-activa', 'jugador', 'tema'];
 
 export function crearRespaldo(datos, imagenes = null, versionApp = '') {
   const respaldo = { formato: FORMATO, version: VERSION_FORMATO, app: versionApp, fecha: new Date().toISOString(), datos };

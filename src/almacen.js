@@ -66,6 +66,10 @@ export const guardarFichaActiva = (id) => escribir('ficha-activa', id);
 export const cargarPreferenciasJugador = (porDefecto) => ({ ...porDefecto, ...leer('jugador', {}) });
 export const guardarPreferenciasJugador = (prefs) => escribir('jugador', prefs);
 
+// Tema de color elegido
+export const cargarTema = () => leer('tema', null);
+export const guardarTema = (id) => escribir('tema', id);
+
 // Tableros favoritos (hechos a mano o guardados desde un juego)
 export const cargarFavoritos = () => leer('favoritos', []);
 export const guardarFavoritos = (favoritos) => escribir('favoritos', favoritos);

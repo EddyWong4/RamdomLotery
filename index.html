@@ -17,12 +17,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/temas.css" />
   <link rel="stylesheet" href="/src/estilos.css" />
   <link rel="stylesheet" href="/src/nativo.css" />
 </head>
 <body>
   <!-- Computadora: encabezado grande con la navegación arriba -->
   <header class="encabezado">
+    <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
     <h1>Lotería <span>Generador de tableros</span></h1>
     <nav class="navegacion" aria-label="Secciones">
       <a href="#/" data-ruta="tableros">🃏 Tableros</a>
@@ -31,9 +33,10 @@
   </header>
 
   <!-- Celular: barra superior fija con el título de la sección (estilo iOS o Material según el dispositivo) -->
-  <header class="barra-app" aria-hidden="true">
-    <span class="barra-app-marca">Lotería</span>
+  <header class="barra-app">
+    <span class="barra-app-marca" aria-hidden="true">Lotería</span>
     <span class="barra-app-titulo" id="titulo-app">Tableros</span>
+    <button type="button" class="btn-tema" data-abrir-temas aria-label="Tema de color" title="Tema de color"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.7-.9 1.4-1.8-.3-.9.2-1.8 1.2-1.8H17a4 4 0 0 0 4-4c0-5-4-8.4-9-8.4z"/><circle cx="7.5" cy="11" r="1.3" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7.2" r="1.3" fill="currentColor" stroke="none"/><circle cx="15" cy="7.4" r="1.3" fill="currentColor" stroke="none"/></svg></button>
   </header>
 
   <!-- Celular: barra de pestañas abajo -->
@@ -203,6 +206,16 @@
         <a id="btn-abrir-enlace" class="btn-principal btn-archivo" target="_blank" rel="noopener">Abrir</a>
       </div>
       <button type="submit" class="btn-enlace">Cerrar</button>
+    </form>
+  </dialog>
+
+  <!-- Temas de color -->
+  <dialog id="dialogo-temas" class="dialogo dialogo-temas">
+    <form method="dialog" class="dialogo-contenido">
+      <h2>Tema de color</h2>
+      <p class="ayuda">El tema se aplica al momento y se recuerda en este dispositivo. Los PDF se imprimen igual con cualquier tema.</p>
+      <div id="lista-temas" class="lista-temas" role="radiogroup" aria-label="Temas"></div>
+      <button type="submit" class="btn-principal">Listo</button>
     </form>
   </dialog>
 

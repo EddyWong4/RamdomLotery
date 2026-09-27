@@ -1,0 +1,163 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Temas de color. El tema se elige en la app (botón de la paleta) y se guarda en el navegador;
+   src/temas.js lo pone en <html data-tema="…">. "Clásico" es el predeterminado.
+   Las transparencias se calculan con color-mix() a partir de estas variables, así un tema solo
+   define sus colores base.
+
+   Variables:
+   --fondo / --fondo-2 / --fondo-luz   fondo de la página, de ventanas y el brillo de arriba
+   --tarjeta / --borde / --hundido     paneles, sus bordes y fondos "hundidos" (listas, cifras)
+   --oro / --sobre-oro                 color de acento (títulos, elementos activos) y el texto sobre él
+   --rojo / --rojo-2                   botón principal (degradado)
+   --texto / --texto-suave             texto normal y secundario
+   --tinta                             color de los velos y bordes suaves (blanco en temas oscuros)
+   --papel / --papel-2                 tableros y cartas provisionales (siempre claros)
+   --tinta-carta / --tinta-carta-suave / --tinta-papel   tinta sobre el papel
+   --aviso-fondo / --aviso-texto       avisos flotantes
+   --peligro / --aviso-error / --exito estados
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Clásico: café, dorado y rojo (oscuro) */
+:root,
+html[data-tema='clasico'] {
+  color-scheme: dark;
+  --fondo: #2d1206;
+  --fondo-2: #3b1a0c;
+  --fondo-luz: #5c1a0a;
+  --tarjeta: rgba(255, 255, 255, 0.06);
+  --borde: rgba(255, 200, 100, 0.22);
+  --hundido: rgba(0, 0, 0, 0.2);
+  --oro: #f9c74f;
+  --sobre-oro: #3b1a0c;
+  --rojo: #dc2f3f; /* #e63946 original: el blanco encima no llegaba a 4.5:1 */
+  --rojo-2: #c1121f;
+  --texto: #fff6e8;
+  --texto-suave: #cdb8a3;
+  --tinta: #ffffff;
+  --papel: #fffaf0;
+  --papel-2: #f3e6cf;
+  --tinta-carta: #8b1a1a;
+  --tinta-carta-suave: #5a3a2a;
+  --tinta-papel: #3c140a;
+  --aviso-fondo: #1b0a03;
+  --aviso-texto: #fff6e8;
+  --peligro: #e98a8a;
+  --aviso-error: #f2a97b;
+  --exito: #9be38f;
+}
+
+/* Talavera: blanco, azul cobalto y amarillo ocre (claro) */
+html[data-tema='talavera'] {
+  color-scheme: light;
+  --fondo: #f3f6fb;
+  --fondo-2: #ffffff;
+  --fondo-luz: #d6e2f5;
+  --tarjeta: #ffffff;
+  --borde: #c9d6ee;
+  --hundido: rgba(29, 64, 175, 0.06);
+  --oro: #b45309;
+  --sobre-oro: #ffffff;
+  --rojo: #1e40af;
+  --rojo-2: #172f7a;
+  --texto: #13213c;
+  --texto-suave: #51607a;
+  --tinta: #0b1b3a;
+  --papel: #ffffff;
+  --papel-2: #eef3fb;
+  --tinta-carta: #1e40af;
+  --tinta-carta-suave: #334155;
+  --tinta-papel: #0f1f40;
+  --aviso-fondo: #13213c;
+  --aviso-texto: #ffffff;
+  --peligro: #b91c1c;
+  --aviso-error: #b45309;
+  --exito: #15803d;
+}
+
+/* Cempasúchil: morado noche, naranja cempasúchil y rosa mexicano (oscuro) */
+html[data-tema='cempasuchil'] {
+  color-scheme: dark;
+  --fondo: #1c0f2e;
+  --fondo-2: #2a1742;
+  --fondo-luz: #43205f;
+  --tarjeta: rgba(255, 255, 255, 0.06);
+  --borde: rgba(255, 159, 28, 0.26);
+  --hundido: rgba(0, 0, 0, 0.25);
+  --oro: #ff9f1c;
+  --sobre-oro: #1c0f2e;
+  --rojo: #d81e84;
+  --rojo-2: #a8126a;
+  --texto: #fff4e6;
+  --texto-suave: #c8b6d8;
+  --tinta: #ffffff;
+  --papel: #fff8ef;
+  --papel-2: #f6e7d4;
+  --tinta-carta: #7a1ea1;
+  --tinta-carta-suave: #4a3560;
+  --tinta-papel: #2a1742;
+  --aviso-fondo: #120820;
+  --aviso-texto: #fff4e6;
+  --peligro: #ff8fa3;
+  --aviso-error: #ffb86b;
+  --exito: #8ee6a0;
+}
+
+/* Mesa de juego: verde fieltro, dorado y rojo (oscuro) */
+html[data-tema='mesa'] {
+  color-scheme: dark;
+  --fondo: #0f2a1d;
+  --fondo-2: #163a28;
+  --fondo-luz: #1f5a3c;
+  --tarjeta: rgba(255, 255, 255, 0.06);
+  --borde: rgba(233, 196, 106, 0.26);
+  --hundido: rgba(0, 0, 0, 0.22);
+  --oro: #e9c46a;
+  --sobre-oro: #0f2a1d;
+  --rojo: #d62828;
+  --rojo-2: #a4161a;
+  --texto: #f1faee;
+  --texto-suave: #a8c5b1;
+  --tinta: #ffffff;
+  --papel: #fdfbf4;
+  --papel-2: #eee7d2;
+  --tinta-carta: #7f1d1d;
+  --tinta-carta-suave: #3f4a3c;
+  --tinta-papel: #1b2e22;
+  --aviso-fondo: #08170f;
+  --aviso-texto: #f1faee;
+  --peligro: #f4978e;
+  --aviso-error: #f4b86a;
+  --exito: #9be38f;
+}
+
+/* Papel picado: crema rosado, rosa mexicano y turquesa (claro) */
+html[data-tema='papel-picado'] {
+  color-scheme: light;
+  --fondo: #fff4f7;
+  --fondo-2: #ffffff;
+  --fondo-luz: #ffd3e3;
+  --tarjeta: #ffffff;
+  --borde: #f3c1d3;
+  --hundido: rgba(214, 36, 110, 0.06);
+  --oro: #0e7c86;
+  --sobre-oro: #ffffff;
+  --rojo: #d6246e;
+  --rojo-2: #a8184f;
+  --texto: #2b1020;
+  --texto-suave: #7a5566;
+  --tinta: #3a0f22;
+  --papel: #ffffff;
+  --papel-2: #fdeef3;
+  --tinta-carta: #b3155a;
+  --tinta-carta-suave: #5b3444;
+  --tinta-papel: #2b1020;
+  --aviso-fondo: #2b1020;
+  --aviso-texto: #ffffff;
+  --peligro: #c0263d;
+  --aviso-error: #b45309;
+  --exito: #15803d;
+}
+
+/* En los temas claros las tarjetas llevan una sombra suave para separarse del fondo */
+html[data-tema='talavera'] .tarjeta,
+html[data-tema='papel-picado'] .tarjeta { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.04); }

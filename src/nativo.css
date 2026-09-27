@@ -13,8 +13,8 @@
   --pestanas-alto: 56px;
   --fuente-ui: 'Nunito', system-ui, sans-serif;
   --toque: 44px;
-  --vidrio: rgba(45, 18, 6, 0.82);
-  --linea-vidrio: rgba(255, 200, 100, 0.16);
+  --vidrio: color-mix(in srgb, var(--fondo) 82%, transparent);
+  --linea-vidrio: color-mix(in srgb, var(--oro) 16%, transparent);
 }
 html[data-plataforma='ios'] {
   --fuente-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', system-ui, sans-serif;
@@ -124,7 +124,7 @@ html[data-plataforma='android'] {
     width: 36px;
     height: 5px;
     border-radius: 3px;
-    background: rgba(255, 255, 255, 0.28);
+    background: color-mix(in srgb, var(--tinta) 28%, transparent);
     margin: -6px 0 2px;
   }
   @keyframes subir-hoja { from { transform: translateY(100%); } }
@@ -171,14 +171,14 @@ html[data-plataforma='android'] {
   /* Android (Material 3): 52 × 32, pista con borde cuando está apagado, perilla que crece al encender */
   html[data-plataforma='android'] .check input[type='checkbox'] {
     width: 52px; height: 32px; border-radius: 16px;
-    background: rgba(255, 255, 255, 0.06); border: 2px solid rgba(255, 246, 232, 0.55);
+    background: color-mix(in srgb, var(--tinta) 6%, transparent); border: 2px solid color-mix(in srgb, var(--texto) 55%, transparent);
   }
   html[data-plataforma='android'] .check input[type='checkbox']::before {
-    top: 6px; left: 6px; width: 16px; height: 16px; background: rgba(255, 246, 232, 0.7);
+    top: 6px; left: 6px; width: 16px; height: 16px; background: color-mix(in srgb, var(--texto) 70%, transparent);
   }
   html[data-plataforma='android'] .check input[type='checkbox']:checked { background: var(--oro); border-color: var(--oro); }
   html[data-plataforma='android'] .check input[type='checkbox']:checked::before {
-    top: 2px; left: 2px; width: 24px; height: 24px; background: #3b1a0c; transform: translateX(20px);
+    top: 2px; left: 2px; width: 24px; height: 24px; background: var(--sobre-oro); transform: translateX(20px);
   }
 
   /* ── iOS ───────────────────────────────────────── */
@@ -188,20 +188,20 @@ html[data-plataforma='android'] {
   /* Control segmentado de iOS: una sola cápsula, la opción elegida resalta */
   html[data-plataforma='ios'] .segmentado { background: rgba(118, 118, 128, 0.24); border-radius: 9px; padding: 2px; gap: 2px; }
   html[data-plataforma='ios'] .segmentado button { border: none; border-radius: 7px; background: transparent; color: var(--texto); }
-  html[data-plataforma='ios'] .segmentado button.activo { background: rgba(249, 199, 79, 0.95); color: #3b1a0c; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04); }
+  html[data-plataforma='ios'] .segmentado button.activo { background: var(--oro); color: var(--sobre-oro); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04); }
   html[data-plataforma='ios'] .segmentado button.activo small,
   html[data-plataforma='ios'] .segmentado button.activo b { opacity: 0.8; }
   /* Botones y tarjetas con esquinas y respuesta al toque de iOS */
   html[data-plataforma='ios'] .btn-principal,
   html[data-plataforma='ios'] .btn-secundario { border-radius: 12px; }
   html[data-plataforma='ios'] .btn-principal { box-shadow: none; }
-  html[data-plataforma='ios'] .tarjeta { border-radius: 14px; border-color: transparent; background: rgba(255, 255, 255, 0.07); }
+  html[data-plataforma='ios'] .tarjeta { border-radius: 14px; border-color: transparent; background: color-mix(in srgb, var(--tinta) 7%, transparent); }
   html[data-plataforma='ios'] button:active,
   html[data-plataforma='ios'] .btn-archivo:active,
   html[data-plataforma='ios'] .barra-pestanas a:active { opacity: 0.55; }
   html[data-plataforma='ios'] .tarjeta h2 { font-size: 13px; letter-spacing: 0.4px; color: var(--texto-suave); }
   /* Avisos como en iOS: cápsula compacta con fondo translúcido */
-  html[data-plataforma='ios'] .aviso { border-radius: 14px; border: none; background: rgba(27, 10, 3, 0.9); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+  html[data-plataforma='ios'] .aviso { border-radius: 14px; border: none; background: color-mix(in srgb, var(--aviso-fondo) 90%, transparent); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
 
   /* ── Android (Material 3) ──────────────────────── */
   html[data-plataforma='android'] .barra-app-titulo { font-size: 22px; font-weight: 400; }
@@ -211,12 +211,12 @@ html[data-plataforma='android'] {
   html[data-plataforma='android'] .pestana-icono { width: 64px; height: 32px; border-radius: 16px; transition: background 0.2s; }
   html[data-plataforma='android'] .pestana-icono svg { width: 24px; height: 24px; }
   html[data-plataforma='android'] .barra-pestanas a.activa { color: var(--texto); }
-  html[data-plataforma='android'] .barra-pestanas a.activa .pestana-icono { background: rgba(249, 199, 79, 0.28); color: var(--oro); }
+  html[data-plataforma='android'] .barra-pestanas a.activa .pestana-icono { background: color-mix(in srgb, var(--oro) 28%, transparent); color: var(--oro); }
   /* Botones segmentados de Material: contorno común y opción elegida en tono secundario */
-  html[data-plataforma='android'] .segmentado { gap: 0; border: 1px solid rgba(255, 246, 232, 0.4); border-radius: 22px; overflow: hidden; }
-  html[data-plataforma='android'] .segmentado button { border: none; border-radius: 0; border-left: 1px solid rgba(255, 246, 232, 0.4); background: transparent; color: var(--texto); }
+  html[data-plataforma='android'] .segmentado { gap: 0; border: 1px solid color-mix(in srgb, var(--texto) 40%, transparent); border-radius: 22px; overflow: hidden; }
+  html[data-plataforma='android'] .segmentado button { border: none; border-radius: 0; border-left: 1px solid color-mix(in srgb, var(--texto) 40%, transparent); background: transparent; color: var(--texto); }
   html[data-plataforma='android'] .segmentado button:first-child { border-left: none; }
-  html[data-plataforma='android'] .segmentado button.activo { background: rgba(249, 199, 79, 0.24); color: var(--oro); }
+  html[data-plataforma='android'] .segmentado button.activo { background: color-mix(in srgb, var(--oro) 24%, transparent); color: var(--oro); }
   html[data-plataforma='android'] .btn-principal,
   html[data-plataforma='android'] .btn-secundario { border-radius: 24px; letter-spacing: 0.1px; font-weight: 700; }
   html[data-plataforma='android'] .tarjeta { border-radius: 16px; }
@@ -228,10 +228,10 @@ html[data-plataforma='android'] {
   html[data-plataforma='android'] .aviso {
     left: 12px; right: 12px; max-width: none; transform: translateY(20px);
     border: none; border-radius: 8px; text-align: left; padding: 14px 16px;
-    background: #f5e6d3; color: #2d1206; font-weight: 500; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    background: var(--texto); color: var(--fondo); font-weight: 500; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   }
   html[data-plataforma='android'] .aviso.visible { transform: translateY(0); }
-  html[data-plataforma='android'] .dialogo-contenido::before { width: 32px; height: 4px; background: rgba(255, 255, 255, 0.4); }
+  html[data-plataforma='android'] .dialogo-contenido::before { width: 32px; height: 4px; background: color-mix(in srgb, var(--tinta) 40%, transparent); }
 }
 
 /* Editor de tablero en el celular: hoja de pantalla casi completa */
@@ -241,4 +241,10 @@ html[data-plataforma='android'] {
   .editor-cartas { max-height: 34vh; }
   .editor-tablero { max-width: min(300px, 72vw); }
   input[type='search'] { font-size: 16px; min-height: var(--toque); }
+}
+
+/* Botón de tema en la barra superior del celular */
+@media (max-width: 860px) {
+  .barra-app .btn-tema { margin-left: auto; width: 36px; height: 36px; background: transparent; border: none; }
+  html[data-plataforma='ios'] .barra-app .btn-tema { position: absolute; right: calc(12px + env(safe-area-inset-right)); bottom: 8px; }
 }
