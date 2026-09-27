@@ -1,0 +1,7 @@
+node_modules
+dist
+.claude/
+
+# Imágenes de las cartas: tienen derechos de autor y no se publican.
+# La página publicada pide al usuario cargar las suyas (se guardan en su navegador).
+public/cartas/

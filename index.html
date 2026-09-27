@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tableros de Lotería</title>
+  <meta name="description" content="Genera tableros de Lotería Mexicana de 2x2 a 5x5 y descárgalos en PDF para imprimir." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/estilos.css" />
+</head>
+<body>
+  <header class="encabezado">
+    <h1>Lotería <span>Generador de tableros</span></h1>
+  </header>
+
+  <main class="contenedor">
+    <aside class="panel-lateral">
+      <!-- Imágenes de las cartas (solo cuando la app no las incluye) -->
+      <section class="tarjeta" id="panel-imagenes" hidden>
+        <h2>Imágenes de las cartas</h2>
+        <p class="ayuda" id="estado-imagenes"></p>
+        <div class="botones-iguales">
+          <label class="btn-secundario btn-archivo">Elegir carpeta<input type="file" id="input-carpeta" webkitdirectory multiple hidden /></label>
+          <label class="btn-principal btn-archivo">Elegir archivos<input type="file" id="input-archivos" accept="image/jpeg,image/png,image/webp" multiple hidden /></label>
+        </div>
+        <button type="button" id="btn-borrar-imagenes" class="btn-enlace" hidden>Borrar las imágenes de este navegador</button>
+      </section>
+
+      <!-- 1. Configuración -->
+      <section class="tarjeta">
+        <h2>1 · Crear tableros</h2>
+
+        <div class="campo">
+          <span>Tamaño del tablero</span>
+          <div class="segmentado" id="tamano" role="radiogroup" aria-label="Tamaño del tablero">
+            <button type="button" data-valor="2">2×2<small>4 cartas</small></button>
+            <button type="button" data-valor="3">3×3<small>9 cartas</small></button>
+            <button type="button" data-valor="4">4×4<small>16 cartas</small></button>
+            <button type="button" data-valor="5">5×5<small>25 cartas</small></button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <label class="check"><input type="checkbox" id="dobles" /> Tableros dobles <small class="ayuda">(una carta se repite 2 veces)</small></label>
+          <div class="opcion-doble" id="opcion-doble" hidden>
+            <label class="campo">
+              <span>Posición de la carta doble</span>
+              <select id="posicion-doble"></select>
+            </label>
+            <div class="diagrama-doble" id="diagrama-doble" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="fila-campos">
+          <label class="campo">
+            <span>Cantidad</span>
+            <input id="cantidad" type="number" min="1" max="500" step="1" inputmode="numeric" />
+          </label>
+          <label class="campo">
+            <span>Código del juego</span>
+            <div class="con-boton">
+              <input id="semilla" type="text" maxlength="20" placeholder="Aleatorio" autocomplete="off" />
+              <button type="button" id="btn-semilla" class="icono" title="Código aleatorio" aria-label="Código aleatorio">🎲</button>
+            </div>
+          </label>
+        </div>
+        <p class="ayuda">Con el mismo código, tamaño y cantidad se obtienen exactamente los mismos tableros.</p>
+
+        <button type="button" id="btn-generar" class="btn-principal">Generar tableros</button>
+      </section>
+
+      <!-- 2. Exportar -->
+      <section class="tarjeta" id="panel-pdf">
+        <h2>2 · Imprimir en PDF</h2>
+
+        <div class="campo">
+          <span>¿Qué tableros?</span>
+          <div class="segmentado" id="alcance">
+            <button type="button" data-valor="todos">Todos <b id="cuenta-todos">0</b></button>
+            <button type="button" data-valor="seleccion">Seleccionados <b id="cuenta-seleccion">0</b></button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <span>Tamaño de impresión</span>
+          <div class="segmentado" id="formato">
+            <button type="button" data-valor="grande">Grande<small>1 por hoja · vertical</small></button>
+            <button type="button" data-valor="s">S<small>2 por hoja · horizontal</small></button>
+            <button type="button" data-valor="xs">XS<small>4 por hoja · vertical</small></button>
+          </div>
+        </div>
+
+        <div class="fila-campos alinear-fin">
+          <label class="campo">
+            <span>Papel</span>
+            <select id="papel"></select>
+          </label>
+          <div class="miniatura-hoja" id="miniatura-hoja" aria-hidden="true"></div>
+        </div>
+
+        <label class="check"><input type="checkbox" id="lineas-corte" /> Líneas de corte</label>
+        <label class="check"><input type="checkbox" id="mostrar-pie" /> Mostrar código del juego en el tablero</label>
+
+        <div class="botones">
+          <button type="button" id="btn-ver-pdf" class="btn-secundario">Ver PDF</button>
+          <button type="button" id="btn-descargar-pdf" class="btn-principal">Descargar PDF</button>
+        </div>
+        <button type="button" id="btn-baraja" class="btn-enlace">Descargar las 54 cartas para cantar (PDF)</button>
+      </section>
+
+      <!-- 3. Simulador -->
+      <section class="tarjeta">
+        <h2>3 · Simulador de partidas</h2>
+
+        <div class="campo">
+          <span>Número de partidas</span>
+          <div class="segmentado" id="jugadas">
+            <button type="button" data-valor="100">100</button>
+            <button type="button" data-valor="1000">1,000</button>
+            <button type="button" data-valor="10000">10,000</button>
+          </div>
+        </div>
+
+        <div class="campo">
+          <span>Forma de ganar</span>
+          <div class="segmentado" id="modo">
+            <button type="button" data-valor="llena">Llena<small>todas las cartas</small></button>
+            <button type="button" data-valor="linea">Línea<small>fila, col. o diag.</small></button>
+            <button type="button" data-valor="esquinas">Esquinas<small>las 4</small></button>
+          </div>
+        </div>
+
+        <p class="ayuda" id="ayuda-simulacion"></p>
+        <button type="button" id="btn-simular" class="btn-principal">Simular partidas</button>
+      </section>
+
+      <!-- 4. Juegos guardados -->
+      <section class="tarjeta">
+        <h2>Juegos guardados</h2>
+        <p class="ayuda">Se guardan solo en este navegador.</p>
+        <ul id="lista-juegos" class="lista-juegos"></ul>
+      </section>
+    </aside>
+
+    <section class="resultados">
+      <div class="barra-resultados" id="barra-resultados" hidden>
+        <div class="estadisticas" id="estadisticas"></div>
+        <div class="acciones">
+          <button type="button" id="btn-sel-todos" class="btn-chico">Seleccionar todos</button>
+          <button type="button" id="btn-sel-ninguno" class="btn-chico">Quitar selección</button>
+          <button type="button" id="btn-guardar" class="btn-chico destacado">Guardar juego</button>
+        </div>
+      </div>
+
+      <section id="simulacion" class="panel-simulacion" hidden aria-live="polite"></section>
+
+      <div id="vacio" class="vacio">
+        <div class="vacio-cartas" aria-hidden="true"></div>
+        <p>Elige el tamaño y la cantidad, y presiona <b>Generar tableros</b>.</p>
+      </div>
+
+      <div id="tableros" class="rejilla-tableros"></div>
+    </section>
+  </main>
+
+  <div id="aviso" class="aviso" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
