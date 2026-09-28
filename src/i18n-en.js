@@ -329,6 +329,10 @@ export const EN = {
   'Sonidos': 'Sounds',
   'Decir en voz alta': 'Read aloud',
   'Nueva partida': 'New game',
+  'Modo simple': 'Simple mode',
+  'Solo la carta, las últimas 3 y los controles, en pantalla completa': 'Just the card, the last 3 and the controls, full screen',
+  'Salir del modo simple': 'Exit simple mode',
+  'Últimas 3 cartas cantadas': 'Last 3 called cards',
   'Toca la carta para sacar la siguiente. Atajos: <b>espacio</b> o <b>→</b> siguiente carta · <b>←</b> anterior.':
     'Tap the card to draw the next one. Shortcuts: <b>space</b> or <b>→</b> next card · <b>←</b> previous.',
   'Atajo: flecha izquierda': 'Shortcut: left arrow',

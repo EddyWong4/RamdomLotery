@@ -155,12 +155,29 @@
     </section>
   </main>
 
+  <!-- Modo simple del cantador: pantalla completa, pensado para el celular -->
+  <div id="cantar-simple" class="cantar-simple" hidden role="dialog" aria-modal="true" aria-label="Modo simple">
+    <div class="simple-cabecera">
+      <b id="simple-progreso">Carta 0 de 54</b>
+      <button type="button" id="simple-salir" class="btn-icono" aria-label="Salir del modo simple" title="Salir del modo simple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="simple-carta" id="simple-carta" role="button" tabindex="0" title="Toca la carta para sacar la siguiente"></div>
+    <p class="simple-nombre" id="simple-nombre" aria-live="polite"></p>
+    <div class="simple-recientes" id="simple-recientes" aria-label="Últimas 3 cartas cantadas"></div>
+    <div class="simple-botones">
+      <button type="button" id="simple-anterior" class="btn-icono" aria-label="Carta anterior" title="Carta anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>
+      <button type="button" id="simple-auto" class="btn-icono" aria-pressed="false" aria-label="Cantar automáticamente" title="Automático"><span class="icono-play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg></span><span class="icono-pausa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14M16 5v14" stroke-width="3"/></svg></span></button>
+      <button type="button" id="simple-siguiente" class="btn-principal btn-con-icono"><span>Siguiente</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+
   <!-- ═══ Vista: Cantar (cantador + verificador) ═══ -->
   <main class="contenedor cantador" data-vista="cantar" hidden>
     <section class="tarjeta escenario">
       <div class="escenario-cabecera">
         <h2 id="cantador-progreso">Carta 0 de 54</h2>
         <span class="ayuda" id="cantador-codigo"></span>
+        <button type="button" id="btn-modo-simple" class="btn-chico destacado btn-con-icono" title="Solo la carta, las últimas 3 y los controles, en pantalla completa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Modo simple</span></button>
       </div>
 
       <div class="carta-grande" id="carta-grande" role="button" tabindex="0" aria-live="polite" title="Toca la carta para sacar la siguiente"></div>

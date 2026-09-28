@@ -107,6 +107,72 @@ function pintarHistorial() {
 function pintarAuto() {
   el.auto.textContent = temporizador ? '⏸ Pausar' : '▶ Automático';
   el.auto.classList.toggle('activo', !!temporizador);
+  pintarSimple();
+}
+
+// ── Modo simple: pantalla completa con la carta, las 3 anteriores y los controles ─
+const modoSimple = () => !el.simple.hidden;
+
+function pintarSimple() {
+  if (!el?.simple || !modoSimple()) return;
+  const id = cartaActual(partida);
+  el.simpleProgreso.textContent = tr('Carta {n} de {t}', { n: partida.cantadas, t: partida.orden.length });
+  if (!id) {
+    el.simpleCarta.innerHTML = '<div class="carta-grande-inicio">¡Corre y se va!<small>Toca para cantar la primera carta</small></div>';
+    el.simpleNombre.textContent = '';
+  } else {
+    const c = cartaPorId(id);
+    const url = imagenes.urlImagen(id);
+    el.simpleCarta.innerHTML = url
+      ? `<img src="${url}" alt="${escapar(c.nombre)}">`
+      : `<div class="carta-vacia"><b>${id}</b><span>${escapar(c.nombre)}</span></div>`;
+    el.simpleNombre.textContent = `${id}. ${c.nombre}`;
+  }
+  el.simpleCarta.classList.toggle('terminada', terminada(partida));
+  // Las 3 anteriores a la actual, de la más reciente a la más vieja
+  const previas = cartasCantadas(partida).slice(0, -1).slice(-3).reverse();
+  el.simpleRecientes.innerHTML = previas.map((x) => cartaHtml(x)).join('');
+  el.simpleAnterior.disabled = partida.cantadas === 0;
+  el.simpleSiguiente.disabled = terminada(partida);
+  el.simpleSiguiente.querySelector('span').textContent = partida.cantadas === 0 ? 'Empezar' : terminada(partida) ? 'Se cantaron todas' : 'Siguiente';
+  el.simpleAuto.setAttribute('aria-pressed', !!temporizador);
+  el.simpleAuto.setAttribute('aria-label', temporizador ? 'Pausar el modo automático' : 'Cantar automáticamente');
+}
+
+// Mientras se canta en modo simple la pantalla no se apaga (si el navegador lo permite)
+let bloqueoPantalla = null;
+async function mantenerPantalla(encendida) {
+  try {
+    if (encendida && 'wakeLock' in navigator && !bloqueoPantalla) {
+      bloqueoPantalla = await navigator.wakeLock.request('screen');
+      bloqueoPantalla.addEventListener('release', () => (bloqueoPantalla = null));
+    } else if (!encendida && bloqueoPantalla) {
+      await bloqueoPantalla.release();
+      bloqueoPantalla = null;
+    }
+  } catch {
+    // sin permiso o sin soporte: la pantalla se comporta como siempre
+  }
+}
+
+function entrarModoSimple() {
+  el.simple.hidden = false;
+  document.documentElement.classList.add('con-modo-simple');
+  pintarSimple();
+  mantenerPantalla(true);
+  // Pantalla completa real donde se puede (Android, escritorio, iPad); en iPhone queda la capa a pantalla completa
+  const pedir = el.simple.requestFullscreen ?? el.simple.webkitRequestFullscreen;
+  if (pedir && !document.fullscreenElement) Promise.resolve(pedir.call(el.simple)).catch(() => {});
+  el.simpleSiguiente.focus();
+}
+
+function salirModoSimple() {
+  if (!modoSimple()) return;
+  el.simple.hidden = true;
+  document.documentElement.classList.remove('con-modo-simple');
+  mantenerPantalla(false);
+  const fuera = document.exitFullscreen ?? document.webkitExitFullscreen;
+  if ((document.fullscreenElement || document.webkitFullscreenElement) && fuera) Promise.resolve(fuera.call(document)).catch(() => {});
 }
 
 function pintarAyudaVerificar() {
@@ -144,6 +210,7 @@ function cambiar(nueva) {
   guardar();
   pintarEscenario();
   pintarHistorial();
+  pintarSimple();
   el.resultado.innerHTML = '';
   el.revisar.innerHTML = '';
   cancelarPendiente();
@@ -253,6 +320,8 @@ function alPresionarTecla(e) {
   } else if (e.key === 'ArrowLeft' && !enCampo) {
     e.preventDefault();
     retroceder();
+  } else if (e.key === 'Escape' && modoSimple()) {
+    salirModoSimple();
   }
 }
 
@@ -279,6 +348,14 @@ export function iniciarCantador() {
     revisar: $('#revisar-resultado'),
     cuenta: $('#cantadas-cuenta'),
     historial: $('#historial'),
+    simple: $('#cantar-simple'),
+    simpleProgreso: $('#simple-progreso'),
+    simpleCarta: $('#simple-carta'),
+    simpleNombre: $('#simple-nombre'),
+    simpleRecientes: $('#simple-recientes'),
+    simpleAnterior: $('#simple-anterior'),
+    simpleAuto: $('#simple-auto'),
+    simpleSiguiente: $('#simple-siguiente'),
   };
   prefs = almacen.cargarPreferenciasCantador(PREFS_INICIALES);
   prefs.modo = normalizarModo(prefs.modo);
@@ -286,6 +363,21 @@ export function iniciarCantador() {
   partida = esPartidaValida(guardada) ? guardada : nuevaPartida();
 
   el.siguiente.addEventListener('click', avanzar);
+  // Modo simple
+  $('#btn-modo-simple').addEventListener('click', () => { despertarAudio(); entrarModoSimple(); });
+  $('#simple-salir').addEventListener('click', salirModoSimple);
+  el.simple.addEventListener('click', despertarAudio, true);
+  el.simpleCarta.addEventListener('click', () => { if (!terminada(partida)) avanzar(); });
+  el.simpleCarta.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.simpleCarta.click(); } });
+  el.simpleAnterior.addEventListener('click', retroceder);
+  el.simpleAuto.addEventListener('click', alternarAuto);
+  el.simpleSiguiente.addEventListener('click', avanzar);
+  // Si la persona sale de la pantalla completa (atrás, Esc), también sale del modo simple
+  const alCambiarPantalla = () => { if (!document.fullscreenElement && !document.webkitFullscreenElement) salirModoSimple(); };
+  document.addEventListener('fullscreenchange', alCambiarPantalla);
+  document.addEventListener('webkitfullscreenchange', alCambiarPantalla);
+  // El bloqueo de pantalla se suelta al cambiar de app: se vuelve a pedir al regresar
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && modoSimple()) mantenerPantalla(true); });
   el.anterior.addEventListener('click', retroceder);
   el.auto.addEventListener('click', alternarAuto);
   el.nueva.addEventListener('click', empezarNuevaPartida);
@@ -349,6 +441,7 @@ export const vistaCantar = {
   },
   alSalir() {
     activa = false;
+    salirModoSimple();
     detenerAuto();
     cancelarPendiente();
     if (hayVoz()) speechSynthesis.cancel();
