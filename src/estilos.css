@@ -995,3 +995,18 @@ html.con-modo-simple, html.con-modo-simple body { overflow: hidden; }
   .simple-recientes { grid-area: recientes; }
   .simple-botones { grid-area: botones; }
 }
+
+/* Modo simple: fila de tiempo y nueva partida */
+.simple-extras { width: 100%; max-width: 520px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.simple-extras .btn-tiempo { width: auto; height: 50px; gap: 8px; padding: 0 8px; font-size: 16px; font-weight: 800; white-space: nowrap; }
+.simple-extras .btn-tiempo svg { width: 22px; height: 22px; }
+#simple-tiempo-valor { min-width: 3.2ch; text-align: left; font-variant-numeric: tabular-nums; }
+.cantar-simple { grid-template-rows: auto minmax(0, 1fr) auto auto auto auto; }
+@media (orientation: landscape) and (max-height: 560px) {
+  .cantar-simple {
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+    grid-template-areas: "carta cab" "carta nombre" "carta recientes" "carta botones" "carta extras";
+  }
+  .simple-extras { grid-area: extras; }
+  .simple-extras .btn-tiempo { height: 44px; }
+}

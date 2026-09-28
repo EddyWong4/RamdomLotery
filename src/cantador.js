@@ -9,7 +9,12 @@ import { sonidoInicio, sonidoFin, despertarAudio, duracion, MELODIA_INICIO } fro
 import { fichaActiva } from './mis-fichas.js';
 import { nuevaPartida, siguiente, anterior, cartasCantadas, cartaActual, terminada, esPartidaValida } from './partida.js';
 
-const PREFS_INICIALES = { intervalo: 5, voz: false, sonidos: true, modo: 'llena' };
+const PREFS_INICIALES = { intervalo: 3, voz: false, sonidos: true, modo: 'llena' };
+/** Segundos entre cartas en automático; el botón del modo simple da vuelta en este orden. */
+export const INTERVALOS = [3, 5, 7, 10, 15, 20];
+// Un tiempo guardado que ya no está en la lista (p. ej. 8 de versiones anteriores) pasa al más cercano
+const intervaloValido = (s) => (INTERVALOS.includes(s) ? s : INTERVALOS.reduce((a, b) => (Math.abs(b - s) < Math.abs(a - s) ? b : a), INTERVALOS[0]));
+export const siguienteIntervalo = (s) => INTERVALOS[(INTERVALOS.indexOf(intervaloValido(s)) + 1) % INTERVALOS.length];
 
 const $ = (sel) => document.querySelector(sel);
 let el;
@@ -110,6 +115,19 @@ function pintarAuto() {
   pintarSimple();
 }
 
+/** Nuevo tiempo entre cartas: se guarda y el automático sigue con el tiempo nuevo (sin cantar una carta extra). */
+function cambiarIntervalo(segundos) {
+  prefs.intervalo = intervaloValido(Number(segundos));
+  guardarPrefs();
+  el.intervalo.value = String(prefs.intervalo);
+  if (temporizador) {
+    clearInterval(temporizador);
+    temporizador = setInterval(avanzar, prefs.intervalo * 1000);
+  }
+  pintarSimple();
+  avisarOyentes();
+}
+
 // ── Modo simple: pantalla completa con la carta, las 3 anteriores y los controles ─
 const modoSimple = () => !el.simple.hidden;
 
@@ -136,6 +154,8 @@ function pintarSimple() {
   el.simpleSiguiente.disabled = terminada(partida);
   el.simpleSiguiente.querySelector('span').textContent = partida.cantadas === 0 ? 'Empezar' : terminada(partida) ? 'Se cantaron todas' : 'Siguiente';
   el.simpleAuto.setAttribute('aria-pressed', !!temporizador);
+  el.simpleTiempoValor.textContent = `${prefs.intervalo} s`;
+  el.simpleTiempo.setAttribute('aria-label', tr('Tiempo entre cartas: {s} segundos. Toca para cambiarlo', { s: prefs.intervalo }));
   el.simpleAuto.setAttribute('aria-label', temporizador ? 'Pausar el modo automático' : 'Cantar automáticamente');
 }
 
@@ -261,6 +281,7 @@ function empezarNuevaPartida() {
   el.revisar.innerHTML = '';
   pintarEscenario();
   pintarHistorial();
+  pintarSimple();
   avisarOyentes();
   return true;
 }
@@ -356,9 +377,12 @@ export function iniciarCantador() {
     simpleAnterior: $('#simple-anterior'),
     simpleAuto: $('#simple-auto'),
     simpleSiguiente: $('#simple-siguiente'),
+    simpleTiempo: $('#simple-tiempo'),
+    simpleTiempoValor: $('#simple-tiempo-valor'),
   };
   prefs = almacen.cargarPreferenciasCantador(PREFS_INICIALES);
   prefs.modo = normalizarModo(prefs.modo);
+  prefs.intervalo = intervaloValido(Number(prefs.intervalo));
   const guardada = almacen.cargarPartida();
   partida = esPartidaValida(guardada) ? guardada : nuevaPartida();
 
@@ -381,11 +405,9 @@ export function iniciarCantador() {
   el.anterior.addEventListener('click', retroceder);
   el.auto.addEventListener('click', alternarAuto);
   el.nueva.addEventListener('click', empezarNuevaPartida);
-  el.intervalo.addEventListener('change', () => {
-    prefs.intervalo = Number(el.intervalo.value);
-    guardarPrefs();
-    if (temporizador) { detenerAuto(); alternarAuto(); }
-  });
+  el.intervalo.addEventListener('change', () => cambiarIntervalo(Number(el.intervalo.value)));
+  $('#simple-tiempo').addEventListener('click', () => cambiarIntervalo(siguienteIntervalo(prefs.intervalo)));
+  $('#simple-nueva').addEventListener('click', empezarNuevaPartida);
   // La carta es la baraja: tocarla saca la siguiente
   el.cartaGrande.addEventListener('click', () => {
     despertarAudio();
@@ -466,10 +488,7 @@ export const canto = {
     guardarPrefs();
     if (clave === 'sonidos' && valor) { despertarAudio(); sonidoInicio(); }
     // Nuevo tiempo entre cartas: el automático sigue corriendo con el intervalo nuevo (sin cantar una carta extra)
-    if (clave === 'intervalo') {
-      el.intervalo.value = String(valor);
-      if (temporizador) { clearInterval(temporizador); temporizador = setInterval(avanzar, valor * 1000); }
-    }
+    if (clave === 'intervalo') cambiarIntervalo(valor);
   },
   despertarAudio,
   alCambiar(fn) { oyentes.add(fn); return () => oyentes.delete(fn); },

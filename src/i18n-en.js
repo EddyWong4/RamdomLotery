@@ -330,6 +330,8 @@ export const EN = {
   'Decir en voz alta': 'Read aloud',
   'Nueva partida': 'New game',
   'Modo simple': 'Simple mode',
+  'Tiempo entre cartas (toca para cambiarlo)': 'Time between cards (tap to change it)',
+  'Tiempo entre cartas: {s} segundos. Toca para cambiarlo': 'Time between cards: {s} seconds. Tap to change it',
   'Solo la carta, las últimas 3 y los controles, en pantalla completa': 'Just the card, the last 3 and the controls, full screen',
   'Salir del modo simple': 'Exit simple mode',
   'Últimas 3 cartas cantadas': 'Last 3 called cards',
