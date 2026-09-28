@@ -1,4 +1,5 @@
 // Ventana "Compartir tablero": link y código QR para abrir el tablero en el celular.
+import { t as tr } from './i18n.js';
 import qrcode from 'qrcode-generator';
 import { enlaceTablero } from './enlaces.js';
 
@@ -51,8 +52,8 @@ export function abrirCompartir(juego, numeros) {
   const url = enlaceTablero(juego, lista, baseApp());
   const nombres = lista.map((n) => `Nº ${String(n).padStart(3, '0')}`);
   el.titulo.textContent = lista.length === 1
-    ? `Compartir tablero ${nombres[0]}`
-    : `Compartir ${lista.length} tableros (${nombres.length > 4 ? `${nombres.slice(0, 4).join(', ')}…` : nombres.join(', ')})`;
+    ? tr('Compartir tablero {n}', { n: nombres[0] })
+    : tr('Compartir {c} tableros ({n})', { c: lista.length, n: nombres.length > 4 ? `${nombres.slice(0, 4).join(', ')}…` : nombres.join(', ') });
   el.enlace.value = url;
   el.abrir.href = url;
   el.qr.innerHTML = codigoQr(url);

@@ -939,3 +939,7 @@ input[type='search']:focus { border-color: var(--oro); }
 @media (max-width: 699px) {
   .jugar-paginas-cuenta { display: none; }
 }
+
+/* ── Selector de idioma (ES / EN) ── */
+.btn-idioma { width: auto !important; border-radius: 50px !important; padding: 0 10px; gap: 5px; display: inline-flex; align-items: center; font-weight: 800; font-size: 13px; }
+.btn-idioma svg { width: 18px; height: 18px; }

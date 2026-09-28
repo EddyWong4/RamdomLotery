@@ -13,6 +13,10 @@ import { generarTableros, semillaAleatoria, MAX_TABLEROS } from './generador.js'
 import { crearPdfTableros, crearPdfBaraja, FORMATOS, PAPELES } from './pdf.js';
 import { simular, MODOS, JUGADAS } from './simulador.js';
 import { normalizarModo } from './reglas.js';
+import { t as tr, LOCALE, iniciarIdioma } from './i18n.js';
+
+// Idioma primero: la página se traduce antes de que la app dibuje (español es el predeterminado)
+iniciarIdioma();
 
 // Las formas de ganar "línea" y "esquinas" de versiones anteriores ahora son parte de "tradicional"
 const normalizarPrefs = (p) => ({ ...p, modo: normalizarModo(p.modo) });
@@ -189,7 +193,7 @@ function pintarPanelPdf() {
   el.btnVerPdf.disabled = !hayTableros || estado.ocupado;
   el.btnCompartirSeleccion.disabled = seleccionados === 0 || seleccionados > MAX_TABLEROS_JUGADOR;
   el.btnCompartirSeleccion.title = seleccionados > MAX_TABLEROS_JUGADOR
-    ? `Se pueden compartir hasta ${MAX_TABLEROS_JUGADOR} tableros juntos`
+    ? tr('Se pueden compartir hasta {n} tableros juntos', { n: MAX_TABLEROS_JUGADOR })
     : 'Un solo link / QR para jugar los tableros seleccionados en el celular';
   el.btnDescargarPdf.disabled = !hayTableros || estado.ocupado;
   el.btnBaraja.disabled = estado.ocupado;
@@ -223,7 +227,7 @@ function pintarOpcionDoble() {
 
   el.opcionDoble.hidden = !p.dobles;
   el.posicionDoble.innerHTML = disponibles
-    .map((x, i) => `<option value="${x.id}">${i + 1}. ${x.nombre}</option>`)
+    .map((x, i) => `<option value="${x.id}">${i + 1}. ${tr(x.nombre)}</option>`)
     .concat(`<option value="${POSICION_ALEATORIA}">Aleatoria (cambia en cada tablero)</option>`)
     .join('');
   el.posicionDoble.value = p.posicionDoble;
@@ -240,7 +244,7 @@ function resumenDobles(tableros) {
   const max = Math.max(...veces.values());
   if (max <= 1) return 'Carta doble distinta en cada tablero';
   const min = veces.size < 54 ? 0 : Math.min(...veces.values());
-  return min === max ? `Cada carta es doble ${max} veces` : `Cada carta es doble ${min}–${max} veces`;
+  return min === max ? tr('Cada carta es doble {n} veces', { n: max }) : tr('Cada carta es doble {a}–{b} veces', { a: min, b: max });
 }
 
 // ── Tableros ────────────────────────────────────────────────────────────────
@@ -263,12 +267,12 @@ function pintarTableros() {
   const n = juego.tamano;
   const e = juego.estadisticas;
   el.estadisticas.innerHTML = [
-    `${juego.tableros.length} tableros ${n}×${n}` + (tablerosEliminados(juego) ? ` (${tablerosEliminados(juego)} eliminados)` : ''),
-    juego.manual ? 'Tableros favoritos' : `Código: ${escapar(juego.semilla)}`,
-    juego.posicionDoble ? `Dobles: ${nombrePosicion(juego.posicionDoble)}` : null,
+    tr('{c} tableros {n}×{n}', { c: juego.tableros.length, n }) + (tablerosEliminados(juego) ? tr(' ({e} eliminados)', { e: tablerosEliminados(juego) }) : ''),
+    juego.manual ? 'Tableros favoritos' : tr('Código: {c}', { c: escapar(juego.semilla) }),
+    juego.posicionDoble ? tr('Dobles: {p}', { p: tr(nombrePosicion(juego.posicionDoble)) }) : null,
     juego.posicionDoble ? resumenDobles(juego.tableros) : null,
-    e.usoMin === e.usoMax ? `Cada carta sale ${e.usoMin} veces` : `Cada carta sale ${e.usoMin}–${e.usoMax} veces`,
-    juego.tableros.length > 1 ? `Máx. ${e.maxComun} cartas en común entre tableros` : null,
+    e.usoMin === e.usoMax ? tr('Cada carta sale {n} veces', { n: e.usoMin }) : tr('Cada carta sale {a}–{b} veces', { a: e.usoMin, b: e.usoMax }),
+    juego.tableros.length > 1 ? tr('Máx. {n} cartas en común entre tableros', { n: e.maxComun }) : null,
   ].filter(Boolean).map((t) => `<span>${t}</span>`).join('');
 
   el.tableros.style.setProperty('--ancho-tablero', ANCHO_VISTA[n]);
@@ -290,7 +294,7 @@ function pintarMasTableros() {
   el.tableros.querySelector('.tablero-agregar')?.remove();
   if (faltan <= 0 && agregar) {
     el.tableros.insertAdjacentHTML('beforeend', `
-      <button type="button" class="tablero-agregar" data-agregar title="Generar el tablero Nº ${String(tablerosGenerados(estado.juego) + 1).padStart(3, '0')} con el mismo código">
+      <button type="button" class="tablero-agregar" data-agregar title="${tr('Generar el tablero Nº {n} con el mismo código', { n: String(tablerosGenerados(estado.juego) + 1).padStart(3, '0') })}">
         <span class="mas" aria-hidden="true">+</span>
         <span>Agregar tablero</span>
       </button>`);
@@ -300,7 +304,7 @@ function pintarMasTableros() {
   if (faltan <= 0) return;
   el.masTableros.innerHTML = `
     <span>Mostrando ${formatoNumero(estado.visibles)} de ${formatoNumero(total)} tableros</span>
-    <button type="button" class="btn-chico destacado" data-mas="pagina">Mostrar ${Math.min(POR_PAGINA, faltan)} más</button>
+    <button type="button" class="btn-chico destacado" data-mas="pagina">${tr('Mostrar {n} más', { n: Math.min(POR_PAGINA, faltan) })}</button>
     <button type="button" class="btn-chico" data-mas="todos">Mostrar todos</button>
     ${agregar ? '<button type="button" class="btn-chico" data-agregar>+ Agregar tablero</button>' : ''}`;
 }
@@ -314,17 +318,17 @@ function agregarUnTablero() {
   guardarJuegoActual();
   pintarTableros();
   if (todosVisibles) irATablero(nuevo.numero);
-  avisar(`Tablero Nº ${String(nuevo.numero).padStart(3, '0')} agregado`);
+  avisar(tr('Tablero Nº {n} agregado', { n: String(nuevo.numero).padStart(3, '0') }));
 }
 
 function eliminarUnTablero(numero) {
   const etiqueta = `Nº ${String(numero).padStart(3, '0')}`;
-  if (!window.confirm(`¿Eliminar el tablero ${etiqueta}?\n\nLos demás conservan su número.`)) return;
+  if (!window.confirm(`${tr('¿Eliminar el tablero {n}?', { n: etiqueta })}\n\n${tr('Los demás conservan su número.')}`)) return;
   estado.juego = eliminarTablero(estado.juego, numero);
   estado.seleccion.delete(numero);
   guardarJuegoActual();
   pintarTableros();
-  avisar(`Tablero ${etiqueta} eliminado`);
+  avisar(tr('Tablero {n} eliminado', { n: etiqueta }));
 }
 
 function mostrarMasTableros(cuantos) {
@@ -348,7 +352,7 @@ function htmlTablero(t, { n, victoriasPorTablero, maxVictorias }) {
   const cartas = t.cartas.map((id) => {
     const c = cartaPorId(id);
     const doble = id === t.doble?.carta;
-    const titulo = `${id}. ${escapar(c.nombre)}${doble ? ' (doble)' : ''}`;
+    const titulo = `${id}. ${escapar(c.nombre)}${doble ? tr(' (doble)') : ''}`;
     const url = imagenes.urlMiniatura(id);
     if (!url) return `<div class="carta-vacia${doble ? ' doble' : ''}" title="${titulo}"><b>${id}</b><span>${escapar(c.nombre)}</span></div>`;
     return `<img src="${url}"${doble ? ' class="doble"' : ''} alt="${escapar(c.nombre)}" title="${titulo}" loading="lazy" decoding="async">`;
@@ -358,12 +362,12 @@ function htmlTablero(t, { n, victoriasPorTablero, maxVictorias }) {
   return `
     <article class="tablero${sel ? ' seleccionado' : ''}${campeon ? ' campeon' : ''}" data-numero="${t.numero}">
       <div class="tablero-cabecera">
-        <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="Seleccionar tablero ${numero}"> Nº ${numero}</label>
+        <label><input type="checkbox" ${sel ? 'checked' : ''} aria-label="${tr('Seleccionar tablero {n}', { n: numero })}"> Nº ${numero}</label>
         ${victorias !== undefined ? `<span class="victorias" title="Victorias en la simulación">${campeon ? '🏆 ' : ''}${formatoNumero(victorias)}</span>` : ''}
-        <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="Compartir tablero ${numero}">📱</button>
-        <button type="button" data-favorito="${t.numero}" class="secundario estrella${esFavorito(estado.juego, t) ? ' activo' : ''}" aria-pressed="${esFavorito(estado.juego, t)}" title="Favorito" aria-label="Favorito: tablero ${numero}">${esFavorito(estado.juego, t) ? '★' : '☆'}</button>
+        <button type="button" data-compartir="${t.numero}" class="secundario" title="Jugar este tablero en el celular (link y QR)" aria-label="${tr('Compartir tablero {n}', { n: numero })}">📱</button>
+        <button type="button" data-favorito="${t.numero}" class="secundario estrella${esFavorito(estado.juego, t) ? ' activo' : ''}" aria-pressed="${esFavorito(estado.juego, t)}" title="Favorito" aria-label="${tr('Favorito: tablero {n}', { n: numero })}">${esFavorito(estado.juego, t) ? '★' : '☆'}</button>
         <button type="button" data-pdf="${t.numero}" title="PDF solo con este tablero">PDF</button>
-        <button type="button" data-eliminar="${t.numero}" class="secundario" title="Eliminar este tablero" aria-label="Eliminar tablero ${numero}">🗑</button>
+        <button type="button" data-eliminar="${t.numero}" class="secundario" title="Eliminar este tablero" aria-label="${tr('Eliminar tablero {n}', { n: numero })}">🗑</button>
       </div>
       <div class="tablero-cartas" style="grid-template-columns:repeat(${n},1fr)">${cartas}</div>
     </article>`;
@@ -382,7 +386,7 @@ function actualizarSeleccionVisual() {
 function generar() {
   const cantidad = Math.floor(Number(el.cantidad.value));
   if (!Number.isFinite(cantidad) || cantidad < 1 || cantidad > MAX_TABLEROS) {
-    avisar(`La cantidad debe estar entre 1 y ${MAX_TABLEROS}`);
+    avisar(tr('La cantidad debe estar entre 1 y {n}', { n: MAX_TABLEROS }));
     el.cantidad.focus();
     return;
   }
@@ -409,7 +413,7 @@ function generar() {
   estado.visibles = POR_PAGINA;
   guardarJuegoActual();
   pintarTableros();
-  avisar(`${cantidad} tableros ${p.tamano}×${p.tamano} generados`);
+  avisar(tr('{c} tableros {n}×{n} generados', { c: cantidad, n: p.tamano }));
 }
 
 // ── PDF ─────────────────────────────────────────────────────────────────────
@@ -425,7 +429,7 @@ async function conOcupado(etiqueta, fn, mensajeError = 'Error al crear el PDF') 
     return true;
   } catch (err) {
     console.error(err);
-    avisar(`${mensajeError}: ${err.message}`, 5000);
+    avisar(`${tr(mensajeError)}: ${tr(err.message)}`, 5000);
     return false;
   } finally {
     estado.ocupado = false;
@@ -441,7 +445,7 @@ function opcionesPdf(extra = {}) {
     lineasCorte: p.lineasCorte,
     mostrarPie: p.mostrarPie,
     semilla: estado.juego.manual ? 'favoritos' : estado.juego.semilla,
-    alProgresar: (x) => avisar(`Creando PDF… ${Math.round(x * 100)}%`, 60000),
+    alProgresar: (x) => avisar(tr('Creando PDF… {p}%', { p: Math.round(x * 100) }), 60000),
     ...extra,
   };
 }
@@ -497,7 +501,7 @@ function pintarPanelImagenes() {
       '(<i>1 el gallo.jpg</i>, <i>2 el diablito.jpg</i>…). Se guardan solo en este navegador y no se suben a internet. ' +
       'Mientras tanto, los tableros usan cartas provisionales con número y nombre.';
   } else if (faltan.length) {
-    el.estadoImagenes.innerHTML = `<b>${tiene} de 54</b> cartas cargadas. Faltan: ${faltan.join(', ')}. Puedes agregar solo las que faltan.`;
+    el.estadoImagenes.innerHTML = tr('<b>{n} de 54</b> cartas cargadas. Faltan: {f}. Puedes agregar solo las que faltan.', { n: tiene, f: faltan.join(', ') });
   } else {
     el.estadoImagenes.innerHTML = '✅ <b>54 de 54</b> cartas cargadas en este navegador. Puedes reemplazar cualquiera eligiéndola de nuevo.';
   }
@@ -525,17 +529,17 @@ async function cargarImagenes(archivos) {
   estado.ocupado = true;
   pintarPanelPdf();
   try {
-    const r = await imagenes.cargarArchivos(archivos, (x) => avisar(`Procesando imágenes… ${Math.round(x * 100)}%`, 60000));
+    const r = await imagenes.cargarArchivos(archivos, (x) => avisar(tr('Procesando imágenes… {p}%', { p: Math.round(x * 100) }), 60000));
     pintarPanelImagenes();
     pintarTableros();
-    const partes = [`${r.cargadas} cartas cargadas`];
-    if (r.ignorados) partes.push(`${r.ignorados} archivos ignorados (su nombre no empieza con un número del 1 al 54)`);
-    if (r.errores.length) partes.push(`no se pudieron leer: ${r.errores.join(', ')}`);
-    if (r.bajaResolucion.length) partes.push(`baja resolución: ${r.bajaResolucion.join(', ')}`);
+    const partes = [tr('{n} cartas cargadas', { n: r.cargadas })];
+    if (r.ignorados) partes.push(tr('{n} archivos ignorados (su nombre no empieza con un número del 1 al 54)', { n: r.ignorados }));
+    if (r.errores.length) partes.push(tr('no se pudieron leer: {a}', { a: r.errores.join(', ') }));
+    if (r.bajaResolucion.length) partes.push(tr('baja resolución: {a}', { a: r.bajaResolucion.join(', ') }));
     avisar(partes.join(' · '), 6000);
   } catch (err) {
     console.error(err);
-    avisar(`Error al cargar las imágenes: ${err.message}`, 5000);
+    avisar(tr('Error al cargar las imágenes: {e}', { e: tr(err.message) }), 5000);
   } finally {
     estado.ocupado = false;
     pintarPanelPdf();
@@ -544,7 +548,7 @@ async function cargarImagenes(archivos) {
 
 // ── Simulador ───────────────────────────────────────────────────────────────
 const formatoNumero = (x, decimales = 0) =>
-  x.toLocaleString('es-MX', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
+  x.toLocaleString(LOCALE, { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
 const numeroTablero = (n) => `Nº ${String(n).padStart(3, '0')}`;
 
 // Partidas mínimas para que cada tablero gane ~20 veces en promedio (lo que pide la prueba estadística)
@@ -558,10 +562,10 @@ function pintarAyudaSimulacion() {
     return;
   }
   const recomendado = partidasRecomendadas(B);
-  const base = `Se juegan ${formatoNumero(estado.prefs.jugadas)} partidas con los ${B} tableros; gana el primero que completa.`;
+  const base = tr('Se juegan {p} partidas con los {b} tableros; gana el primero que completa.', { p: formatoNumero(estado.prefs.jugadas), b: B });
   el.ayudaSimulacion.textContent = recomendado
-    ? `${base} Para ${B} tableros se recomiendan al menos ${formatoNumero(recomendado)} partidas.`
-    : `${base} Con tantos tableros, incluso 10,000 partidas dan pocas victorias por tablero.`;
+    ? `${base} ${tr('Para {b} tableros se recomiendan al menos {p} partidas.', { b: B, p: formatoNumero(recomendado) })}`
+    : `${base} ${tr('Con tantos tableros, incluso 10,000 partidas dan pocas victorias por tablero.')}`;
 }
 
 function simulacionVigente() {
@@ -574,20 +578,20 @@ function veredicto(sim) {
   if (!sim.muestraSuficiente) {
     return {
       icono: 'ℹ️',
-      texto: `<b>Pocas partidas para sacar conclusiones.</b> Cada tablero ganó en promedio ${formatoNumero(sim.esperado, 1)} veces, así que las diferencias pueden ser puro azar.` +
-        (recomendado ? ` Simula ${formatoNumero(recomendado)} partidas o más para comprobar si hay tableros con ventaja.` : ''),
+      texto: tr('<b>Pocas partidas para sacar conclusiones.</b> Cada tablero ganó en promedio {n} veces, así que las diferencias pueden ser puro azar.', { n: formatoNumero(sim.esperado, 1) }) +
+        (recomendado ? ' ' + tr('Simula {n} partidas o más para comprobar si hay tableros con ventaja.', { n: formatoNumero(recomendado) }) : ''),
     };
   }
   // Umbral estricto (1 %) para no alarmar por casualidad: con 5 % una de cada 20 simulaciones "fallaría" sola
   if (sim.valorP >= 0.01) {
     return {
       icono: '✅',
-      texto: `<b>Los tableros están parejos.</b> La diferencia entre el que más gana y el que menos es la normal del azar (p = ${formatoNumero(sim.valorP, 2)}). Ningún tablero tiene ventaja real.`,
+      texto: tr('<b>Los tableros están parejos.</b> La diferencia entre el que más gana y el que menos es la normal del azar (p = {p}). Ningún tablero tiene ventaja real.', { p: formatoNumero(sim.valorP, 2) }),
     };
   }
   return {
     icono: '⚠️',
-    texto: `<b>Hay diferencias mayores a las del azar</b> (p = ${formatoNumero(sim.valorP, 3)}). Algunos tableros ganan más de lo esperado; puedes generar otro juego con un código distinto y volver a simular.`,
+    texto: tr('<b>Hay diferencias mayores a las del azar</b> (p = {p}). Algunos tableros ganan más de lo esperado; puedes generar otro juego con un código distinto y volver a simular.', { p: formatoNumero(sim.valorP, 3) }),
   };
 }
 
@@ -611,7 +615,7 @@ function pintarSimulacion() {
 
   el.simulacion.innerHTML = `
     <div class="sim-cabecera">
-      <h2>Resultado de ${formatoNumero(sim.jugadas)} partidas · ${MODOS[sim.modo].nombre}</h2>
+      <h2>${tr('Resultado de {p} partidas · {m}', { p: formatoNumero(sim.jugadas), m: tr(MODOS[sim.modo].nombre) })}</h2>
       <button type="button" class="sim-cerrar" data-sim="ocultar">Ocultar ✕</button>
     </div>
 
@@ -620,7 +624,7 @@ function pintarSimulacion() {
       <div class="texto">
         <small>${empatadosPrimero.length > 1 ? 'Tableros más ganadores (empatados)' : 'Tablero más ganador'}</small>
         <b>${nombresGanador}</b>
-        <span>ganó ${formatoNumero(primero.victorias)} de ${formatoNumero(sim.jugadas)} partidas (${pct(primero.victorias)})</span>
+        <span>${tr('ganó {v} de {p} partidas ({pct})', { v: formatoNumero(primero.victorias), p: formatoNumero(sim.jugadas), pct: pct(primero.victorias) })}</span>
       </div>
       <button type="button" class="btn-chico destacado" data-ir="${primero.numero}">Ver tablero</button>
     </div>
@@ -636,12 +640,12 @@ function pintarSimulacion() {
 
     <div class="sim-grafica">
       <div class="sim-grafica-titulo">
-        <span>Victorias por tablero${orden.length > 10 ? (estado.verTodaLaSimulacion ? ' (todos)' : ' (los 10 que más ganaron)') : ''}</span>
+        <span>${tr('Victorias por tablero')}${orden.length > 10 ? (estado.verTodaLaSimulacion ? tr(' (todos)') : tr(' (los 10 que más ganaron)')) : ''}</span>
         <span class="clave"><i></i> promedio esperado</span>
       </div>
       ${visibles.map((x, i) => `
         <button type="button" class="sim-fila${x.victorias === primero.victorias ? ' primero' : ''}" data-ir="${x.numero}"
-          title="${numeroTablero(x.numero)}: ${formatoNumero(x.victorias)} victorias (${pct(x.victorias)}), ${formatoNumero(x.empates)} compartidas en empate">
+          title="${tr('{t}: {v} victorias ({pct}), {e} compartidas en empate', { t: numeroTablero(x.numero), v: formatoNumero(x.victorias), pct: pct(x.victorias), e: formatoNumero(x.empates) })}">
           <span class="num">${numeroTablero(x.numero)}</span>
           <span class="sim-pista">
             <span class="sim-barra" style="width:${(x.victorias / max) * 100}%"></span>
@@ -649,7 +653,7 @@ function pintarSimulacion() {
           </span>
           <span class="valor"><b>${formatoNumero(x.victorias)}</b> · ${pct(x.victorias)}</span>
         </button>`).join('')}
-      ${orden.length > 10 ? `<button type="button" class="btn-chico sim-mas" data-sim="todos">${estado.verTodaLaSimulacion ? 'Ver solo los 10 primeros' : `Ver los ${orden.length} tableros`}</button>` : ''}
+      ${orden.length > 10 ? `<button type="button" class="btn-chico sim-mas" data-sim="todos">${estado.verTodaLaSimulacion ? 'Ver solo los 10 primeros' : tr('Ver los {n} tableros', { n: orden.length })}</button>` : ''}
     </div>`;
 }
 
@@ -704,7 +708,7 @@ function pintarRespaldo() {
   if (cuantas === 0) el.respaldoImagenes.checked = false;
   el.respaldoImagenesNota.textContent = incluidas
     ? '(esta copia usa las imágenes incluidas; no hace falta respaldarlas)'
-    : cuantas ? `(${cuantas} cartas, aumenta el tamaño del archivo)` : '(no hay imágenes cargadas)';
+    : cuantas ? tr('({n} cartas, aumenta el tamaño del archivo)', { n: cuantas }) : '(no hay imágenes cargadas)';
 }
 
 async function descargarRespaldo() {
@@ -727,14 +731,14 @@ async function restaurarRespaldo(archivo) {
   try {
     respaldo = validarRespaldo(JSON.parse(await archivo.text()));
   } catch (err) {
-    avisar(err instanceof SyntaxError ? 'El archivo no es un respaldo válido.' : err.message, 5000);
+    avisar(err instanceof SyntaxError ? 'El archivo no es un respaldo válido.' : tr(err.message), 5000);
     return;
   }
 
   const cuantasImagenes = Object.keys(respaldo.imagenes ?? {}).length;
   const juegos = respaldo.datos.juegos?.length ?? 0;
-  const resumen = [`${juegos} juegos guardados`, cuantasImagenes ? `${cuantasImagenes} imágenes de cartas` : null].filter(Boolean).join(' y ');
-  if (!window.confirm(`Respaldo del ${new Date(respaldo.fecha).toLocaleString('es-MX')} con ${resumen}.\n\nSe agregarán a lo que ya tienes, sin borrar nada. ¿Continuar?`)) return;
+  const resumen = [tr('{n} juegos guardados', { n: juegos }), cuantasImagenes ? tr('{n} imágenes de cartas', { n: cuantasImagenes }) : null].filter(Boolean).join(tr(' y '));
+  if (!window.confirm(`${tr('Respaldo del {f} con {r}.', { f: new Date(respaldo.fecha).toLocaleString(LOCALE), r: resumen })}\n\n${tr('Se agregarán a lo que ya tienes, sin borrar nada. ¿Continuar?')}`)) return;
   const reemplazarActual = traeDatosActuales(respaldo.datos) &&
     window.confirm('¿Reemplazar también el juego actual, las preferencias y la partida del cantador por los del respaldo?\n\nAceptar = reemplazar · Cancelar = conservar los tuyos');
 
@@ -755,12 +759,12 @@ function pintarJuegosGuardados() {
     return;
   }
   el.listaJuegos.innerHTML = juegos.map((j) => {
-    const fecha = new Date(j.creado).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+    const fecha = new Date(j.creado).toLocaleDateString(LOCALE, { day: 'numeric', month: 'short', year: 'numeric' });
     return `
       <li data-id="${escapar(j.id)}">
         <div class="info">
           <b title="${escapar(j.nombre)}">${escapar(j.nombre)}</b>
-          <small>${j.tableros.length} × ${j.tamano}×${j.tamano}${j.posicionDoble ? ' dobles' : ''} · ${escapar(j.semilla)} · ${fecha}</small>
+          <small>${j.tableros.length} × ${j.tamano}×${j.tamano}${j.posicionDoble ? tr(' dobles') : ''} · ${escapar(j.semilla)} · ${fecha}</small>
         </div>
         <button type="button" data-accion="cargar">Abrir</button>
         <button type="button" data-accion="borrar" class="borrar" aria-label="Borrar">✕</button>
@@ -771,7 +775,7 @@ function pintarJuegosGuardados() {
 function guardarJuegoEnLista() {
   if (!estado.juego) return;
   const { tableros, tamano, posicionDoble } = estado.juego;
-  const sugerido = estado.juego.nombre || `${tableros.length} tableros ${tamano}×${tamano}${posicionDoble ? ' dobles' : ''}`;
+  const sugerido = estado.juego.nombre || tr('{c} tableros {n}×{n}', { c: tableros.length, n: tamano }) + (posicionDoble ? tr(' dobles') : '');
   const nombre = window.prompt('Nombre para este juego:', sugerido);
   if (nombre === null) return;
   estado.juego.nombre = nombre.trim() || sugerido;
@@ -794,7 +798,7 @@ function cargarJuego(id) {
   guardarJuegoActual();
   pintarFormulario();
   pintarTableros();
-  avisar(`Juego "${juego.nombre}" abierto`);
+  avisar(tr('Juego "{n}" abierto', { n: juego.nombre }));
 }
 
 // ── Eventos ─────────────────────────────────────────────────────────────────
@@ -900,15 +904,15 @@ function conectarEventos() {
 
 // ── Versión (la inyecta vite.config.js al compilar) ─────────────────────────
 function pintarVersion() {
-  const fecha = new Date(__APP_FECHA__).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+  const fecha = new Date(__APP_FECHA__).toLocaleDateString(LOCALE, { day: 'numeric', month: 'short', year: 'numeric' });
   const partes = [`<b>v${__APP_VERSION__}</b>`, __APP_COMMIT__, fecha].filter(Boolean);
   const version = document.getElementById('version');
   version.innerHTML = partes.join(' · ');
-  version.title = `Versión ${__APP_VERSION__}${__APP_COMMIT__ ? `, commit ${__APP_COMMIT__}` : ''}, compilada el ${new Date(__APP_FECHA__).toLocaleString('es-MX')}`;
+  version.title = tr('Versión {v}{c}, compilada el {f}', { v: __APP_VERSION__, c: __APP_COMMIT__ ? `, commit ${__APP_COMMIT__}` : '', f: new Date(__APP_FECHA__).toLocaleString(LOCALE) });
 }
 
 // ── Inicio ──────────────────────────────────────────────────────────────────
-el.papel.innerHTML = Object.entries(PAPELES).map(([k, v]) => `<option value="${k}">${v.nombre}</option>`).join('');
+el.papel.innerHTML = Object.entries(PAPELES).map(([k, v]) => `<option value="${k}">${tr(v.nombre)}</option>`).join('');
 el.cantidad.max = MAX_TABLEROS;
 pintarVersion();
 pintarFormulario();
@@ -926,7 +930,7 @@ iniciarFavoritos({
     pintarTableros();
     if (location.hash && location.hash !== '#/') location.hash = '#/';
     el.barra.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    avisar(`Juego con ${juego.tableros.length} tableros favoritos listo: imprímelo, simúlalo, cántalo o compártelo`, 5000);
+    avisar(tr('Juego con {n} tableros favoritos listo: imprímelo, simúlalo, cántalo o compártelo', { n: juego.tableros.length }), 5000);
   },
 });
 iniciarCantador();

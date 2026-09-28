@@ -1,4 +1,5 @@
 // Panel "Ficha" de la vista Jugar: elegir, personalizar, exportar e importar fichas.
+import { t as tr } from './i18n.js';
 import { TIPOS, COLORES, ID_PREDETERMINADA, svgFicha, crearArchivoFichas, leerArchivoFichas } from './fichas.js';
 import * as misFichas from './mis-fichas.js';
 
@@ -83,7 +84,7 @@ function exportar() {
   a.download = 'loteria-fichas.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-  avisar(`${archivo.fichas.length} fichas exportadas`);
+  avisar(tr('{n} fichas exportadas', { n: archivo.fichas.length }));
 }
 
 async function importar(archivo) {
@@ -92,11 +93,11 @@ async function importar(archivo) {
     const { fichas, descartadas } = leerArchivoFichas(JSON.parse(await archivo.text()));
     const agregadas = misFichas.importar(fichas);
     avisar(
-      `${agregadas} fichas nuevas importadas` +
-      (fichas.length - agregadas ? ` · ${fichas.length - agregadas} ya existían` : '') +
-      (descartadas ? ` · ${descartadas} dañadas se ignoraron` : ''), 5000);
+      tr('{n} fichas nuevas importadas', { n: agregadas }) +
+      (fichas.length - agregadas ? tr(' · {n} ya existían', { n: fichas.length - agregadas }) : '') +
+      (descartadas ? tr(' · {n} dañadas se ignoraron', { n: descartadas }) : ''), 5000);
   } catch (err) {
-    avisar(err instanceof SyntaxError ? 'El archivo no es un archivo de fichas válido.' : err.message, 5000);
+    avisar(err instanceof SyntaxError ? 'El archivo no es un archivo de fichas válido.' : tr(err.message), 5000);
   }
 }
 
@@ -125,7 +126,7 @@ export function iniciarPanelFichas(funcionAvisar) {
     importar: $('#input-fichas'),
   };
 
-  el.tipo.innerHTML = Object.entries(TIPOS).map(([id, t]) => `<option value="${id}">${t.nombre}</option>`).join('');
+  el.tipo.innerHTML = Object.entries(TIPOS).map(([id, x]) => `<option value="${id}">${tr(x.nombre)}</option>`).join('');
   el.colores.innerHTML = COLORES.map((c) => `<button type="button" data-color="${c}" style="background:${c}" aria-label="Color ${c}" title="${c}"></button>`).join('');
 
   el.lista.addEventListener('click', (e) => {
@@ -163,7 +164,7 @@ export function iniciarPanelFichas(funcionAvisar) {
     el.nombre.select();
   });
   el.eliminar.addEventListener('click', () => {
-    if (window.confirm(`¿Eliminar la ficha "${misFichas.fichaActiva().nombre}"?`)) misFichas.eliminarActiva();
+    if (window.confirm(tr('¿Eliminar la ficha "{n}"?', { n: misFichas.fichaActiva().nombre }))) misFichas.eliminarActiva();
   });
   el.exportar.addEventListener('click', exportar);
   el.importar.addEventListener('change', () => {

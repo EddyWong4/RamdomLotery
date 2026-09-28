@@ -1,5 +1,6 @@
 // Vista "Cómo jugar": instrucciones de la lotería y de cada forma de ganar.
 // Los diagramas salen de reglas.js (gruposCeldas), así siempre coinciden con lo que revisa el verificador.
+import { t as tr } from './i18n.js';
 import { MODOS, MODOS_VISIBLES, gruposCeldas } from './reglas.js';
 
 const N = 4; // los ejemplos se dibujan en un tablero de 4 × 4, el más común
@@ -74,12 +75,12 @@ function pintarFormas(contenedor) {
     const e = EXPLICACION[modo];
     return `
       <article class="tarjeta forma-ganar" id="forma-${modo}">
-        <h3><span aria-hidden="true">${e.icono}</span> ${MODOS[modo].nombre}</h3>
-        <p>${e.texto}</p>
+        <h3><span aria-hidden="true">${e.icono}</span> ${tr(MODOS[modo].nombre)}</h3>
+        <p>${tr(e.texto)}</p>
         <div class="figuras">${figuras(modo).map((f) => `
-          <figure>${tableroMini(f.celdas)}<figcaption>${f.titulo}</figcaption></figure>`).join('')}
+          <figure>${tableroMini(f.celdas)}<figcaption>${tr(f.titulo)}</figcaption></figure>`).join('')}
         </div>
-        <ul>${e.notas.map((n) => `<li>${n}</li>`).join('')}</ul>
+        <ul>${e.notas.map((n) => `<li>${tr(n)}</li>`).join('')}</ul>
       </article>`;
   }).join('');
 }

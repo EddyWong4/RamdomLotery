@@ -1,4 +1,5 @@
 // Ventana "Tema de color": muestra los temas con sus colores y aplica el elegido al momento.
+import { t as tr } from './i18n.js';
 import { TEMAS, elegirTema, elegirFondo, fondoGuardado } from './temas.js';
 
 let el;
@@ -10,7 +11,7 @@ function pintar() {
       <span class="tema-muestra" aria-hidden="true" style="background:${t.muestra[0]}">
         <i style="background:${t.muestra[3]}"></i><i style="background:${t.muestra[1]}"></i><i style="background:${t.muestra[2]}"></i>
       </span>
-      <span class="tema-texto"><b>${t.nombre}</b><small>${t.descripcion} · ${t.claro ? 'claro' : 'oscuro'}</small></span>
+      <span class="tema-texto"><b>${tr(t.nombre)}</b><small>${tr(t.descripcion)} · ${tr(t.claro ? 'claro' : 'oscuro')}</small></span>
       <span class="tema-marca" aria-hidden="true">${t.id === actual ? '✓' : ''}</span>
     </button>`).join('');
 }

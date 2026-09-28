@@ -1,3 +1,4 @@
+import { t as tr } from './i18n.js';
 // Botón "Instalar app": usa la instalación nativa del navegador cuando existe (Chrome, Edge, Samsung…)
 // y, donde no la hay (iPhone/iPad, Safari en Mac), muestra una guía con los pasos.
 
@@ -20,13 +21,19 @@ export function modoInstalacion({ plataforma, instalada, hayPromptNativo, userAg
   return null;
 }
 
+// Íconos de las guías (van aparte del texto para poder traducirlo)
+const ICONOS = {
+  compartir: '<span class="icono-guia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg></span>',
+  agregar: '<span class="icono-guia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span>',
+};
+
 const GUIAS = {
   ios: {
     titulo: 'Instalar en iPhone o iPad',
     pasos: [
       'Abre esta página en <b>Safari</b>.',
-      'Toca el botón <b>Compartir</b> <span class="icono-guia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M8 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-2"/></svg></span> (abajo en iPhone, arriba en iPad).',
-      'Desliza y elige <b>Agregar a pantalla de inicio</b> <span class="icono-guia" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg></span>.',
+      'Toca el botón <b>Compartir</b> {compartir} (abajo en iPhone, arriba en iPad).',
+      'Desliza y elige <b>Agregar a pantalla de inicio</b> {agregar}.',
       'Toca <b>Agregar</b>. El ícono de Lotería aparece en tu pantalla de inicio.',
     ],
   },
@@ -77,8 +84,8 @@ function mostrarGuia(modo) {
   const guia = guiaInstalacion(modo);
   if (!guia) return;
   const dialogo = document.getElementById('dialogo-instalar');
-  dialogo.querySelector('#instalar-titulo').textContent = guia.titulo;
-  dialogo.querySelector('#instalar-pasos').innerHTML = guia.pasos.map((p) => `<li>${p}</li>`).join('');
+  dialogo.querySelector('#instalar-titulo').textContent = tr(guia.titulo);
+  dialogo.querySelector('#instalar-pasos').innerHTML = guia.pasos.map((p) => `<li>${tr(p, ICONOS)}</li>`).join('');
   dialogo.showModal();
 }
 

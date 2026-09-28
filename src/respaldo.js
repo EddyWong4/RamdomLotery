@@ -1,5 +1,6 @@
 // Respaldo: un archivo .json con lo que la app guarda en el navegador, para no perderlo
 // o para pasarlo a otro dispositivo. Opcionalmente incluye las imágenes cargadas.
+import { t as tr } from './i18n.js';
 import { combinarFichas, fichasConPredeterminada, normalizarFicha } from './fichas.js';
 import { combinarFavoritos, normalizarFavorito } from './favoritos.js';
 
@@ -25,7 +26,7 @@ export function validarRespaldo(r) {
     for (const [id, img] of Object.entries(r.imagenes)) {
       const n = Number(id);
       if (!Number.isInteger(n) || n < 1 || n > 54 || !/^data:image\//.test(img?.imagen ?? '') || !/^data:image\//.test(img?.miniatura ?? '')) {
-        throw new Error(`La imagen de la carta ${id} del respaldo está dañada.`);
+        throw new Error(tr('La imagen de la carta {n} del respaldo está dañada.', { n: id }));
       }
     }
   }

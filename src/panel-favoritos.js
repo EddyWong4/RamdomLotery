@@ -1,4 +1,5 @@
 // Panel "Mis tableros favoritos": lista, crear a mano, editar, eliminar y usarlos como juego.
+import { t as tr } from './i18n.js';
 import { cartaPorId } from './cartas.js';
 import * as almacen from './almacen.js';
 import * as imagenes from './imagenes.js';
@@ -39,18 +40,18 @@ export function alternarFavorito(juego, tablero) {
     seleccion.delete(existente.id);
     guardar();
     pintarFavoritos();
-    ganchos.avisar(`"${existente.nombre}" se quitó de favoritos`);
+    ganchos.avisar(tr('"{n}" se quitó de favoritos', { n: existente.nombre }));
     return false;
   }
   if (favoritos.length >= MAX_FAVORITOS) {
-    ganchos.avisar(`Se pueden guardar hasta ${MAX_FAVORITOS} favoritos`);
+    ganchos.avisar(tr('Se pueden guardar hasta {n} favoritos', { n: MAX_FAVORITOS }));
     return false;
   }
   const nuevo = favoritoDesdeTablero(juego, tablero);
   favoritos = [...favoritos, nuevo];
   guardar();
   pintarFavoritos();
-  ganchos.avisar(`"${nuevo.nombre}" se agregó a favoritos`);
+  ganchos.avisar(tr('"{n}" se agregó a favoritos', { n: nuevo.nombre }));
   return true;
 }
 
@@ -71,26 +72,26 @@ export function pintarFavoritos() {
     return;
   }
   el.lista.innerHTML = favoritos.map((f) => {
-    const detalle = [`${f.tamano}×${f.tamano}`, f.doble ? `doble: ${cartaPorId(f.doble.carta).nombre}` : null, f.origen === 'manual' ? 'a mano' : 'de un juego']
+    const detalle = [`${f.tamano}×${f.tamano}`, f.doble ? tr('doble: {p}', { p: cartaPorId(f.doble.carta).nombre }) : null, tr(f.origen === 'manual' ? 'a mano' : 'de un juego')]
       .filter(Boolean).join(' · ');
     return `
       <li data-fav="${escapar(f.id)}" class="${seleccion.has(f.id) ? 'seleccionado' : ''}">
-        <label class="fav-elegir"><input type="checkbox" ${seleccion.has(f.id) ? 'checked' : ''} aria-label="Elegir ${escapar(f.nombre)}"></label>
+        <label class="fav-elegir"><input type="checkbox" ${seleccion.has(f.id) ? 'checked' : ''} aria-label="${tr('Elegir {n}', { n: escapar(f.nombre) })}"></label>
         ${miniTablero(f)}
         <div class="info"><b title="${escapar(f.nombre)}">${escapar(f.nombre)}</b><small>${escapar(detalle)}</small></div>
-        <button type="button" data-accion="editar" aria-label="Editar ${escapar(f.nombre)}" title="Editar">✎</button>
-        <button type="button" data-accion="borrar" class="borrar" aria-label="Quitar ${escapar(f.nombre)} de favoritos" title="Quitar de favoritos">✕</button>
+        <button type="button" data-accion="editar" aria-label="${tr('Editar {n}', { n: escapar(f.nombre) })}" title="Editar">✎</button>
+        <button type="button" data-accion="borrar" class="borrar" aria-label="${tr('Quitar {n} de favoritos', { n: escapar(f.nombre) })}" title="Quitar de favoritos">✕</button>
       </li>`;
   }).join('');
   const n = seleccion.size;
-  el.usar.textContent = n ? `Usar ${n} como juego` : 'Usar como juego';
+  el.usar.textContent = n ? tr('Usar {n} como juego', { n }) : 'Usar como juego';
   el.usar.disabled = n === 0;
   el.seleccionar.textContent = n === favoritos.length ? 'Quitar selección' : 'Seleccionar todos';
 }
 
 function guardarDesdeEditor(favorito, esNuevo) {
   if (esNuevo) {
-    if (favoritos.length >= MAX_FAVORITOS) return ganchos.avisar(`Se pueden guardar hasta ${MAX_FAVORITOS} favoritos`);
+    if (favoritos.length >= MAX_FAVORITOS) return ganchos.avisar(tr('Se pueden guardar hasta {n} favoritos', { n: MAX_FAVORITOS }));
     favoritos = [...favoritos, favorito];
     seleccion.add(favorito.id);
   } else {
@@ -101,7 +102,7 @@ function guardarDesdeEditor(favorito, esNuevo) {
   }
   guardar();
   pintarFavoritos();
-  ganchos.avisar(esNuevo ? `"${favorito.nombre}" se guardó en favoritos` : 'Cambios guardados');
+  ganchos.avisar(esNuevo ? tr('"{n}" se guardó en favoritos', { n: favorito.nombre }) : 'Cambios guardados');
 }
 
 function usarComoJuego() {
@@ -128,7 +129,7 @@ export function iniciarFavoritos(opciones) {
 
   el.crear.addEventListener('click', () => abrirEditor({
     tamano: ganchos.tamanoPreferido(),
-    nombreSugerido: `Tablero a mano ${favoritos.filter((f) => f.origen === 'manual').length + 1}`,
+    nombreSugerido: tr('Tablero a mano {n}', { n: favoritos.filter((f) => f.origen === 'manual').length + 1 }),
     alGuardar: (f) => guardarDesdeEditor(f, true),
   }));
   el.lista.addEventListener('change', (e) => {
@@ -145,7 +146,7 @@ export function iniciarFavoritos(opciones) {
     if (!f) return;
     if (b.dataset.accion === 'editar') {
       abrirEditor({ favorito: f, alGuardar: (nuevo) => guardarDesdeEditor(nuevo, false) });
-    } else if (window.confirm(`¿Quitar "${f.nombre}" de favoritos?`)) {
+    } else if (window.confirm(tr('¿Quitar "{n}" de favoritos?', { n: f.nombre }))) {
       favoritos = favoritos.filter((x) => x !== f);
       seleccion.delete(f.id);
       guardar();

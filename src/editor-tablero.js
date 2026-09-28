@@ -1,4 +1,5 @@
 // Editor para crear o cambiar un tablero a mano: se toca una casilla y después la carta que va en ella.
+import { t as tr } from './i18n.js';
 import { CARTAS, cartaPorId } from './cartas.js';
 import * as imagenes from './imagenes.js';
 import { validarCartas, completarAlAzar, normalizarFavorito, nuevoIdFavorito } from './favoritos.js';
@@ -35,14 +36,14 @@ function pintarTablero() {
   el.tablero.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
   el.tablero.innerHTML = cartas.map((id, i) => {
     const clases = ['editor-casilla', i === sel ? 'seleccionada' : '', id == null ? 'vacia' : '', id != null && id === v.doble?.carta ? 'doble' : ''].filter(Boolean).join(' ');
-    const etiqueta = id == null ? `Casilla ${i + 1}, vacía` : `Casilla ${i + 1}: ${cartaPorId(id).nombre}`;
+    const etiqueta = id == null ? tr('Casilla {n}, vacía', { n: i + 1 }) : tr('Casilla {n}: {c}', { n: i + 1, c: cartaPorId(id).nombre });
     return `<button type="button" class="${clases}" data-i="${i}" aria-label="${escapar(etiqueta)}" aria-pressed="${i === sel}">${id == null ? '<span class="mas">+</span>' : miniatura(id)}</button>`;
   }).join('');
 
   el.estado.classList.toggle('ok', v.ok);
   el.estado.textContent = v.ok
-    ? `Listo para guardar${v.doble ? ` · tablero doble (${cartaPorId(v.doble.carta).nombre})` : ''}`
-    : v.error;
+    ? tr('Listo para guardar') + (v.doble ? tr(' · tablero doble ({c})', { c: cartaPorId(v.doble.carta).nombre }) : '')
+    : tr(v.error);
   el.guardar.disabled = !v.ok;
   el.quitar.disabled = cartas[sel] == null;
 }
@@ -56,7 +57,7 @@ function pintarCartas() {
     .map((c) => {
       const usada = veces.get(c.id) ?? 0;
       return `<button type="button" class="editor-carta${usada ? ' usada' : ''}" data-carta="${c.id}" ${usada >= 2 ? 'disabled' : ''}
-        title="${c.id}. ${escapar(c.nombre)}${usada ? ` (ya está ${usada === 1 ? 'una vez' : 'dos veces'})` : ''}">
+        title="${c.id}. ${escapar(c.nombre)}${usada ? tr(usada === 1 ? ' (ya está una vez)' : ' (ya está dos veces)') : ''}">
         ${miniatura(c.id)}${usada ? `<span class="veces">${usada}</span>` : ''}</button>`;
     }).join('') || '<p class="ayuda">Ninguna carta coincide.</p>';
 }
@@ -103,7 +104,7 @@ function ponerCarta(id) {
 function cambiarTamano(n) {
   if (n === estado.n) return;
   const puestas = estado.cartas.filter((c) => c != null);
-  if (puestas.length > n * n && !window.confirm(`El tablero ${n}×${n} tiene ${n * n} casillas: se quitarán ${puestas.length - n * n} cartas. ¿Continuar?`)) return;
+  if (puestas.length > n * n && !window.confirm(tr('El tablero {n}×{n} tiene {c} casillas: se quitarán {q} cartas. ¿Continuar?', { n, c: n * n, q: puestas.length - n * n }))) return;
   estado.n = n;
   estado.cartas = Array.from({ length: n * n }, (_, i) => puestas[i] ?? null);
   estado.sel = estado.cartas.indexOf(null) === -1 ? 0 : estado.cartas.indexOf(null);

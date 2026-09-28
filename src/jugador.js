@@ -10,6 +10,7 @@ import { iniciarPanelFichas } from './panel-fichas.js';
 import { canto } from './cantador.js';
 import { cartasCantadas, cartaActual, terminada } from './partida.js';
 import { MODOS, verificarTablero, normalizarModo } from './reglas.js';
+import { t as tr } from './i18n.js';
 import {
   leerParametros, tablerosDesdeParametros, claveTablero, claveTableroAnterior, firmaJuego, parametrosTablerosManuales, MAX_TABLEROS_JUGADOR,
 } from './enlaces.js';
@@ -56,19 +57,19 @@ function htmlCasilla(numero, id, i, marcada, ficha, cantada = false) {
   const url = imagenes.urlMiniatura(id);
   const carta = url ? `<img src="${url}" alt="">` : `<div class="carta-vacia"><b>${id}</b><span>${escapar(c.nombre)}</span></div>`;
   return `<button type="button" class="jugar-casilla${marcada ? ' marcada' : ''}${cantada ? ' cantada' : ''}" data-numero="${numero}" data-i="${i}"
-    aria-pressed="${marcada}" aria-label="${id}. ${escapar(c.nombre)}${marcada ? ', marcada' : ''}">${carta}<span class="ficha-capa">${marcada ? svgFicha(ficha) : ''}</span></button>`;
+    aria-pressed="${marcada}" aria-label="${id}. ${escapar(c.nombre)}${marcada ? tr(', marcada') : ''}">${carta}<span class="ficha-capa">${marcada ? svgFicha(ficha) : ''}</span></button>`;
 }
 
 function pintarDetalle() {
   const { datos, numeros, tableros, marcas } = actual;
   const total = [...marcas.values()].reduce((s, m) => s + m.size, 0);
-  el.titulo.textContent = numeros.length === 1 ? `Tablero ${numeroTablero(numeros[0])}` : `Mis ${numeros.length} tableros`;
+  el.titulo.textContent = numeros.length === 1 ? tr('Tablero {n}', { n: numeroTablero(numeros[0]) }) : tr('Mis {n} tableros', { n: numeros.length });
   const doble = datos.manual
-    ? ([...tableros.values()].some((t) => t.doble) ? 'con carta doble' : null)
+    ? ([...tableros.values()].some((t) => t.doble) ? tr('con carta doble') : null)
     : datos.posicionDoble
-    ? `doble: ${nombrePosicion(datos.posicionDoble === 'aleatoria' ? 'aleatoria' : tableros.get(numeros[0])?.doble?.posicion ?? datos.posicionDoble).toLowerCase()}`
+    ? tr('doble: {p}', { p: tr(nombrePosicion(datos.posicionDoble === 'aleatoria' ? 'aleatoria' : tableros.get(numeros[0])?.doble?.posicion ?? datos.posicionDoble)).toLowerCase() })
     : null;
-  el.detalle.textContent = [`${datos.tamano}×${datos.tamano}`, doble, datos.manual ? 'tableros favoritos' : `juego ${datos.semilla}`, `${total} marcadas`].filter(Boolean).join(' · ');
+  el.detalle.textContent = [`${datos.tamano}×${datos.tamano}`, doble, datos.manual ? tr('tableros favoritos') : tr('juego {c}', { c: datos.semilla }), tr('{n} marcadas', { n: total })].filter(Boolean).join(' · ');
   // Sin código de juego no se pueden pedir otros tableros por número
   el.agregar.hidden = !!datos.manual;
   el.agregarNumero.max = datos.cantidad;
@@ -96,9 +97,9 @@ function pintar() {
       <section class="jugar-tablero-caja" data-caja="${numero}">
         <header>
           <b>${numeroTablero(numero)}</b>
-          <span class="ayuda" data-cuenta="${numero}">${m.size} marcadas</span>
+          <span class="ayuda" data-cuenta="${numero}">${tr('{n} marcadas', { n: m.size })}</span>
           <span class="loteria-aviso" data-loteria hidden>🎉 ¡Lotería!</span>
-          ${numeros.length > 1 ? `<button type="button" class="btn-chico" data-quitar="${numero}" aria-label="Dejar de jugar el tablero ${numeroTablero(numero)}">✕</button>` : ''}
+          ${numeros.length > 1 ? `<button type="button" class="btn-chico" data-quitar="${numero}" aria-label="${tr('Dejar de jugar el tablero {n}', { n: numeroTablero(numero) })}">✕</button>` : ''}
         </header>
         <div class="jugar-tablero" style="grid-template-columns:repeat(${datos.tamano},1fr)">
           ${t.cartas.map((id, i) => htmlCasilla(numero, id, i, m.has(i), ficha, salieron.has(id))).join('')}
@@ -111,8 +112,8 @@ function pintar() {
   ultimoPorPagina = cuantos;
 
   const sinImagenes = imagenes.cartasSinImagen().length === 54;
-  el.ayuda.textContent = 'Toca una carta cuando la canten para ponerle tu ficha. Tócala otra vez para quitarla.' +
-    (sinImagenes ? ' Las cartas se ven como número y nombre; para verlas con imagen, cárgalas en la sección Tableros de este navegador.' : '');
+  el.ayuda.textContent = tr('Toca una carta cuando la canten para ponerle tu ficha. Tócala otra vez para quitarla.') +
+    (sinImagenes ? ' ' + tr('Las cartas se ven como número y nombre; para verlas con imagen, cárgalas en la sección Tableros de este navegador.') : '');
 }
 
 // Solo actualiza las fichas (sin volver a pintar las imágenes)
@@ -127,7 +128,7 @@ function pintarMarcas(numeros = actual.numeros) {
       b.querySelector('.ficha-capa').innerHTML = marcada ? ficha : '';
     });
     const cuenta = el.tableros.querySelector(`[data-cuenta="${numero}"]`);
-    if (cuenta) cuenta.textContent = `${m.size} marcadas`;
+    if (cuenta) cuenta.textContent = tr('{n} marcadas', { n: m.size });
   }
   pintarDetalle();
   revisarGanadores();
@@ -148,7 +149,7 @@ function pintarCanto() {
   const p = canto.partida();
   const id = cartaActual(p);
   const c = id ? cartaPorId(id) : null;
-  el.cantoProgreso.textContent = `Carta ${p.cantadas} de ${p.orden.length}`;
+  el.cantoProgreso.textContent = tr('Carta {n} de {t}', { n: p.cantadas, t: p.orden.length });
   if (!c) {
     el.cantoCarta.innerHTML = '<div class="canto-inicio">¡Corre y se va!<small>Toca para cantar la primera carta</small></div>';
   } else {
@@ -219,7 +220,7 @@ function revisarGanadores() {
   }
   const nuevos = [...ganadores].filter((n) => !ganadoresPrevios.has(n));
   if (nuevos.length) {
-    avisar(`🎉 ¡Lotería! ${nuevos.map(numeroTablero).join(', ')} · ${MODOS[modo].nombre.toLowerCase()}`, 5000);
+    avisar(`🎉 ${tr('¡Lotería!')} ${nuevos.map(numeroTablero).join(', ')} · ${tr(MODOS[modo].nombre).toLowerCase()}`, 5000);
     if (canto.automatico()) canto.detener();
   }
   ganadoresPrevios = ganadores;
@@ -310,7 +311,7 @@ function htmlPaginas(paginas, cuantos) {
   const botones = numeros.map((n, i) => {
     const aqui = Math.floor(i / cuantos) === pagina;
     return `<button type="button" class="pagina-tablero${aqui ? ' actual' : ''}${ganadoresPrevios.has(n) ? ' gano' : ''}" data-ir="${n}"
-      ${aqui ? 'aria-current="true"' : ''} title="Ir al tablero ${numeroTablero(n)}">${String(n).padStart(3, '0')}</button>`;
+      ${aqui ? 'aria-current="true"' : ''} title="${tr('Ir al tablero {n}', { n: numeroTablero(n) })}">${String(n).padStart(3, '0')}</button>`;
   }).join('');
   return `<nav class="jugar-paginas" aria-label="Páginas de tableros">
       <button type="button" class="btn-icono" data-pagina="-1" aria-label="Tableros anteriores" ${pagina === 0 ? 'disabled' : ''}>${flecha('M15 5 8 12l7 7')}</button>
@@ -364,11 +365,11 @@ function agregarTablero() {
   const numero = Number(el.agregarNumero.value);
   const { datos, numeros } = actual;
   if (!Number.isInteger(numero) || numero < 1 || numero > datos.cantidad) {
-    avisar(`Escribe un número de tablero entre 1 y ${datos.cantidad}`);
+    avisar(tr('Escribe un número de tablero entre 1 y {n}', { n: datos.cantidad }));
     return;
   }
   if (numeros.includes(numero)) {
-    avisar(`Ya estás jugando el tablero ${numeroTablero(numero)}`);
+    avisar(tr('Ya estás jugando el tablero {n}', { n: numeroTablero(numero) }));
     return;
   }
   if (numeros.length >= MAX_TABLEROS_JUGADOR) return;
@@ -383,7 +384,7 @@ function agregarTablero() {
 
 function quitarTablero(numero) {
   if (actual.numeros.length <= 1) return;
-  if (actual.marcas.get(numero).size && !window.confirm(`¿Dejar de jugar el tablero ${numeroTablero(numero)}? Sus marcas se conservan si lo vuelves a agregar.`)) return;
+  if (actual.marcas.get(numero).size && !window.confirm(tr('¿Dejar de jugar el tablero {n}? Sus marcas se conservan si lo vuelves a agregar.', { n: numeroTablero(numero) }))) return;
   actual.numeros = actual.numeros.filter((n) => n !== numero);
   actual.tableros.delete(numero);
   actual.marcas.delete(numero);
@@ -393,8 +394,7 @@ function quitarTablero(numero) {
 
 function limpiar() {
   const total = [...actual.marcas.values()].reduce((s, m) => s + m.size, 0);
-  const texto = actual.numeros.length > 1 ? 'de todos tus tableros' : 'de este tablero';
-  if (!total || !window.confirm(`¿Quitar todas las marcas ${texto}?`)) return;
+  if (!total || !window.confirm(tr(actual.numeros.length > 1 ? '¿Quitar todas las marcas de todos tus tableros?' : '¿Quitar todas las marcas de este tablero?'))) return;
   for (const n of actual.numeros) {
     actual.marcas.get(n).clear();
     guardarMarcas(n);

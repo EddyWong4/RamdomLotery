@@ -1,6 +1,7 @@
 // Tableros favoritos: hechos a mano o guardados desde un juego generado.
 // Funciones puras: validar un tablero, completarlo al azar y armar un "juego" con varios favoritos
 // para imprimirlos, simularlos, verificarlos en el cantador y compartirlos.
+import { t as tr } from './i18n.js';
 import { TOTAL_CARTAS } from './cartas.js';
 import { TAMANOS, calcularEstadisticas } from './generador.js';
 
@@ -22,19 +23,19 @@ export function validarCartas(cartas, n) {
   const veces = new Map();
   for (const c of cartas) {
     if (c == null) continue;
-    if (!Number.isInteger(c) || c < 1 || c > TOTAL_CARTAS) return { ok: false, faltan, error: `Carta inválida: ${c}`, doble: null };
+    if (!Number.isInteger(c) || c < 1 || c > TOTAL_CARTAS) return { ok: false, faltan, error: tr('Carta inválida: {c}', { c }), doble: null };
     veces.set(c, (veces.get(c) ?? 0) + 1);
   }
   const repetidas = [...veces].filter(([, v]) => v > 1);
   if (repetidas.some(([, v]) => v > 2)) {
     const [c] = repetidas.find(([, v]) => v > 2);
-    return { ok: false, faltan, error: `La carta ${c} está más de 2 veces`, doble: null };
+    return { ok: false, faltan, error: tr('La carta {c} está más de 2 veces', { c }), doble: null };
   }
   if (repetidas.length > 1) {
-    return { ok: false, faltan, error: `Solo una carta puede repetirse (se repiten ${repetidas.map(([c]) => c).join(' y ')})`, doble: null };
+    return { ok: false, faltan, error: tr('Solo una carta puede repetirse (se repiten {c})', { c: repetidas.map(([c]) => c).join(tr(' y ')) }), doble: null };
   }
   const doble = repetidas.length ? { carta: repetidas[0][0] } : null;
-  if (faltan) return { ok: false, faltan, error: `Faltan ${faltan} casilla${faltan > 1 ? 's' : ''}`, doble };
+  if (faltan) return { ok: false, faltan, error: faltan > 1 ? tr('Faltan {n} casillas', { n: faltan }) : tr('Falta 1 casilla'), doble };
   return { ok: true, faltan: 0, error: null, doble };
 }
 

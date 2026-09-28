@@ -3,6 +3,7 @@ import { CARTAS, cartaPorId } from './cartas.js';
 import * as almacen from './almacen.js';
 import * as imagenes from './imagenes.js';
 import { MODOS, verificarTablero, normalizarModo } from './reglas.js';
+import { t as tr } from './i18n.js';
 import { svgFicha } from './fichas.js';
 import { sonidoInicio, sonidoFin, despertarAudio, duracion, MELODIA_INICIO } from './sonidos.js';
 import { fichaActiva } from './mis-fichas.js';
@@ -69,8 +70,8 @@ function decir(texto, alTerminar = null) {
 // ── Pintado ──────────────────────────────────────────────────────────────────
 function pintarEscenario() {
   const id = cartaActual(partida);
-  el.progreso.textContent = `Carta ${partida.cantadas} de ${partida.orden.length}`;
-  el.codigo.textContent = `Partida ${partida.semilla}`;
+  el.progreso.textContent = tr('Carta {n} de {t}', { n: partida.cantadas, t: partida.orden.length });
+  el.codigo.textContent = tr('Partida {c}', { c: partida.semilla });
   el.anterior.disabled = partida.cantadas === 0;
   el.siguiente.disabled = terminada(partida);
   el.siguiente.textContent = partida.cantadas === 0 ? 'Empezar ▶' : terminada(partida) ? 'Se cantaron todas' : 'Siguiente carta ▶';
@@ -112,7 +113,7 @@ function pintarAyudaVerificar() {
   const juego = almacen.cargarJuegoActual();
   el.numero.max = juego?.tableros.length ?? '';
   el.verificarAyuda.textContent = juego?.tableros.length
-    ? `Juego actual: ${juego.tableros.length} tableros ${juego.tamano}×${juego.tamano}${juego.posicionDoble ? ' dobles' : ''} ${juego.manual ? '(tableros favoritos)' : `(código ${juego.semilla})`}.`
+    ? tr('Juego actual: {c} tableros {n}×{n}{d} {o}.', { c: juego.tableros.length, n: juego.tamano, d: juego.posicionDoble ? tr(' dobles') : '', o: juego.manual ? tr('(tableros favoritos)') : tr('(código {c})', { c: juego.semilla }) })
     : 'Primero genera tableros en la sección Tableros.';
   el.btnVerificar.disabled = !juego?.tableros.length;
   el.btnRevisar.disabled = !juego?.tableros.length;
@@ -185,7 +186,7 @@ function alternarAuto() {
 function empezarNuevaPartida() {
   cancelarPendiente();
   if (partida.cantadas > 0 && !terminada(partida) &&
-    !window.confirm(`Van ${partida.cantadas} cartas cantadas. ¿Empezar una partida nueva?`)) return false;
+    !window.confirm(tr('Van {n} cartas cantadas. ¿Empezar una partida nueva?', { n: partida.cantadas }))) return false;
   detenerAuto();
   partida = nuevaPartida();
   guardar();
@@ -202,7 +203,7 @@ function verificar(numero = Number(el.numero.value)) {
   const juego = almacen.cargarJuegoActual();
   const tablero = juego?.tableros.find((t) => t.numero === numero);
   if (!tablero) {
-    el.resultado.innerHTML = `<p class="verificar-estado no">No existe el tablero ${Number.isFinite(numero) && numero ? numeroTablero(numero) : ''} en el juego actual.</p>`;
+    el.resultado.innerHTML = `<p class="verificar-estado no">${tr('No existe el tablero {n} en el juego actual.', { n: Number.isFinite(numero) && numero ? numeroTablero(numero) : '' })}</p>`;
     return;
   }
   el.numero.value = numero;
@@ -212,13 +213,13 @@ function verificar(numero = Number(el.numero.value)) {
   const ganadoras = new Set(r.ganadoras ?? []);
 
   const estado = r.gano
-    ? `<p class="verificar-estado si">🎉 ¡Lotería! El tablero <b>${numeroTablero(numero)}</b> ganó con <b>${MODOS[prefs.modo].nombre.toLowerCase()}</b>.</p>`
-    : `<p class="verificar-estado no">Todavía no gana (${MODOS[prefs.modo].nombre.toLowerCase()}). ` +
+    ? `<p class="verificar-estado si">${tr('🎉 ¡Lotería! El tablero <b>{n}</b> ganó con <b>{m}</b>.', { n: numeroTablero(numero), m: tr(MODOS[prefs.modo].nombre).toLowerCase() })}</p>`
+    : `<p class="verificar-estado no">${tr('Todavía no gana ({m}).', { m: tr(MODOS[prefs.modo].nombre).toLowerCase() })} ` +
       (r.casillasFaltantes !== null
-        ? `Le falta${r.casillasFaltantes > 1 ? 'n' : ''} <b>${r.casillasFaltantes}</b> casilla${r.casillasFaltantes > 1 ? 's' : ''} (cualquiera).`
+        ? (r.casillasFaltantes > 1 ? tr('Le faltan <b>{n}</b> casillas (cualquiera).', { n: r.casillasFaltantes }) : tr('Le falta <b>1</b> casilla (cualquiera).'))
         : r.faltan.length <= 6
-        ? `Le falta${r.faltan.length > 1 ? 'n' : ''}: <b>${r.faltan.map((id) => escapar(cartaPorId(id).nombre)).join(', ')}</b>.`
-        : `Le faltan <b>${r.faltan.length}</b> cartas.`) +
+        ? tr(r.faltan.length > 1 ? 'Le faltan: <b>{c}</b>.' : 'Le falta: <b>{c}</b>.', { c: r.faltan.map((id) => escapar(cartaPorId(id).nombre)).join(', ') })
+        : tr('Le faltan <b>{n}</b> cartas.', { n: r.faltan.length })) +
       '</p>';
 
   const ficha = svgFicha(fichaActiva());
@@ -236,9 +237,9 @@ function revisarTodos() {
   const cantadas = new Set(cartasCantadas(partida));
   const ganadores = juego.tableros.filter((t) => verificarTablero(t.cartas, cantadas, prefs.modo).gano);
   el.revisar.innerHTML = ganadores.length
-    ? `Ya ganaron (${MODOS[prefs.modo].corto.toLowerCase()}): ` +
+    ? `${tr('Ya ganaron ({m}):', { m: tr(MODOS[prefs.modo].corto).toLowerCase() })} ` +
       ganadores.map((t) => `<button type="button" class="btn-enlace en-linea" data-verificar="${t.numero}">${numeroTablero(t.numero)}</button>`).join(', ')
-    : `Ningún tablero ha ganado todavía (${MODOS[prefs.modo].corto.toLowerCase()}).`;
+    : tr('Ningún tablero ha ganado todavía ({m}).', { m: tr(MODOS[prefs.modo].corto).toLowerCase() });
 }
 
 // ── Teclado ──────────────────────────────────────────────────────────────────

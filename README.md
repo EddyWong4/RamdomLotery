@@ -88,6 +88,10 @@ forma respetuosa (máscara de luchador, gatito negro, arco con plumas).
 **Cómo jugar** (`#/reglas`, `src/instrucciones.js`): instrucciones paso a paso, las 4 formas de ganar (tabla llena,
 tradicional, en cruz, siete loco) con diagramas generados desde `src/reglas.js`, carta doble, formas de jugar con la app y consejos.
 
+**Idiomas** (`src/i18n.js`, `src/i18n-en.js`): español (predeterminado) e inglés, con el botón 🌐 del encabezado. El
+español es el texto original; en inglés la página se traduce con un diccionario (textos fijos, lo que se dibuja después,
+atributos y confirmaciones) y los mensajes con datos usan `t('… {x} …', { x })`. Los nombres de las cartas no se traducen.
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).

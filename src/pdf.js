@@ -1,3 +1,4 @@
+import { t as tr } from './i18n.js';
 import { jsPDF } from 'jspdf';
 import { cartaPorId, CARTAS, PROPORCION_CARTA as A } from './cartas.js';
 import { bytesImagen } from './imagenes.js';
@@ -110,7 +111,7 @@ function dibujarTablero(doc, imagenes, tablero, celda, opciones) {
   if (opciones.mostrarPie) {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...COLOR_SUAVE);
-    const pie = `Tablero ${n}×${n}  ·  Juego ${opciones.semilla}`;
+    const pie = tr('Tablero {n}×{n}  ·  Juego {c}', { n, c: opciones.semilla });
     textoAjustado(doc, pie, bw - 2 * p, bw * PIE * 0.55 * mm2pt);
     doc.text(pie, bx + bw / 2, by + bh - p * 0.9, { align: 'center' });
   }

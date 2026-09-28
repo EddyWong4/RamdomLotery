@@ -1,6 +1,7 @@
 // Contador de visitas con GoatCounter, sin cargar su script: la visita se registra con su "píxel"
 // (una petición a /count) y el total se lee de /counter/<ruta>.json. Sin cookies y sin datos personales.
 // Se cuenta una vez por cada vez que se abre la app (no por cada cambio de sección).
+import { t as tr, LOCALE } from './i18n.js';
 import { GOATCOUNTER } from './config.js';
 
 const CODIGO_VALIDO = /^[a-z0-9-]{1,50}$/;
@@ -49,7 +50,7 @@ export async function iniciarVisitas(elemento, win = window, codigo = GOATCOUNTE
     if (!r.ok) return;
     const total = leerTotal(await r.json());
     if (total == null || !elemento) return;
-    elemento.textContent = `👁 ${total.toLocaleString('es-MX')} ${total === 1 ? 'visita' : 'visitas'}`;
+    elemento.textContent = `👁 ${total.toLocaleString(LOCALE)} ${tr(total === 1 ? 'visita' : 'visitas')}`;
     elemento.title = 'Visitas a la página (contadas sin cookies con GoatCounter)';
     elemento.hidden = false;
   } catch {
