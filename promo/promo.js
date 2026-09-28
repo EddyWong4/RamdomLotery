@@ -276,6 +276,88 @@ export const DIAPOSITIVAS = [
   },
 ];
 
+// ── Fotos de perfil (1080 × 1080; TikTok las recorta en círculo) ───────────
+const LADO = 1080;
+const MEDIO = LADO / 2;
+const carta = (id) => ILUSTRACIONES.find((il) => il.id === id);
+
+function frijol(ctx, x, y, r) {
+  const g = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, 2, x, y, r);
+  g.addColorStop(0, '#c98a4b'); g.addColorStop(1, '#6e3f16');
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 6;
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.77, -0.5, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+
+// Carta girada alrededor de su centro
+function cartaGirada(ctx, il, cx, cy, w, grados) {
+  const h = w / 0.631;
+  ctx.save();
+  ctx.translate(cx, cy); ctx.rotate((grados * Math.PI) / 180);
+  dibujarCarta(ctx, il, il.id, -w / 2, -h / 2, w);
+  ctx.restore();
+}
+
+export const FOTOS = [
+  {
+    id: 'abanico', nombre: 'Abanico de cartas',
+    dibujar(ctx) {
+      cartaGirada(ctx, carta(27), MEDIO - 210, MEDIO + 40, 300, -16);
+      cartaGirada(ctx, carta(35), MEDIO + 210, MEDIO + 40, 300, 16);
+      cartaGirada(ctx, carta(46), MEDIO, MEDIO - 10, 330, 0);
+    },
+  },
+  {
+    id: 'carta', nombre: 'Carta con frijolito',
+    dibujar(ctx) {
+      cartaGirada(ctx, carta(46), MEDIO, MEDIO, 430, -6);
+      frijol(ctx, MEDIO + 120, MEDIO + 170, 62);
+    },
+  },
+  {
+    id: 'tablero', nombre: 'Tablero marcado',
+    dibujar(ctx, c) {
+      // Mismas medidas que tablero(): así queda centrado a lo alto
+      const w = 470;
+      const pad = w * 0.04;
+      const gap = w * 0.02;
+      const h = 2 * pad + 2 * ((w - 2 * pad - gap) / 2 / 0.63) + gap;
+      tablero(ctx, c, MEDIO - w / 2, MEDIO - h / 2, w, 2, { frijoles: [0, 3] });
+    },
+  },
+];
+
+function fondoFoto(ctx, c) {
+  ctx.fillStyle = c.fondo;
+  ctx.fillRect(0, 0, LADO, LADO);
+  const brillo = ctx.createRadialGradient(MEDIO, MEDIO, 60, MEDIO, MEDIO, 620);
+  brillo.addColorStop(0, `${c.acento}66`);
+  brillo.addColorStop(1, `${c.acento}00`);
+  ctx.fillStyle = brillo;
+  ctx.fillRect(0, 0, LADO, LADO);
+  // Confeti tenue alrededor (queda dentro del círculo que muestra TikTok)
+  const confeti = [[230, 250, c.acento], [850, 300, c.acento2], [190, 760, c.acento2], [880, 800, c.acento], [540, 110, c.acento2], [540, 975, c.acento], [120, 520, c.acento], [960, 540, c.acento2]];
+  for (const [x, y, color] of confeti) {
+    ctx.fillStyle = color; ctx.globalAlpha = 0.55;
+    ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/** Dibuja una foto de perfil (1080 × 1080) con un anillo del color de acento en el borde del círculo. */
+export function dibujarFoto(canvas, foto, tema) {
+  canvas.width = LADO;
+  canvas.height = LADO;
+  const ctx = canvas.getContext('2d');
+  const c = colores(tema);
+  fondoFoto(ctx, c);
+  foto.dibujar(ctx, c);
+  ctx.strokeStyle = c.acento;
+  ctx.lineWidth = 22;
+  ctx.beginPath(); ctx.arc(MEDIO, MEDIO, MEDIO - 26, 0, Math.PI * 2); ctx.stroke();
+}
+
 /** Dibuja una diapositiva completa en el canvas (1080 × 1920). */
 export function dibujarDiapositiva(canvas, diapositiva, tema) {
   canvas.width = ANCHO;
@@ -305,6 +387,9 @@ function pintar() {
     const d = DIAPOSITIVAS.find((x) => x.id === cv.dataset.diapositiva);
     dibujarDiapositiva(cv, d, temaActual);
   });
+  document.querySelectorAll('canvas[data-foto]').forEach((cv) => {
+    dibujarFoto(cv, FOTOS.find((x) => x.id === cv.dataset.foto), temaActual);
+  });
 }
 
 async function iniciar() {
@@ -321,6 +406,17 @@ async function iniciar() {
       <canvas data-diapositiva="${d.id}" aria-label="${d.nombre}"></canvas>
       <figcaption><span>${d.nombre}</span><button type="button" data-descargar="${d.id}">Descargar PNG</button></figcaption>
     </figure>`).join('');
+
+  document.getElementById('fotos').innerHTML = FOTOS.map((f) => `
+    <figure>
+      <canvas data-foto="${f.id}" aria-label="${f.nombre}"></canvas>
+      <figcaption><span>${f.nombre}</span><button type="button" data-descargar-foto="${f.id}">Descargar PNG</button></figcaption>
+    </figure>`).join('');
+  document.getElementById('fotos').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-descargar-foto]');
+    if (!b) return;
+    descargar(document.querySelector(`canvas[data-foto="${b.dataset.descargarFoto}"]`), `loteria-perfil-${temaActual.id}-${b.dataset.descargarFoto}.png`);
+  });
 
   document.getElementById('temas').addEventListener('click', (e) => {
     const b = e.target.closest('[data-tema]');
