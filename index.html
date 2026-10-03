@@ -212,6 +212,13 @@
     </section>
 
     <aside class="cantador-lateral">
+      <section class="tarjeta" id="panel-voces">
+        <h2>Voces de las cartas</h2>
+        <p class="ayuda" id="voces-resumen"></p>
+        <label class="check"><input type="checkbox" id="usar-grabaciones" /> Cantar con mis grabaciones</label>
+        <button type="button" id="btn-grabar-voces" class="btn-secundario btn-con-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span>Grabar voces</span></button>
+      </section>
+
       <section class="tarjeta">
         <h2>Verificar un tablero</h2>
         <p class="ayuda" id="verificar-ayuda"></p>
@@ -402,6 +409,39 @@
       <label class="check"><input type="checkbox" id="fondo-decorativo" /> Fondo decorativo del tema</label>
       <button type="submit" class="btn-principal">Listo</button>
     </form>
+  </dialog>
+
+  <!-- Grabar las voces de las cartas (se guardan solo en este navegador) -->
+  <dialog id="dialogo-voces" class="dialogo dialogo-voces">
+    <div class="dialogo-contenido">
+      <div class="voces-cabecera">
+        <h2>Voces de las cartas</h2>
+        <span class="ayuda" id="voces-cuenta"></span>
+      </div>
+      <p class="voces-aviso" id="voces-aviso" role="alert" hidden></p>
+      <div class="voces-carta">
+        <button type="button" id="voces-anterior" class="btn-icono" aria-label="Carta anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5 8 12l7 7"/></svg></button>
+        <div class="voces-imagen" id="voces-imagen"></div>
+        <button type="button" id="voces-siguiente" class="btn-icono" aria-label="Carta siguiente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <p class="voces-nombre" id="voces-nombre"></p>
+      <p class="ayuda voces-estado" id="voces-estado-carta"></p>
+      <button type="button" id="voces-grabar" class="btn-principal btn-con-icono voces-grabar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="voces-grabar-texto">Grabar</span></button>
+      <div class="botones-iguales">
+        <button type="button" id="voces-escuchar" class="btn-secundario">▶ Escuchar</button>
+        <button type="button" id="voces-borrar" class="btn-secundario">Borrar</button>
+      </div>
+      <label class="check"><input type="checkbox" id="voces-avanzar" checked /> Al terminar, pasar a la siguiente carta</label>
+      <p class="ayuda">Di el nombre de la carta o su verso (“el que le cantó a San Pedro… ¡el gallo!”). Máximo 6 segundos. Atajos: <b>R</b> graba, <b>←</b> <b>→</b> cambian de carta.</p>
+      <div class="voces-rejilla" id="voces-rejilla" aria-label="Cartas"></div>
+      <div class="botones-iguales">
+        <button type="button" id="voces-exportar" class="btn-secundario">Exportar (ZIP)</button>
+        <label class="btn-secundario btn-archivo">Importar audios…<input type="file" id="voces-importar" accept="audio/*,.m4a,.webm,.ogg,.mp3,.wav" multiple hidden /></label>
+      </div>
+      <button type="button" id="voces-borrar-todas" class="btn-enlace">Borrar todas las grabaciones</button>
+      <p class="aviso-legal">Las grabaciones se guardan solo en este navegador; esta página no las sube ni las comparte.</p>
+      <form method="dialog"><button type="submit" class="btn-principal" style="width:100%">Listo</button></form>
+    </div>
   </dialog>
 
   <!-- Editor para crear o cambiar un tablero a mano -->

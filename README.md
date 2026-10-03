@@ -92,6 +92,10 @@ tradicional, en cruz, siete loco) con diagramas generados desde `src/reglas.js`,
 español es el texto original; en inglés la página se traduce con un diccionario (textos fijos, lo que se dibuja después,
 atributos y confirmaciones) y los mensajes con datos usan `t('… {x} …', { x })`. Los nombres de las cartas no se traducen.
 
+**Voces grabadas** (`src/voces.js`, `src/grabador-voces.js`): en Cantar → *Grabar voces* cada quien graba su voz para
+las 54 cartas (MediaRecorder, máx. 6 s). Se guardan en IndexedDB (`loteria-voces`), nunca se suben; el cantador las usa en
+lugar de la voz del navegador y la que falte la dice el navegador. Exportar / importar en ZIP (número de carta al inicio).
+
 ## Uso
 
 Requiere [Node.js](https://nodejs.org) **20 o superior** (la compilación de la PWA no funciona en Node 18).

@@ -5,11 +5,13 @@ import * as imagenes from './imagenes.js';
 import { MODOS, verificarTablero, normalizarModo } from './reglas.js';
 import { t as tr } from './i18n.js';
 import { svgFicha } from './fichas.js';
-import { sonidoInicio, sonidoFin, despertarAudio, duracion, MELODIA_INICIO } from './sonidos.js';
+import { sonidoInicio, sonidoFin, despertarAudio as despertarSonidos, duracion, MELODIA_INICIO } from './sonidos.js';
+import * as voces from './voces.js';
+import { iniciarGrabador, abrirGrabador } from './grabador-voces.js';
 import { fichaActiva } from './mis-fichas.js';
 import { nuevaPartida, siguiente, anterior, cartasCantadas, cartaActual, terminada, esPartidaValida } from './partida.js';
 
-const PREFS_INICIALES = { intervalo: 3, voz: false, sonidos: true, modo: 'llena' };
+const PREFS_INICIALES = { intervalo: 3, voz: false, sonidos: true, modo: 'llena', grabaciones: true };
 /** Segundos entre cartas en automático; el botón del modo simple da vuelta en este orden. */
 export const INTERVALOS = [3, 5, 7, 10, 15, 20];
 // Un tiempo guardado que ya no está en la lista (p. ej. 8 de versiones anteriores) pasa al más cercano
@@ -47,8 +49,38 @@ function guardarPrefs() {
   almacen.guardarPreferenciasCantador(prefs);
 }
 
-// ── Voz (API del navegador, sin servidor) ────────────────────────────────────
+// ── Voz (grabaciones propias o la voz del navegador, sin servidor) ──────────
 const hayVoz = () => 'speechSynthesis' in window;
+
+// Un toque desbloquea los sonidos y el reproductor de las voces grabadas (el celular lo exige)
+function despertarAudio() {
+  despertarSonidos();
+  voces.despertarVoz();
+}
+
+/** Canta la carta: con la grabación de la persona si existe (y está activada), si no con la voz del navegador. */
+function decirCarta(id, alTerminar = null) {
+  if (prefs.voz && prefs.grabaciones !== false && voces.tieneVoz(id)) {
+    if (hayVoz()) speechSynthesis.cancel();
+    let listo = false;
+    const una = () => { if (!listo) { listo = true; alTerminar?.(); } };
+    if (voces.reproducirVoz(id, alTerminar ? una : null)) {
+      // Por si el audio nunca avisa que terminó
+      if (alTerminar) pendiente = setTimeout(una, (voces.DURACION_MAXIMA + 1) * 1000);
+      return;
+    }
+  }
+  decir(cartaPorId(id).nombre, alTerminar);
+}
+
+function pintarVoces() {
+  const n = voces.vocesGrabadas();
+  el.vocesResumen.textContent = n
+    ? tr('{n} de 54 cartas con tu voz. Las que falten las dice la voz del navegador.', { n })
+    : tr('Graba tu voz diciendo cada carta (o su verso) y la app cantará con ella.');
+  el.usarGrabaciones.checked = prefs.grabaciones !== false;
+  el.usarGrabaciones.disabled = n === 0;
+}
 
 /** Dice el texto si la voz está activa. `alTerminar` se llama al acabar de hablar (o enseguida si no hay voz). */
 function decir(texto, alTerminar = null) {
@@ -215,12 +247,14 @@ function pintarTodo() {
   el.voz.disabled = !hayVoz();
   el.sonidos.checked = prefs.sonidos;
   el.modo.querySelectorAll('button').forEach((b) => b.classList.toggle('activo', b.dataset.valor === prefs.modo));
+  pintarVoces();
 }
 
 // ── Acciones ─────────────────────────────────────────────────────────────────
 function cancelarPendiente() {
   clearTimeout(pendiente);
   pendiente = null;
+  voces.detenerVoz();
 }
 
 function cambiar(nueva) {
@@ -237,16 +271,16 @@ function cambiar(nueva) {
   avisarOyentes(avanzo);
   if (!avanzo) return;
 
-  const nombre = cartaPorId(cartaActual(partida)).nombre;
+  const id = cartaActual(partida);
   if (partida.cantadas === 1 && prefs.sonidos) {
     // Arranca la partida: sonido de inicio y después la voz dice la primera carta
     sonidoInicio();
-    pendiente = setTimeout(() => decir(nombre), duracion(MELODIA_INICIO) * 1000);
+    pendiente = setTimeout(() => decirCarta(id), duracion(MELODIA_INICIO) * 1000);
   } else if (terminada(partida)) {
     // Última carta: primero se dice y después suena el cierre
-    decir(nombre, () => prefs.sonidos && (pendiente = setTimeout(sonidoFin, 250)));
+    decirCarta(id, () => prefs.sonidos && (pendiente = setTimeout(sonidoFin, 250)));
   } else {
-    decir(nombre);
+    decirCarta(id);
   }
   if (terminada(partida)) detenerAuto();
 }
@@ -332,7 +366,7 @@ function revisarTodos() {
 
 // ── Teclado ──────────────────────────────────────────────────────────────────
 function alPresionarTecla(e) {
-  if (!activa || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (!activa || e.altKey || e.ctrlKey || e.metaKey || document.querySelector('dialog[open]')) return;
   const enCampo = e.target.closest('input, select, textarea, button');
   if ((e.key === ' ' || e.key === 'ArrowRight') && !enCampo) {
     e.preventDefault();
@@ -377,6 +411,8 @@ export function iniciarCantador() {
     simpleAnterior: $('#simple-anterior'),
     simpleAuto: $('#simple-auto'),
     simpleSiguiente: $('#simple-siguiente'),
+    vocesResumen: $('#voces-resumen'),
+    usarGrabaciones: $('#usar-grabaciones'),
     simpleTiempo: $('#simple-tiempo'),
     simpleTiempoValor: $('#simple-tiempo-valor'),
   };
@@ -433,7 +469,7 @@ export function iniciarCantador() {
   el.voz.addEventListener('change', () => {
     prefs.voz = el.voz.checked;
     guardarPrefs();
-    if (prefs.voz && cartaActual(partida)) decir(cartaPorId(cartaActual(partida)).nombre);
+    if (prefs.voz && cartaActual(partida)) decirCarta(cartaActual(partida));
   });
   el.modo.addEventListener('click', (e) => {
     const b = e.target.closest('button[data-valor]');
@@ -450,6 +486,26 @@ export function iniciarCantador() {
   el.revisar.addEventListener('click', (e) => {
     const b = e.target.closest('[data-verificar]');
     if (b) verificar(Number(b.dataset.verificar));
+  });
+  // Voces grabadas
+  el.usarGrabaciones.addEventListener('change', () => {
+    prefs.grabaciones = el.usarGrabaciones.checked;
+    guardarPrefs();
+  });
+  $('#btn-grabar-voces').addEventListener('click', () => abrirGrabador());
+  $('#dialogo-voces').addEventListener('close', pintarVoces);
+  iniciarGrabador({
+    alCambiar() {
+      // La primera grabación enciende la voz y el uso de grabaciones, para oírlas sin buscar la opción
+      if (voces.vocesGrabadas() > 0 && !prefs.voz) {
+        prefs.voz = true;
+        prefs.grabaciones = true;
+        guardarPrefs();
+        el.voz.checked = true;
+        avisarOyentes();
+      }
+      pintarVoces();
+    },
   });
   document.addEventListener('keydown', alPresionarTecla);
   if (hayVoz()) speechSynthesis.getVoices(); // algunos navegadores cargan las voces al primer uso

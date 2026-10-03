@@ -955,6 +955,9 @@ iniciarPwa(avisar);
 iniciarInstalacion(avisar);
 iniciarVisitas(document.getElementById('visitas'));
 // Los tableros se pintan cuando se sabe de dónde salen las imágenes (incluidas, guardadas o ninguna)
+// Voces grabadas de las cartas (IndexedDB): cuando cargan, el cantador muestra cuántas hay
+import('./voces.js').then((v) => v.iniciarVoces()).then(() => refrescarCantador());
+
 imagenes.iniciarImagenes().finally(() => {
   pintarPanelImagenes();
   pintarTableros();
